@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
+import pandas as pd
 
 
 @dataclass
@@ -8,6 +9,7 @@ class AopssopData:
     # Массив размерности O×N,
     # где O – количество объектов,
     # N – количество признаков
+    # ПОСНД, АПССОП, АОССОП
     features_matrix: np.array([])
 
     # Вектор типов признаков
@@ -18,6 +20,7 @@ class AopssopData:
     # Массив размерности O×M,
     # где O – количество объектов,
     # где M – количество лейблов
+    # АОССОП
     labels_matrix: np.array([])
 
     # Вектор имен лейблов
@@ -37,10 +40,49 @@ class AopssopData:
     # Массив размерности U, где U – количество правил на вейвлетах
     wave_rules: np.array([])
 
-    # Результаты оценки состояния
+    # АОССОП: результаты оценки состояния
     assessment_results: np.array([])
 
-    # Результаты прогнозирования состояния
+    # АОССОП: показатели качества оценки
+    assessment_quality: {}
+
+    # АПССОП: результаты прогнозирования состояния
     forecasting_results: np.array([])
+
+    # АПССОП: показатели качества прогнозирования
+    forecasting_quality: pd.DataFrame()
+
+    # -- ПОСНД --
+    # порог корректности
+    correctness_threshold: float = 0.70
+
+    # метод кластеризации
+    clasterization_method: str = "K-means"
+
+    # метод устранения неполноты
+    incompletness_method: str = "avg"
+
+    # порог информативности
+    informative_threshold: float = 0.70
+    # -- ПОСНД --
+
+    # -- АПССОП --
+    # путь к модели прогнозирования
+    forecasting_model_path: str = "models/default_forecasting_model"
+
+    # путь к модели нормализации
+    normalization_model_path: str = "models/default_normalization_model"
+
+    # размер временного окна при обучении
+    time_window_length: int = 60
+
+    # размер временного окна при прогнозировании
+    forecasting_time_window: int = 1000
+    # -- АПССОП --
+
+
+
+
+
 
 
