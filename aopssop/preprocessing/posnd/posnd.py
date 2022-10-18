@@ -10,6 +10,9 @@ def posnd(
 ):
     data = AopssopData
     data.features_matrix = set_features_matrix(features)
+    # и т.п.
+    data_types_correctness_analysis(data)
+
 
     return output_data
 
