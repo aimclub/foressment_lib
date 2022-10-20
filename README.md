@@ -14,7 +14,7 @@ which is a part of the Research Center "Strong Artificial Intelligence in Indust
 
 <p align="left">
 <a href="https://sai.itmo.ru/" target="_blank" rel="noreferrer">
-<img src="https://drive.google.com/file/d/1eHpxnjRUZn1ErNm47REQmEMGSQevziVu/view?usp=sharing" alt="Сильный ИИ" width="40" height="40"/></a></p>
+<img src="https://sai.itmo.ru/img/subdomains/sai/logo.png" alt="Сильный ИИ" width="40" height="40"/></a></p>
 
 <h3 align="left">Languages and Tools:</h3>
 <p align="left">
