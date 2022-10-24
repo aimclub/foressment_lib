@@ -8,13 +8,32 @@ def posnd(
         features, labels,
         features_types : None, labels_types : None
 ):
+    """
+        Preprocessing of the given dataset.
+
+        :param features: matrix of features of the datasets.
+        :type features: np.array
+
+        :param labels: matrix of labels of the datasets.
+        :type labels: np.array
+
+        :param feature_types: array of data types of features (optional).
+        :type feature_types: np.array
+
+        :param label_types: array of data types of labels (optional).
+        :type label_types: np.array
+
+        :return: preprocessed features and labels.
+        :rtype: np.arrays
+    """
+
     data = AopssopData
-    data.features_matrix = set_features_matrix(features)
+    # data.features_matrix = set_features_matrix(features)
     # и т.п.
     data_types_correctness_analysis(data)
 
 
-    return output_data
+    return data
 
 
 def data_types_correctness_analysis(data):
