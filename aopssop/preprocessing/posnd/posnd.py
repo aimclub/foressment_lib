@@ -32,7 +32,6 @@ def posnd(
     # и т.п.
     data_types_correctness_analysis(data)
 
-
     return data
 
 
