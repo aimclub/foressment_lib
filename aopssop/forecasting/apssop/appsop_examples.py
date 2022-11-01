@@ -1,6 +1,5 @@
 from apssop import *
 from data_classes import AopssopData as PDATA
-import sys
 
 class DataLoaderAndPreprocessor:
     """
