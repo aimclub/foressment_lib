@@ -13,6 +13,8 @@ import pickle
 
 import pandas as pd
 import numpy as np
+import sys
+import decimal
 
 
 class AIForecaster:
@@ -57,24 +59,25 @@ class AIForecaster:
                 print('Uncorrected zero values')
                 exit()
 
+            self.model = Sequential([
+                Input(shape=(self.time_window_length, self.n_features)),
+                # self.input = (time_window_length, n_features)
+                LSTM(64, activation='relu', return_sequences=True,
+                     kernel_regularizer=regularizers.l2(0.00)),
+                Dropout(0.01),
+                LSTM(32, return_sequences=True, activation='relu',
+                     kernel_regularizer=regularizers.l2(0.00)),
+                Dropout(0.01),
+                LSTM(16, return_sequences=False, activation='relu',
+                     kernel_regularizer=regularizers.l2(0.00)),
+                Dropout(0.01),
+                Dense(self.n_features, activation='sigmoid')
+            ])
+            self.model.compile(optimizer='adam', loss='mse')
+
         self.epochs = n_epochs
         self.batch_size = 128
         self.early_stop = EarlyStopping(monitor='loss', patience=1)
-
-        self.model = Sequential([
-            Input(shape=(self.time_window_length, self.n_features)), # self.input = (time_window_length, n_features)
-            LSTM(64, activation='relu', return_sequences=True,
-                 kernel_regularizer=regularizers.l2(0.00)),
-            Dropout(0.01),
-            LSTM(32, return_sequences=True, activation='relu',
-                 kernel_regularizer=regularizers.l2(0.00)),
-            Dropout(0.01),
-            LSTM(16, return_sequences=False, activation='relu',
-                 kernel_regularizer=regularizers.l2(0.00)),
-            Dropout(0.01),
-            Dense(self.n_features, activation='linear')
-        ])
-        self.model.compile(optimizer='adam', loss='mse')
 
     def train(self, train_generator, validation_generator=None,
               save=True):
@@ -105,7 +108,10 @@ class AIForecaster:
         :return: Array of forecast data (np.array).
         """
         predictions = []
+
         for i in range(forecasting_data_length):
+            sys.stdout.write('\r\x1b[K' + 'Forecasting: {0}/{1}'.format(i, forecasting_data_length-1))
+            sys.stdout.flush()
             current_pred = self.model.predict(current_batch,
                                               batch_size=self.batch_size)[0]
             predictions.append(current_pred)
@@ -127,6 +133,7 @@ class AIForecaster:
             self.model = load_model(self.model_path)
             self.time_window_length = self.model.input.shape[1]
             self.n_features = self.model.input.shape[2]
+            print(self.model.summary())
 
         else:
             print('File with foreasting model does not exist')
@@ -147,17 +154,22 @@ class AIForecaster:
         except:
             return None
 
-    def get_last_batch(self, generator):
+    def get_batch(self, generator, current_batch_id):
         """
         Upload the last batch of temporary data.
         :param generator: Temporary data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
         :return: Last batch of temporary data (np.array).
         """
-        config = generator.get_config()
-        current_batch_id = config['end_index'] - self.time_window_length
-        last_batch = generator[current_batch_id]
-        last_batch = np.append(last_batch[0][:, 1:, :], [last_batch[1]], axis=1)
-        return last_batch
+        if current_batch_id == -1:
+            config = generator.get_config()
+            current_batch_id = config['end_index'] - self.time_window_length
+        try:
+            batch = generator[current_batch_id]
+            batch = np.append(batch[0][:, 1:, :], [batch[1]], axis=1)
+            return batch
+        except:
+            print('Wrong batch number')
+            exit()
 
 
 class DataScaler:
