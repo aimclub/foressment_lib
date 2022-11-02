@@ -33,7 +33,7 @@ class DataLoaderAndPreprocessor:
 
             else:
                 self.data = pd.DataFrame()
-                for file in os.listdir(DATA_PATH)[:1]:
+                for file in os.listdir(DATA_PATH):
                     self.data = pd.concat([self.data, pd.read_csv(DATA_PATH + '/' + file)],
                                            ignore_index=True)
 
