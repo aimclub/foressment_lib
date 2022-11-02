@@ -206,9 +206,9 @@ def test_appsop_example_forecast_by_parts(dataset_name):
 
     train, test = data.train_test_split(train_size=0.9)
 
-    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path
+    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path,
+                                     open=True
                                      )
-    normalization_model.fit(train)
 
     scaled_train = normalization_model.transform(train)
     scaled_test = normalization_model.transform(test)
@@ -216,12 +216,12 @@ def test_appsop_example_forecast_by_parts(dataset_name):
     forecasting_model = AIForecaster(n_epochs=3,
                                      time_window_length=PDATA.time_window_length,
                                      n_features=len(PDATA.features_names),
-                                     model_path=PDATA.forecasting_model_path
+                                     model_path=PDATA.forecasting_model_path,
+                                     open=True
                                      )
 
     train_generator = forecasting_model.data_to_generator(scaled_train)
     test_generator = forecasting_model.data_to_generator(scaled_test)
-    forecasting_model.train(train_generator, validation_generator=test_generator)
 
     PDATA.forecasting_time_window = len(scaled_test)
     current_batch = forecasting_model.get_batch(train_generator, -1)
