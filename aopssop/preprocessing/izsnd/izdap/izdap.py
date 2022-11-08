@@ -4,7 +4,16 @@ from numbers import Number
 from collections import defaultdict
 
 class Predicate:
-    """ Class for predicates representation"""
+    """ 
+    Class for predicates representation
+    
+    Attributes:
+        colunm: Name of the column (str).
+        values: List of true values of the predicate (array).
+        class_label: True class label for the predicate (str).
+        metric: Metric that was calculalated to estimate predicst's quality (str).
+        metric_value: Value of the metric (float)
+    """
     
     def __init__ (self, column, values, class_label):
         self.column = column
@@ -23,6 +32,11 @@ class Predicate:
     
     
     def __check_values(self, value):
+        """
+        Checks if predicate is true for the values.
+        :param values: Values to check (list).
+        :return: Truthfulness of the predicate.
+        """
         if isinstance(value, Number):
             return 1 if any([value in interval for interval in self.values]) else 0
         else:
@@ -30,15 +44,38 @@ class Predicate:
     
     
     def is_true (self, data):
+        """
+        Checks if predicate is true for the value.
+        :param value: Value to check.
+        :return: Truthfulness of the predicate.
+        """
         return data[self.column].apply(self.__check_values) 
     
     
     def get_rule (self):
+        """
+        Return rule represented by the predicate in string format.
+        :return: Rule represented by the predicate in string format (str).
+        """
         return f'if {self.column} in {self.values} then {self.class_label} ({self.metric}={round(self.metric_value, 3)})'  
 
 
 class IzdapAlgo:
-    """ Class with IZDAP algo implementation """
+    """ 
+    Class with IZDAP algo implementation 
+    
+    Attributes:
+        threshold: Treshold for values separation for predicates building (float).
+        __N: Length of the dataset (int).
+        __rule_metric: Metric that should be used to evaluate predicates (str).
+        __class_column: Name of column with class labels (str)
+        __data_stats: Dictionary with all dataset's values frequncies (dict).
+        __class_stats: Dictionary with class labels frequncies (dict).
+        __string_columns: String columns of the dataset (list).
+        __number_columns: Numeric columns of the dataset (list).
+        aggregates: Aggregates built for the dataset (list).
+        predicates: Predicates built for the dataset (list).
+    """
     
     def __init__(self, probability_threshold,  verbose=0):
         self.__threshold = probability_threshold
@@ -46,6 +83,11 @@ class IzdapAlgo:
     
     
     def __default_dict_to_regular(self, d):
+        """
+        Transforms defaultdict to dict ()
+        :param d: defaultdict to transform.
+        :return: transfromed dict (dict).
+        """
         
         if isinstance(d, defaultdict):
             d = {k: self.__default_dict_to_regular(v) for k, v in d.items()}
@@ -53,7 +95,14 @@ class IzdapAlgo:
     
     
     def __calculate_regression_coefficient(self, nA, nB, nAB, N):
-        """ Calculates regression coefficient (pAB - pA*pB) / (pA * (1 - pA)) """
+        """ 
+        Calculates regression coefficient (pAB - pA*pB) / (pA * (1 - pA)) 
+        :param nA: Frequency of event A - left part of the rule (int)
+        :param nB: Frequency of event B - right part of the rule (int)
+        :param nAB: Frequency of event A anв B together (int)
+        :param N: Number of instances in the dataset (int).
+        :return: value of the regression coefficient(float).
+        """
         
         pA = float(nA) / N
         pB = float(nB) / N
@@ -62,7 +111,14 @@ class IzdapAlgo:
 
     
     def __klosgen_measure(self, nA, nB, nAB, N) :
-        """ Calculates Klosgen meausure sqrt(pB) * (pB|A- pB)) """
+        """ 
+        Calculates Klosgen meausure sqrt(pB) * (pB|A-pB))
+        :param nA: Frequency of event A - left part of the rule (int)
+        :param nB: Frequency of event B - right part of the rule (int)
+        :param nAB: Frequency of event A anв B together (int)
+        :param N: Number of instanec in the dataset (int).
+        :return: Value of the Klosgen meausure(float).
+        """
         
         pA = float(nA) / N
         pB = float(nB) / N
@@ -72,7 +128,13 @@ class IzdapAlgo:
         
             
     def fit(self, data, class_column, positive_class_label = 1, rule_metric='regression_coef'):
-        """ Builds predicates and rules """
+        """ 
+        Builds predicates and rules 
+        :param data: Data to build predicates and rules for (pd.DataFrame)
+        :param class_column: Name of column with class labels (str)
+        :param positive_class_label: Label for positive class (str)
+        :param rule_metric: Metric that should be used to evaluate predicates (str).
+        """
         
         self.__N = len(data)
         self.__class_column = class_column
@@ -82,7 +144,10 @@ class IzdapAlgo:
     
     
     def __evaluate_predicates(self, rule_metric_label):
-        """ Evaluates rules represented by predicates using metric specified by rule_metric_label """
+        """ 
+        Evaluates rules represented by predicates using metric specified by rule_metric_label 
+        :param rule_metric_label: Metric that should be used to evaluate predicates (str).
+        """
         
         if rule_metric_label == 'regression_coef':
             self.__rule_metric = self.__calculate_regression_coefficient
@@ -109,7 +174,11 @@ class IzdapAlgo:
             
             
     def __count_statistics(self, data, bins=10):
-        """ Calculates data statistics """
+        """ 
+        Calculates data statistics 
+        :param data: Data that is used to calculate stsatistocs for (pd.DataFrame)
+        :param bind: Number of discretization bins used to build predicates for numeric attributes (int).
+        """
         
         self.__data_stats = {}
         
@@ -150,7 +219,9 @@ class IzdapAlgo:
         
         
     def __build_aggregates_and_predicates(self):
-        """ Builds aggregates and predicates """
+        """ 
+        Builds aggregates and predicates 
+        """
         
         self.aggregates = {k : [] for k in self.__data_stats .keys()}
         self.predicates = []
@@ -181,7 +252,12 @@ class IzdapAlgo:
 
             
     def transform (self, data, rule_fraction=.8):
-        """ Transfroms data using top rule_fraction*100% of predicates """
+        """ 
+        Transfroms data using top rule_fraction*100% of predicates 
+        :param rule_fraction: Fraction of rules that will be used to form new dataset (float)
+        :param data: Data to transform (pd.DataFrame).
+        :return: Transformed binary dataset (pd.DataFrame).
+        """
         
         rule_set = self.predicates[:int(rule_fraction * len(self.predicates))]
         new_columns = []
@@ -203,7 +279,10 @@ class IzdapAlgo:
     
     
     def get_rules(self):
-        """ Outputs rules built in string format """
+        """ 
+        Outputs rules built in string format 
+        :return: List of Rules (array).
+        """
         
         rules = [predicate.get_rule() for predicate in self.predicates]
         
