@@ -288,22 +288,3 @@ class IzdapAlgo:
         
         return rules
     
-        
-if __name__ == '__main__':
-    
-    import sys
-    
-    if sys.argv:
-        
-        test_path = sys.argv[0]
-
-        test_data = pd.read_csv(test_path)
-
-        algo = IzdapAlgo(0.1)
-        algo.fit(test_data, class_column = "class", positive_class_label = ' >50K')
-
-        rules = algo.get_rules()
-        print(rules[0])
-
-        transformed_data = algo.transform(test_data)
-        print(transformed_data.info())    
