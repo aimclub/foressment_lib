@@ -69,11 +69,11 @@ class IzdapAlgo:
         threshold: Treshold for values separation for predicates building (float).
         __N: Length of the dataset (int).
         __rule_metric: Metric that should be used to evaluate predicates (str).
-        __class_column: Name of column with class labels (str)
+        class_column: Name of column with class labels (str)
         __data_stats: Dictionary with all dataset's values frequncies (dict).
         __class_stats: Dictionary with class labels frequncies (dict).
-        __string_columns: String columns of the dataset (list).
-        __number_columns: Numeric columns of the dataset (list).
+        string_columns: String columns of the dataset (list).
+        number_columns: Numeric columns of the dataset (list).
         aggregates: Aggregates built for the dataset (list).
         predicates: Predicates built for the dataset (list).
     """
@@ -95,7 +95,7 @@ class IzdapAlgo:
         return d
     
     
-    def __calculate_regression_coefficient(self, nA, nB, nAB, N):
+    def calculate_regression_coefficient(self, nA, nB, nAB, N):
         """ 
         Calculates regression coefficient (pAB - pA*pB) / (pA * (1 - pA)) 
         :param nA: Frequency of event A - left part of the rule (int)
@@ -111,7 +111,7 @@ class IzdapAlgo:
         return 0 if pA == 0 or pA == 1 else (pAB - pA*pB) / (pA * (1 - pA))
 
     
-    def __klosgen_measure(self, nA, nB, nAB, N) :
+    def klosgen_measure(self, nA, nB, nAB, N) :
         """ 
         Calculates Klosgen meausure sqrt(pB) * (pB|A-pB))
         :param nA: Frequency of event A - left part of the rule (int)
@@ -151,10 +151,10 @@ class IzdapAlgo:
         """
         
         if rule_metric_label == 'regression_coef':
-            self.__rule_metric = self.__calculate_regression_coefficient
+            self.__rule_metric = self.calculate_regression_coefficient
 
         if rule_metric_label == 'klosen':
-            self.__rule_metric = self.__klosgen_measure
+            self.__rule_metric = self.klosgen_measure
             
         for predicate in self.predicates:
             
@@ -183,17 +183,17 @@ class IzdapAlgo:
         
         self.__data_stats = {}
         
-        self.__number_columns = list(data.select_dtypes(include=['int64','int64']).columns)
-        self.__string_columns = list(data.select_dtypes(include=['object']).columns)
+        self.number_columns = list(data.select_dtypes(include=['int64','int64']).columns)
+        self.string_columns = list(data.select_dtypes(include=['object']).columns)
 
-        if self.__class_column in self.__string_columns:
-            self.__string_columns.remove(self.__class_column)
+        if self.class_column in self.string_columns:
+            self.string_columns.remove(self.__class_column)
         
-        if self.__class_column in self.__number_columns:
-            self.__number_columns.remove(self.__class_column)
+        if self.class_column in self.number_columns:
+            self.number_columns.remove(self.class_column)
 
-        for col in self.__string_columns:
-            d = dict(data[[col, self.__class_column]].value_counts())
+        for col in self.string_columns:
+            d = dict(data[[col, self.class_column]].value_counts())
 
             tree = lambda: defaultdict(tree)  
             new_d = tree()
@@ -203,10 +203,10 @@ class IzdapAlgo:
 
             self.__data_stats[col] = self.__default_dict_to_regular(new_d)
     
-        for col in self.__number_columns:
+        for col in self.number_columns:
             categories = pd.cut(data[col], bins)
 
-            d = dict(pd.concat([pd.cut(data[col], bins), data[[self.__class_column]]], axis=1).value_counts())
+            d = dict(pd.concat([pd.cut(data[col], bins), data[[self.class_column]]], axis=1).value_counts())
 
             tree = lambda: defaultdict(tree)  
             new_d = tree()
@@ -216,7 +216,7 @@ class IzdapAlgo:
 
             self.__data_stats[col] = self.__default_dict_to_regular(new_d)
             
-        self.__class_stats = dict(data[self.__class_column].value_counts())
+        self.__class_stats = dict(data[self.class_column].value_counts())
         
         
     def __build_aggregates_and_predicates(self):
@@ -269,9 +269,9 @@ class IzdapAlgo:
             new_columns.append(predicate.column + '=' + str(predicate.values))
             result = pd.concat([result, predicate.is_true(data)], axis=1)
         
-        result = pd.concat([result, data[self.__class_column]], axis=1)   
+        result = pd.concat([result, data[self.class_column]], axis=1)   
         
-        new_columns.append(self.__class_column)
+        new_columns.append(self.class_column)
         
         result.columns = new_columns
         result.set_index(data.index)
