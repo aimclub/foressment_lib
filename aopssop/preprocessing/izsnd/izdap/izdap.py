@@ -164,10 +164,10 @@ class IzdapAlgo:
             nAB = 0
             
             for value in predicate.values:
-                nA += sum(self.__data_stats[predicate.column][value].values())
+                nA += sum(self.data_stats[predicate.column][value].values())
                 
-                if predicate.class_label in self.__data_stats[predicate.column][value]:
-                    nAB += self.__data_stats[predicate.column][value][predicate.class_label]
+                if predicate.class_label in self.data_stats[predicate.column][value]:
+                    nAB += self.data_stats[predicate.column][value][predicate.class_label]
             
             predicate.metric_value = self.__rule_metric(nA, nB, nAB, self.__N)
         
@@ -181,7 +181,7 @@ class IzdapAlgo:
         :param bind: Number of discretization bins used to build predicates for numeric attributes (int).
         """
         
-        self.__data_stats = {}
+        self.data_stats = {}
         
         self.number_columns = list(data.select_dtypes(include=['int64','int64']).columns)
         self.string_columns = list(data.select_dtypes(include=['object']).columns)
@@ -201,7 +201,7 @@ class IzdapAlgo:
             for (k1, k2), val in d.items():
                 new_d[k1][k2] = val
 
-            self.__data_stats[col] = self.__default_dict_to_regular(new_d)
+            self.data_stats[col] = self.__default_dict_to_regular(new_d)
     
         for col in self.number_columns:
             categories = pd.cut(data[col], bins)
@@ -214,7 +214,7 @@ class IzdapAlgo:
             for (k1, k2), val in d.items():
                 new_d[k1][k2] = val
 
-            self.__data_stats[col] = self.__default_dict_to_regular(new_d)
+            self.data_stats[col] = self.__default_dict_to_regular(new_d)
             
         self.class_stats = dict(data[self.class_column].value_counts())
         
@@ -224,10 +224,10 @@ class IzdapAlgo:
         Builds aggregates and predicates 
         """
         
-        self.aggregates = {k : [] for k in self.__data_stats .keys()}
+        self.aggregates = {k : [] for k in self.data_stats .keys()}
         self.predicates = []
 
-        for column, value_stats in self.__data_stats .items():
+        for column, value_stats in self.data_stats .items():
 
             self.aggregates[column] = {}
 
