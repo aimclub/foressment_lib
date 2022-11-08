@@ -183,7 +183,7 @@ class IzdapAlgo:
         
         self.data_stats = {}
         
-        self.number_columns = list(data.select_dtypes(include=['int64','int64']).columns)
+        self.number_columns = list(data.select_dtypes(include=['int64','float64']).columns)
         self.string_columns = list(data.select_dtypes(include=['object']).columns)
 
         if self.class_column in self.string_columns:
