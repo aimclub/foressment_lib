@@ -70,8 +70,8 @@ class IzdapAlgo:
         __N: Length of the dataset (int).
         __rule_metric: Metric that should be used to evaluate predicates (str).
         class_column: Name of column with class labels (str)
-        __data_stats: Dictionary with all dataset's values frequncies (dict).
-        __class_stats: Dictionary with class labels frequncies (dict).
+        data_stats: Dictionary with all dataset's values frequncies (dict).
+        class_stats: Dictionary with class labels frequncies (dict).
         string_columns: String columns of the dataset (list).
         number_columns: Numeric columns of the dataset (list).
         aggregates: Aggregates built for the dataset (list).
@@ -159,7 +159,7 @@ class IzdapAlgo:
         for predicate in self.predicates:
             
             predicate.metric = rule_metric_label
-            nB = self.__class_stats[predicate.class_label]
+            nB = self.class_stats[predicate.class_label]
             nA = 0
             nAB = 0
             
@@ -216,7 +216,7 @@ class IzdapAlgo:
 
             self.__data_stats[col] = self.__default_dict_to_regular(new_d)
             
-        self.__class_stats = dict(data[self.class_column].value_counts())
+        self.class_stats = dict(data[self.class_column].value_counts())
         
         
     def __build_aggregates_and_predicates(self):
@@ -232,7 +232,7 @@ class IzdapAlgo:
             self.aggregates[column] = {}
 
             for value, value_class_stats in value_stats.items():   
-                for class_label in [*self.__class_stats]:
+                for class_label in [*self.class_stats]:
 
                     class_count = 0
 
