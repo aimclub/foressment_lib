@@ -138,7 +138,7 @@ class IzdapAlgo:
         """
         
         self.__N = len(data)
-        self.__class_column = class_column
+        self.class_column = class_column
         self.__count_statistics(data)
         self.__build_aggregates_and_predicates()
         self.__evaluate_predicates(rule_metric)
@@ -187,7 +187,7 @@ class IzdapAlgo:
         self.string_columns = list(data.select_dtypes(include=['object']).columns)
 
         if self.class_column in self.string_columns:
-            self.string_columns.remove(self.__class_column)
+            self.string_columns.remove(self.class_column)
         
         if self.class_column in self.number_columns:
             self.number_columns.remove(self.class_column)
