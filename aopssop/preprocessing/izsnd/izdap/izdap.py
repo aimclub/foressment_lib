@@ -1,6 +1,7 @@
 import pandas as pd
 
 from numbers import Number
+from math import sqrt
 from collections import defaultdict
 
 class Predicate:
