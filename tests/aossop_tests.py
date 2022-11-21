@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from aopssop.assessment.aossop.aossop import SAIClassifier, FormatDetector, DataLoader, ClsEstimator
+from aopssop import SAIClassifier, FormatDetector, DataLoader, ClsEstimator
 import unittest
 import inspect
 import os.path
