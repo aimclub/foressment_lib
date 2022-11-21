@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+from aopssop import IzdapAlgo
 
 if __name__ == '__main__':
     

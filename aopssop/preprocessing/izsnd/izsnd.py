@@ -5,7 +5,7 @@
 # (посылке) используются коэффициенты дискретного вейвлет-преобразования, производимого
 # с использованием ортогональных базисных вейвлет-функций (Добеши, симлетов, койфлетов и др.).
 import random
-from izdap.rules_extractor import izdap
+# from izdap.izdap import
 from rvp.wavelet_extractor import rvp
 
 
@@ -14,7 +14,8 @@ def izsnd(data):
         result = rvp(data)
 
     else:
-        result = izdap(data)
+        # result = izdap(data)
+        result = data
 
     return result
 

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from aopssop.forecasting.apssop.apssop import AIForecaster, DataScaler, ForecastEstimator
-from aopssop.forecasting.apssop.appsop_examples import DataLoaderAndPreprocessor
+from aopssop import AIForecaster, DataScaler, ForecastEstimator
+from examples.appsop_examples import DataLoaderAndPreprocessor
 import unittest
 import inspect
 import os.path
@@ -146,7 +146,6 @@ class TestAPSSOP(unittest.TestCase):
         pred = [0, 1, 1, 0, 0, 0]
         result = ForecastEstimator().estimate(true, pred)
         self.assertTrue(result.empty, message)
-
 
 
 if __name__ == '__main__':

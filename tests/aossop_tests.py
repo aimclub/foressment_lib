@@ -9,22 +9,24 @@ import os
 import numpy as np
 import tempfile
 
+
 class TestAOSSOP(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestAOSSOP, self).__init__(*args, **kwargs)
         TestAOSSOP.n = 1
         self.xor_ds = {'features': np.array([[0, 0], [0, 1], [1, 0], [1, 1]]), 'labels': np.array([[0], [1], [1], [0]])}
-    
+
     def setUp(self):
         print('Test {} BEGIN'.format(TestAOSSOP.n))
 
     def tearDown(self):
         print('Test {} END'.format(TestAOSSOP.n))
         TestAOSSOP.n += 1
-    
+
     def test_sc_is_not_none(self):
         print(inspect.stack()[0][3])
-        self.assertFalse(SAIClassifier('neural_network', 10, 1) is None, 'The object of class SAIClassifier could not be created')
+        self.assertFalse(SAIClassifier('neural_network', 10, 1) is None,
+                         'The object of class SAIClassifier could not be created')
 
     def test_sc_type_is_correct(self):
         print(inspect.stack()[0][3])
@@ -57,7 +59,7 @@ class TestAOSSOP(unittest.TestCase):
                 classifier.predict(self.xor_ds['features'])
             except:
                 self.assertTrue(False, 'Error while calling predict')
-                
+
     def test_sc_save(self):
         print(inspect.stack()[0][3])
         classifier_types = ['decision_tree', 'naive_bayes', 'logistic_regression', 'neural_network']
@@ -70,7 +72,8 @@ class TestAOSSOP(unittest.TestCase):
             if os.path.isfile(f):
                 os.remove(f)
             classifier.save(f)
-            self.assertTrue(os.path.isfile(f) or os.path.isfile(f + '.index'), 'The classifier could not be saved into the file')
+            self.assertTrue(os.path.isfile(f) or os.path.isfile(f + '.index'),
+                            'The classifier could not be saved into the file')
 
     def test_sc_load(self):
         print(inspect.stack()[0][3])
@@ -85,7 +88,7 @@ class TestAOSSOP(unittest.TestCase):
                 classifier.load(f)
             except:
                 self.assertTrue(False, 'Error while calling load')
-            
+
     def test_fd_is_not_none(self):
         print(inspect.stack()[0][3])
         f = '../hai/hai-20.07/test1.csv.gz'
@@ -109,11 +112,14 @@ class TestAOSSOP(unittest.TestCase):
     def test_dl_is_not_none(self):
         print(inspect.stack()[0][3])
         f = '../hai/hai-20.07/test1.csv.gz'
+
         class DataLoaderExample(DataLoader):
             def load(self, file):
                 pass
+
         if os.path.isfile(f):
-            self.assertFalse(DataLoaderExample(f, 0, 0) is None, 'The object of class DataLoaderExample could not be created')
+            self.assertFalse(DataLoaderExample(f, 0, 0) is None,
+                             'The object of class DataLoaderExample could not be created')
 
     def test_ce_is_not_none(self):
         print(inspect.stack()[0][3])
@@ -122,7 +128,8 @@ class TestAOSSOP(unittest.TestCase):
         out_size = np.shape(self.xor_ds['labels'])[1]
         classifiers = [SAIClassifier(c, in_size, out_size, plot=False) for c in classifier_types]
         for classifier in classifiers:
-            self.assertFalse(ClsEstimator(self.xor_ds['features'], self.xor_ds['labels'], self.xor_ds['labels'], [classifier]) is None,
+            self.assertFalse(ClsEstimator(self.xor_ds['features'], self.xor_ds['labels'], self.xor_ds['labels'],
+                                          [classifier]) is None,
                              'The object of class ClsEstimator could not be created')
 
     def test_ce_estimate(self):
@@ -137,6 +144,7 @@ class TestAOSSOP(unittest.TestCase):
             ClsEstimator(self.xor_ds['features'], self.xor_ds['labels'], self.xor_ds['labels'], classifiers).estimate()
         except:
             self.assertTrue(False, 'Error while calling estimate')
-            
+
+
 if __name__ == '__main__':
     unittest.main()

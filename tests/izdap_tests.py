@@ -1,8 +1,10 @@
 import unittest
 
-from izdap import IzdapAlgo
-from izdap import Predicate
+from aopssop import IzdapAlgo
+# from aopssop import Predicate
 from sklearn.datasets import make_classification
+import pandas as pd
+import inspect
 
 
 class IzdapTest(unittest.TestCase):

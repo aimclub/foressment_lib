@@ -10,8 +10,8 @@ from sklearn.naive_bayes import GaussianNB as GNB
 from sklearn.tree import DecisionTreeClassifier as DTC
 from sklearn.linear_model import LogisticRegression as LR
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense
+from keras import Sequential
+from keras.layers import Dense
 import matplotlib.pyplot as plt
 import pickle
 import os.path
