@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import pickle
 import os.path
 
+
 class _NNClassifier:
     """
     Класс для описания параметров глубокой нейронной сети.
