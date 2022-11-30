@@ -114,7 +114,6 @@ class IzdapTest(unittest.TestCase):
         algo.fit(df, class_column = "class", positive_class_label = 1)
 
         predicate = algo.predicates[0]
-        row = df[0]
         self.assertEqual(predicate.is_true(df[:1]).iloc[0], 1, message)
 
         
