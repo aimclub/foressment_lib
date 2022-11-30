@@ -47,6 +47,7 @@ class Predicate:
         Checks if predicate is true for the value
 
         :param value: Value to check.
+
         :return: Truthfulness of the predicate.
         """
         return data[self.column].apply(self.__check_values)

@@ -13,7 +13,7 @@ if __name__ == '__main__':
         test_data = pd.read_csv(test_path)
 
         algo = IzdapAlgo(0.1)
-        algo.fit(test_data, class_column = class_column, positive_class_label = positive_class_label)
+        algo.fit(test_data, class_column=class_column, positive_class_label=positive_class_label)
 
         rules = algo.get_rules()
         print(rules[0])

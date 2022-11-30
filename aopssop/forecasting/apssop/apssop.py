@@ -19,7 +19,7 @@ import decimal
 
 class AIForecaster:
     """
-    Class for forecasting the states of complex objects and processes.
+    Class for forecasting the states of complex objects and processes
 
     :param epochs: Number of training epochs (int).
     :param batch_size: Training batch size (int).
@@ -33,7 +33,7 @@ class AIForecaster:
                  model_path='',
                  n_epochs=2, open=False):
         """
-        Model initialization.
+        Model initialization
 
         :param open: Parameter for load model (boolean).
         """
@@ -81,7 +81,7 @@ class AIForecaster:
     def train(self, train_generator, validation_generator=None,
               save=True):
         """
-        Training and validation of a neural network model on data.
+        Training and validation of a neural network model on data
 
         :param train_generator: Temporary training data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
         :param validation_generator:  Temporary test data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).

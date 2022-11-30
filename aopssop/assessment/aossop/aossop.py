@@ -18,23 +18,39 @@ import os.path
 
 
 class _NNClassifier:
+    # """
+    # Класс для описания параметров глубокой нейронной сети
+    #
+    # :param model: Модель глубокой нейронной сети (keras.models.Sequential).
+    # :param out_size: Количество нейронов на выходном слое (int).
+    # :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
+    # :param num_epochs: Количество эпох обучения (int). Default = 10.
+    # """
     """
-    Класс для описания параметров глубокой нейронной сети
+    Class for the description of deep neural network
 
-    :param model: Модель глубокой нейронной сети (keras.models.Sequential).
-    :param out_size: Количество нейронов на выходном слое (int).
-    :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
-    :param num_epochs: Количество эпох обучения (int). Default = 10.
+    :param model: model of the deep neural network (keras.models.Sequential).
+    :param out_size: number of neurons in the outer layer (int).
+    :param plot: boolean parameter that defines presentation of the neural network plot (bool). Default = True.
+    :param num_epochs: number of training epochs (int). Default = 10.
     """
 
     def __init__(self, in_size, out_size, plot=True, num_epochs=10):
+        # """
+        # Инициализация модели глубокой нейронной сети
+        #
+        # :param in_size: Количество нейронов на распределительном слое (int).
+        # :param out_size: Количество нейронов на выходном слое (int).
+        # :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
+        # :param num_epochs: Количество эпох обучения (int). Default = 10.
+        # """
         """
-        Инициализация модели глубокой нейронной сети
+        Initialization of the deep neural network model
 
-        :param in_size: Количество нейронов на распределительном слое (int).
-        :param out_size: Количество нейронов на выходном слое (int).
-        :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
-        :param num_epochs: Количество эпох обучения (int). Default = 10.
+        :param in_size: number of neurons in the inner layer (int).
+        :param out_size: number of neurons in the outer layer (int).
+        :param plot: boolean parameter that defines presentation of the neural network plot (bool). Default = True.
+        :param num_epochs: number of training epochs (int). Default = 10.
         """
         self.model = Sequential()
         self.model.add(Dense(30, activation='relu', input_shape=(in_size,)))
@@ -47,13 +63,21 @@ class _NNClassifier:
         print(self.model.summary())
 
     def fit(self, x_train, y_train):
+        # """
+        # Обучение модели глубокой нейронной сети
+        #
+        # :param x_train: Обучающая выборка (признаки) (numpy.ndarray).
+        # :param y_train: Обучающая выборка (метки классов) (numpy.ndarray).
+        #
+        # :return: модель обученной глубокой нейронной сети.
+        # """
         """
-        Обучение модели глубокой нейронной сети
+        Training of the deep neural network model
 
-        :param x_train: Обучающая выборка (признаки) (numpy.ndarray).
-        :param y_train: Обучающая выборка (метки классов) (numpy.ndarray).
+        :param x_train: training data (features) (numpy.ndarray).
+        :param y_train: training dat (labels) (numpy.ndarray).
 
-        :return: модель обученной глубокой нейронной сети.
+        :return: trained model of the deep neural network.
         """
         self.model.compile(optimizer='adam', loss='mse', metrics=['accuracy', 'binary_accuracy'])
         self.history = self.model.fit(x_train, y_train, epochs=self.num_epochs, batch_size=32, verbose=1,
@@ -63,21 +87,35 @@ class _NNClassifier:
         return self
 
     def test(self, x_test, y_test):
+        # """
+        # Тестирование модели глубокой нейронной сети
+        #
+        # :param x_test: Тестовая выборка (признаки) (numpy.ndarray).
+        # :param y_test: Тестовая выборка (метки классов) (numpy.ndarray).
+        # """
         """
-        Тестирование модели глубокой нейронной сети
+        Testing of the deep neural network model
 
-        :param x_test: Тестовая выборка (признаки) (numpy.ndarray).
-        :param y_test: Тестовая выборка (метки классов) (numpy.ndarray).
+        :param x_test: testing data (features) (numpy.ndarray).
+        :param y_test: testing data (labels) (numpy.ndarray).
         """
         loss, acc = self.model.evaluate(x_test, y_test, verbose=1)
         print('Test accuracy: %.3f' % acc)
 
     def predict(self, x):
-        """
-        Определение класса объектов при помощи модели глубокой нейронной сети.
+        # """
+        # Определение класса объектов при помощи модели глубокой нейронной сети
+        #
+        # :param x: Объекты (numpy.ndarray).
 
-        :param x: Объекты (numpy.ndarray).
-        :return: Метки классов (numpy.ndarray).
+        # :return: Метки классов (numpy.ndarray).
+        # """
+        """
+        Identification of class objects with the help of deep neural network model
+
+        :param x: objects (numpy.ndarray).
+
+        :return: class labels (numpy.ndarray).
         """
         predicted_labels = None
         if self.out_size > 1:
@@ -91,36 +129,58 @@ class _NNClassifier:
         return predicted_labels
 
     def draw_plot(self):
+        # """
+        # Вывод графика обучения нейронной сети
+        # """
         """
-        Вывод графика обучения нейронной сети
+        Output of the plot of the deep neural network training process
         """
         print(self.history.history.keys())
         plt.plot(self.history.history['acc'])
         plt.plot(self.history.history['val_acc'])
-        plt.title(u'Точность модели')
-        plt.ylabel(u'точность')
-        plt.xlabel(u'номер эпохи')
-        plt.legend([u'обучающая выборка', u'тестовая выборка'], loc='lower right')
+        # plt.title(u'Точность модели')
+        # plt.ylabel(u'точность')
+        # plt.xlabel(u'номер эпохи')
+        # plt.legend([u'обучающая выборка', u'тестовая выборка'], loc='lower right')
+        plt.title(u'Accuracy of the model')
+        plt.ylabel(u'Accuracy')
+        plt.xlabel(u'Number of epoch')
+        plt.legend([u'Training data', u'Testing data'], loc='lower right')
         plt.show()
 
 
 class SAIClassifier:
+    # """
+    # Класс для описания параметров классификатора
+    #
+    # :param cls_type: тип классификатора (str).
+    # :param classifier: Объект классиификатора (keras.models.Sequential и sklearn.*).
+    # """
     """
-    Класс для описания параметров классификатора
+    Class for the description of the classifier parameters
 
-    :param cls_type: тип классификатора (str).
-    :param classifier: Объект классиификатора (keras.models.Sequential и sklearn.*).
+    :param cls_type: type of the classifier (str).
+    :param classifier: object of the classifier (keras.models.Sequential and sklearn.*).
     """
 
     def __init__(self, cls_type='neural_network', in_size=None, out_size=None, plot=False, num_epochs=10):
+        # """
+        # Инициализация модели классификатора
+        #
+        # :param cls_type: тип классификатора (str). Default = 'neural_network'.
+        # :param in_size: Количество нейронов на распределительном слое (int). Default = None.
+        # :param out_size: Количество нейронов на выходном слое (int). Default = None.
+        # :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = False.
+        # :param num_epochs: Количество эпох обучения (int). Default = 10.
+        # """
         """
-        Инициализация модели классификатора
+        Initialization of the classifier model
 
-        :param cls_type: тип классификатора (str). Default = 'neural_network'.
-        :param in_size: Количество нейронов на распределительном слое (int). Default = None.
-        :param out_size: Количество нейронов на выходном слое (int). Default = None.
-        :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = False.
-        :param num_epochs: Количество эпох обучения (int). Default = 10.
+        :param cls_type: type of the classifier (str). Default = 'neural_network'.
+        :param in_size: number of neurons in inner layer (int). Default = None.
+        :param out_size: number of neuron in outer layer (int). Default = None.
+        :param plot: boolean parameter that defines the presentation of the neural network plot (bool). Default = False.
+        :param num_epochs: number of training epochs (int). Default = 10.
         """
         self.cls_type = cls_type
         self.classifier = None
@@ -136,33 +196,55 @@ class SAIClassifier:
             assert (False)
 
     def fit(self, x_train, y_train):
+        # """
+        # Обучение модели классификатора
+        #
+        # :param x_train: Обучающая выборка (признаки) (numpy.ndarray).
+        # :param y_train: Обучающая выборка (метки классов) (numpy.ndarray).
+        # :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
+        # :param num_epochs: Количество эпох обучения (int). Default = 10.
+        # :return: модель обученного классификатора.
+        # """
         """
-        Обучение модели классификатора
+        Training of the classifier model
 
-        :param x_train: Обучающая выборка (признаки) (numpy.ndarray).
-        :param y_train: Обучающая выборка (метки классов) (numpy.ndarray).
-        :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default=True.
-        :param num_epochs: Количество эпох обучения (int). Default=10.
-        :return: модель обученного классификатора.
+        :param x_train: training data (features) (numpy.ndarray).
+        :param y_train: training data (labels) (numpy.ndarray).
+        :param plot: boolean parameter that defines the presentation of the neural network plot (bool). Default = True.
+        :param num_epochs: number of training epochs (int). Default = 10.
+        :return: model of the trained classifier.
         """
         cls = self.classifier.fit(x_train, y_train)
         return cls
 
     def predict(self, x):
+        # """
+        # Определение класса объектов при помощи модели классификатора
+        #
+        # :param x: Объекты (numpy.ndarray).
+        #
+        # :return: Метки классов (numpy.ndarray).
+        # """
         """
-        Определение класса объектов при помощи модели классификатора
+        Definition of classes of objects based on the classifier model
 
-        :param x: Объекты (numpy.ndarray).
-        :return: Метки классов (numpy.ndarray).
+        :param x: objects (numpy.ndarray).
+
+        :return: class labels (numpy.ndarray).
         """
         y = self.classifier.predict(x)
         return y
 
     def save(self, saved_file):
+        # """
+        # Сериализация модели классификатора
+        #
+        # :param saved_file: Наименование файла (str).
+        # """
         """
-        Сериализация модели классификатора
+        Serialization of the classifier model
 
-        :param saved_file: Наименование файла (str).
+        :param saved_file: name of the file to save (str).
         """
         if self.cls_type == 'neural_network':
             self.classifier.steps[1][1].model.save_weights(saved_file)  # [1][1] - the second classifier in pipeline
@@ -171,10 +253,15 @@ class SAIClassifier:
                 pickle.dump(self.classifier, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     def load(self, loaded_file):
+        # """
+        # Десериализация модели классификатора
+        #
+        # :param loaded_file: Наименование файла (str).
+        # """
         """
-        Десериализация модели классификатора
+        Deserialization of the classifier model
 
-        :param loaded_file: Наименование файла (str).
+        :param loaded_file: name of the file to load (str).
         """
         if self.cls_type == 'neural_network':
             self.classifier.steps[1][1].model.load_weights(loaded_file)  # [1][1] - the second classifier in pipeline
@@ -184,18 +271,29 @@ class SAIClassifier:
 
 
 class FormatDetector:
+    # """
+    # Класс для определения формата обрабатываемого набора данных
+    #
+    # :param n: Количество полей в записи (int).
+    # :param d: Разделитель полей в записи (str).
+    # """
     """
-    Класс для определения формата обрабатываемого набора данных
+    Class for the identification of the format of the processed data
 
-    :param n: Количество полей в записи (int).
-    :param d: Разделитель полей в записи (str).
+    :param n: number of fields in data (int).
+    :param d: delimeter of fields in data (str).
     """
 
     def __init__(self, file):
+        # """
+        # Инициализация объекта класса FormatDetector
+        #
+        # :param file: Наименование файла, содержащего набор данных (str).
+        # """
         """
-        Инициализация объекта класса FormatDetector
+        Initialization of the object of FormatDetector class
 
-        :param file: Наименование файла, содержащего набор данных (str).
+        :param file: name of the file that contains data to process (str).
         """
         n, d = None, None
         if not os.path.isfile(file):
@@ -220,23 +318,39 @@ class FormatDetector:
 
 
 class DataLoader:
+    # """
+    # Класс для загрузки набора данных
+    #
+    # :param n: Количество полей в записи (int).
+    # :param d: Разделитель полей в записи (str).
+    # :param features: Признаки (numpy.ndarray).
+    # :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
+    # :param num_labels: Метки классов (numpy.ndarray).
+    # """
     """
-    Класс для загрузки набора данных
+    Class to load the data to process
 
-    :param n: Количество полей в записи (int).
-    :param d: Разделитель полей в записи (str).
-    :param features: Признаки (numpy.ndarray).
-    :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
-    :param num_labels: Метки классов (numpy.ndarray).
+    :param n: number of fields in data (int).
+    :param d: delimiter of fields in data (str).
+    :param features: features in data (numpy.ndarray).
+    :param labels: labels in data (one-hot encoding) (numpy.ndarray).
+    :param num_labels: labels in data (numpy.ndarray).
     """
 
     def __init__(self, file, n, d):
+        # """
+        # Инициализация объекта класса DataLoader
+        #
+        # :param file: Наименование файла, содержащего набор данных (str).
+        # :param n: Количество полей в записи (int).
+        # :param d: Разделитель полей в записи (str).
+        # """
         """
-        Инициализация объекта класса FormatDetector
+        Initialization of the object of DataLoader class
 
-        :param file: Наименование файла, содержащего набор данных (str).
-        :param n: Количество полей в записи (int).
-        :param d: Разделитель полей в записи (str).
+        :param file: name of the file with data to process (str).
+        :param n: number of fields in data (int).
+        :param d: delimiter between fields in data (str).
         """
         self.n = n
         self.d = d
@@ -246,32 +360,53 @@ class DataLoader:
         self.load(file)
 
     def load(self, file):  # override this method in derived class
+        # """
+        # Загрузка набора данных
+        #
+        # :param file: Наименование файла (str).
+        # """
         """
-        Загрузка набора данных
+        Load of the data to process
 
-        :param file: Наименование файла (str).
+        :param file: name of the file to load (str).
         """
         raise NotImplementedError()
 
 
 class ClsEstimator:
+    # """
+    # Класс для оценки параметров эффективности классификаторов
+    #
+    # :param features: Признаки (numpy.ndarray).
+    # :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
+    # :param num_labels: Метки классов (numpy.ndarray).
+    # :param  classifiers: Классификаторы (list).
+    # """
     """
-    Класс для оценки параметров эффективности классификаторов
+    Class for the assessment of the classifier effectiveness
 
-    :param features: Признаки (numpy.ndarray).
-    :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
-    :param num_labels: Метки классов (numpy.ndarray).
-    :param  classifiers: Классификаторы (list).
+    :param features: features in data (numpy.ndarray).
+    :param labels: labels in data (one-hot encoding) (numpy.ndarray).
+    :param num_labels: labels in data (numpy.ndarray).
+    :param  classifiers: classifiers to check (list).
     """
 
     def __init__(self, features, labels, num_labels, classifiers):
+        # """
+        # Инициализация объекта класса ClsEstimator
+        #
+        # :param features: Признаки (numpy.ndarray).
+        # :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
+        # :param num_labels: Метки классов (numpy.ndarray).
+        # :param classifiers: Классификаторы (list).
+        # """
         """
-        Инициализация объекта класса ClsEstimator
+        Initialization of the object of the ClsEstimator class
 
-        :param features: Признаки (numpy.ndarray).
-        :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
-        :param num_labels: Метки классов (numpy.ndarray).
-        :param classifiers: Классификаторы (list).
+        :param features: features in data (numpy.ndarray).
+        :param labels: labels in data (one-hot encoding) (numpy.ndarray).
+        :param num_labels: labels in data (numpy.ndarray).
+        :param classifiers: classifiers to check (list).
         """
         self.features = features
         self.labels = labels
@@ -279,12 +414,19 @@ class ClsEstimator:
         self.classifiers = classifiers
 
     def estimate(self, print_metrics=True):
+        # """
+        # Оценка параметров эффективности классификаторов
+        #
+        # :param print_metric: Булев параметр, задающий печать параметров эффективности классификаторов (bool).
+        #
+        # :return: Параметры эффективности классификаторов (dict).
+        # """
         """
-        Оценка параметров эффективности классификаторов
+        Assessment of the classifiers effectiveness
 
-        :param print_metric: Булев параметр, задающий печать параметров эффективности классификаторов (bool).
+        :param print_metric: boolean parameter that defines the presentation of the parameters of classifiers effectiveness (bool).
 
-        :return: Параметры эффективности классификаторов (dict).
+        :return: parameters of the classifiers effectiveness (dict).
         """
         train_features, test_features, train_labels_inds, test_labels_inds = train_test_split(self.features,
                                                                                               range(len(self.labels)),
