@@ -77,7 +77,7 @@ class IzdapAlgo:
     :param predicates: Predicates built for the dataset (list).
     """
 
-    def __init__(self, probability_threshold, verbose=0):
+    def __init__(self, probability_threshold=0.1, verbose=0):
         self.__threshold = probability_threshold
         self.__verbose = verbose
 
@@ -111,7 +111,7 @@ class IzdapAlgo:
         pAB = float(nAB) / N
         return 0 if pA == 0 or pA == 1 else (pAB - pA * pB) / (pA * (1 - pA))
 
-    def klosgen_measure(self, nA, nB, nAB, N):
+    def calculate_klosgen_measure(self, nA, nB, nAB, N):
         """ 
         Calculates Klosgen meausure sqrt(pB) * (pB|A-pB))
 
