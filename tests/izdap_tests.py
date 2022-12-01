@@ -23,13 +23,13 @@ class IzdapTest(unittest.TestCase):
     def test_regression_coefficient(self):
         print(inspect.stack()[0][3])
         message = 'The regression coefficient is calculated incorrectly'
-        self.assertEqual(round(IzdapAlgo(0.1).calculate_regression_coefficient(nA=200, nB=200, nAB=100, N=1000), 3), 0.375,
+        self.assertEqual(round(IzdapAlgo().calculate_regression_coefficient(nA=200, nB=200, nAB=100, N=1000), 3), 0.375,
                          message)
 
     def test_klosgen_measure(self):
         print(inspect.stack()[0][3])
         message = 'The klosgen measure is calculated incorrectly'
-        self.assertEqual(round(IzdapAlgo(0.1).calculate_klosgen_measure(nA=200, nB=200, nAB=100, N=1000), 3), 0.134,
+        self.assertEqual(round(IzdapAlgo().calculate_klosgen_measure(nA=200, nB=200, nAB=100, N=1000), 3), 0.134,
                          message)
 
     def test_string_column(self):
