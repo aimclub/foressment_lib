@@ -13,6 +13,7 @@ class MultiCollinear:
     # Processing preferences should be defined in Data.
     # Typical usage example:
     # MultiCollinear.MultiCollinear.remove_uninformative_features(data)
+
     """
     Class for the deletion of non-informative features based on the multicorrelation analysis.
 
@@ -30,31 +31,31 @@ class MultiCollinear:
 
     @staticmethod
     def remove_uninformative_features(data: Data_Structure.Data) -> None:
-        # Method that remove uninformative features
+        """
+        Method that remove uninformative features
+
+        :param use_spearman: if True than Spearman correlation is used (recommended if type of data is unknown) (bool).
+        :param use_cramerV: if True than Cramer correlation is used (recommended for categorical data) (bool).
+        :param use_pearson: if True than Pearson correlation is used (recommend for numerical data) (bool).
+        :param multicolinear: if True than decision is made in accordance with thresholds (np.bool).
+        """
 
         def __cramers_V__(var1, var2):
-            # Method that calculate informativity between categorical values
+            # Method that calculates informativity between categorical values
 
             # Cross table building
             crosstab = np.array(pd.crosstab(var1, var2, rownames=None, colnames=None))
-            # print(f'crosstab: {type(crosstab)}')
 
             # Keeping of the test statistic of the Chi2 test
             stat = scipy.stats.chi2_contingency(crosstab)[0]
-            # print(f'stat: {type(stat)}')
 
             # Number of observations
             obs = np.sum(crosstab)
-            # print(f'obs: {type(obs)}')
 
             # Take the minimum value between the columns and the rows of the cross table
             mini = min(crosstab.shape) - 1
-            # print(f'mini: {type(mini)}')
 
-            result = stat / (obs * mini)
-            # print(f'result: {type(result)}')
-
-            return result
+            return stat / (obs * mini)
 
         PrintLog.instance().info("START MULTICOLINEARITY ANALYSIS")
 

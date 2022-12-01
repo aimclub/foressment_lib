@@ -13,6 +13,7 @@ class Informativity:
     # Processing preferences should be defined in Data.
     # Typical usage example:
     # Informativity.Informativity.calculate_informativity(data)
+
     """
     Class for the deletion of non-informative features based on the informativity analysis.
 
@@ -30,7 +31,14 @@ class Informativity:
 
     @staticmethod
     def calculate_informativity(data: Data_Structure.Data):
-        # Method that remove uninformative features
+        """
+        Method that removes non-informative features
+
+        :param use_spearman: if True than Spearman correlation is used (recommended if type of data in unknown) (bool).
+        :param use_cramerV: if True than Cramer correlation is used (recommended for categorical data) (bool).
+        :param use_pearson: if True than Pearson correlation is used (recommend for numerical data) (bool).
+        :param informativity: if True than decision is made in accordance with thresholds (np.bool).
+        """
 
         def __cramers_V__(var1, var2):
             # Method that calculate informativity between categorical values
@@ -57,7 +65,6 @@ class Informativity:
 
         # Create empty feature-label informativity matrix
         informativity_matrix = [[0] * len(data.labels_matrix)]*len(data.features_matrix)
-        print(f'informativity matrix: {type(informativity_matrix)}')
 
         # Calculate correlation between feature and label
         for column_idx, column in enumerate(data.features_matrix):

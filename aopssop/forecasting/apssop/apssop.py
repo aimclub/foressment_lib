@@ -287,9 +287,9 @@ class ForecastEstimator:
 
         :param file_name: name of the file to save.
         """
-        if not os.path.exists('results/'):
-            os.makedirs('results/')
+        if not os.path.exists('apssop_results/'):
+            os.makedirs('apssop_results/')
 
-        self.quality.to_csv('results/' + file_name + '.csv',
+        self.quality.to_csv('apssop_results/' + file_name + '.csv',
                             index_label='feature')
 
