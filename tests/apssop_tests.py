@@ -57,7 +57,7 @@ class TestAPSSOP(unittest.TestCase):
         print(inspect.stack()[0][3])
         AIForecaster(10, 10, 'models/test_model.h5').save_model()
         message = 'The forecasting model could not be saved into the file'
-        self.assertTrue(os.path.isfile('model.h5'), message)
+        self.assertTrue(os.path.isfile('models/test_model.h5'), message)
 
     def test_forecasting_model_open(self):
         print(inspect.stack()[0][3])
@@ -83,14 +83,14 @@ class TestAPSSOP(unittest.TestCase):
     def test_normalization_model_is_not_none(self):
         print(inspect.stack()[0][3])
         message = 'The object of class DataScaler could not be created'
-        self.assertIsNotNone(DataScaler(scaler_path='scaler.pkl'), message)
+        self.assertIsNotNone(DataScaler(scaler_path='models/scaler.pkl'), message)
 
     def test_normalization_model_train(self):
         print(inspect.stack()[0][3])
         message = 'Error while calling fit normalization model'
         data = DataLoaderAndPreprocessor('test').data
         try:
-            DataScaler(scaler_path='scaler.pkl').fit(data, save=False)
+            DataScaler(scaler_path='models/scaler.pkl').fit(data, save=False)
         except:
             self.assertTrue(False, message)
 
@@ -98,7 +98,7 @@ class TestAPSSOP(unittest.TestCase):
         print(inspect.stack()[0][3])
         message = 'Error while calling transform with normalization model'
         data = DataLoaderAndPreprocessor('test').data
-        scaler = DataScaler(scaler_path='scaler.pkl')
+        scaler = DataScaler(scaler_path='models/scaler.pkl')
         scaler.fit(data, save=False)
         try:
             scaler.transform(data)
@@ -109,7 +109,7 @@ class TestAPSSOP(unittest.TestCase):
         print(inspect.stack()[0][3])
         message = 'Error while inverse data with normalization model'
         data = DataLoaderAndPreprocessor('test').data
-        scaler = DataScaler(scaler_path='scaler.pkl')
+        scaler = DataScaler(scaler_path='models/scaler.pkl')
         scaler.fit(data, save=False)
         scaled_data = scaler.transform(data)
         inverted_data = np.round(scaler.inverse(scaled_data), 0)
@@ -118,13 +118,13 @@ class TestAPSSOP(unittest.TestCase):
     def test_normalization_model_save(self):
         print(inspect.stack()[0][3])
         message = 'The normalization model could not be saved into the file'
-        DataScaler(scaler_path='scaler.pkl').save()
-        self.assertTrue(os.path.isfile('scaler.pkl'), message)
+        DataScaler(scaler_path='models/scaler.pkl').save()
+        self.assertTrue(os.path.isfile('models/scaler.pkl'), message)
 
     def test_normalization_model_open(self):
         print(inspect.stack()[0][3])
         message = 'File with normalization model does not exist'
-        self.assertIsNone(DataScaler('scaler.pkl', open=True), message)
+        self.assertIsNotNone(DataScaler('models/scaler.pkl', open=True), message)
 
     def test_estimator_mae_results(self):
         message = 'Forecasting quality evaluation failed in MAE'
