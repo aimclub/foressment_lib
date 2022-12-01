@@ -14,7 +14,6 @@ import pickle
 import pandas as pd
 import numpy as np
 import sys
-import decimal
 
 
 class AIForecaster:
@@ -84,12 +83,12 @@ class AIForecaster:
         Training and validation of a neural network model on data
 
         :param train_generator: Temporary training data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
-        :param validation_generator:  Temporary test data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
+        :param validation_generator: Temporary test data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
         :param save: Parameter fo saving model (boolean).
         """
         generator_batch_size = train_generator[0][1].shape[1]
         if generator_batch_size != self.n_features:
-            print('Uncorrect data for training. Number of features must be = ' + str(self.n_features))
+            print('Incorrect data for training. Number of features must be = ' + str(self.n_features))
             exit()
 
         self.model.fit(train_generator, epochs=self.epochs,

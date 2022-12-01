@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from aopssop import AIForecaster, DataScaler, ForecastEstimator
-from examples.appsop_examples import DataLoaderAndPreprocessor
+from examples.apssop_examples import DataLoaderAndPreprocessor
 import unittest
 import inspect
 import os.path

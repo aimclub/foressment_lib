@@ -6,10 +6,9 @@ from aopssop import \
 
 
 def posnd_example_titanic():
-    """ TEST BASED ON titanic.csv DATA
-        """
+    # TEST BASED ON titanic.csv DATA
 
-    """INITIAL DATA SETTINGS"""
+    # INITIAL DATA SETTINGS
     data = Data()
     titanic_path = __file__.replace('examples/posnd_examples.py', '') + 'datasets/titanic.csv'
     titanic = pd.read_csv(titanic_path)
@@ -20,10 +19,10 @@ def posnd_example_titanic():
     data.features_types = ["cat", "cat", "num", None, None]
     data.labels_types = ["cat", None]
 
-    """MULTIPROC OPTION"""
+    # MULTIPROC OPTION
     data.n_jobs = 2
 
-    """DATA TYPES SETTINGS"""
+    # DATA TYPES SETTINGS
     data.feature_names_substrings = {
         "num": ["age", "id"],
         "cat": ["surv", "tick", "cabin"]
@@ -36,13 +35,13 @@ def posnd_example_titanic():
         "float": 0.3
     }
 
-    """CLUSTERING SETTINGS"""
+    # CLUSTERING SETTINGS
     # can be = [mean_mode, centroids]
     data.fill_method = "mean_mode"
     data.n_clusters = 10
     data.cluster_max_iter = 5
 
-    """INFORMATIVITY SETTINGS"""
+    # INFORMATIVITY SETTINGS
     data.thresholds_correlation_with_label = {
         "num_num": [0.2] * len(data.labels_names),
         "cat_cat": [0.1] * len(data.labels_names),
@@ -50,18 +49,18 @@ def posnd_example_titanic():
     }
     data.thresholds_min_number_of_predicted_labels = [1] * len(data.features_names)
 
-    """MULTICOLINEAR SETTINGS"""
+    # MULTICOLINEAR SETTINGS
     data.thresholds_multicolinear = {
         "num_num": 0.9,
         "cat_cat": 0.7,
         "num_cat": 0.8
     }
 
-    """SET True TO GET OUTPUT"""
+    # SET TRUE TO GET OUTPUT
     __Verbose__.PrintLog.instance().set_print_mode(True)
     __Verbose__.PrintLog.instance().set_severity_level("status")
 
-    """RUN"""
+    # RUN
     CheckDataTypes.CheckDataTypes.correct_types(data)
     ClusterFilling.ClusterFilling.fill(data)
     Informativity.Informativity.calculate_informativity(data)
@@ -69,10 +68,9 @@ def posnd_example_titanic():
 
 
 def posnd_example_basic():
-    """ TEST BASED ON SYNTHETIC DATA
-        """
+    # TEST BASED ON SYNTHETIC DATA
 
-    """INITIAL DATA SETTINGS"""
+    # INITIAL DATA SETTINGS
     data = Data()
     data.features_matrix = np.array(list(zip(*[
         [1, 1, 1, 1, np.nan, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -91,10 +89,10 @@ def posnd_example_basic():
     data.labels_types = ["num", "cat", "num"]
     data.labels_names = ["salary", "color", "id"]
 
-    """MULTIPROC OPTION"""
+    # MULTIPROC OPTION
     data.n_jobs = 2
 
-    """DATA TYPES SETTINGS"""
+    # DATA TYPES SETTINGS
     data.feature_names_substrings = {
         "num": ["ge", "price"],
         "cat": ["name", "id", "color"]
@@ -107,13 +105,13 @@ def posnd_example_basic():
         "float": 0.3
     }
 
-    """CLUSTERING SETTINGS"""
+    # CLUSTERING SETTINGS
     # can be = [mean_mode, centroids]
     data.fill_method = "mean_mode"
     data.n_clusters = 3
     data.cluster_max_iter = 5
 
-    """INFORMATIVITY SETTINGS"""
+    # INFORMATIVITY SETTINGS
     data.thresholds_correlation_with_label = {
         "num_num": [0.3, 0.3, 0.3],
         "cat_cat": [0.3, 0.3, 0.3],
@@ -121,18 +119,18 @@ def posnd_example_basic():
     }
     data.thresholds_min_number_of_predicted_labels = [1, 1, 2, 1, 3]
 
-    """MULTICOLINEAR SETTINGS"""
+    # MULTICOLINEAR SETTINGS
     data.thresholds_multicolinear = {
         "num_num": 0.3,
         "cat_cat": 0.3,
         "num_cat": 0.3
     }
 
-    """SET True TO GET OUTPUT"""
+    # SET True TO GET OUTPUT
     __Verbose__.PrintLog.instance().set_print_mode(True)
     __Verbose__.PrintLog.instance().set_severity_level("status")
 
-    """RUN"""
+    # RUN
     CheckDataTypes.CheckDataTypes.correct_types(data)
     ClusterFilling.ClusterFilling.fill(data)
     Informativity.Informativity.calculate_informativity(data)
