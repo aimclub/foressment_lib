@@ -97,8 +97,7 @@ class DataLoaderAndPreprocessor:
         #     self.features_names = self.data.columns.values
 
         elif dataset_name == 'smart_crane':
-            DATA_PATH = DATA_PATH + 'IEEE_smart_crane'
-            self.data = pd.read_csv(DATA_PATH + '/combined_csv.csv')
+            self.data = pd.read_csv(DATA_PATH + 'IEEE_smart_crane.csv')
             if mode not in range(1,9):
                 print('Wrong cycle number')
                 exit()
@@ -156,7 +155,6 @@ class DataLoaderAndPreprocessor:
                     print('Too many values for categorical feature "' + feature +'". Delete feature from data')
                     self.data = self.data.drop(feature, axis=1)
         self.data = self.data.fillna(0)
-
 
     def train_test_split(self, train_size=0.9):
         """
@@ -387,7 +385,6 @@ def test_appsop_example_forecast_by_parts(dataset_name, suf = '', mode=1):
     print(PDATA.forecasting_quality)
 
     print('Done')
-
 
 
 if __name__ == '__main__':
