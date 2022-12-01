@@ -98,7 +98,7 @@ class AIForecaster:
         if save:
             self.save_model()
 
-    def forecasting(self, current_batch, forecasting_data_length):
+    def forecasting(self, current_batch, forecasting_data_length, verbose=True):
         """
         Forecasting values within a given time window
 
@@ -109,8 +109,9 @@ class AIForecaster:
         predictions = []
 
         for i in range(forecasting_data_length):
-            sys.stdout.write('\r\x1b[K' + 'Forecasting: {0}/{1}'.format(i, forecasting_data_length-1))
-            sys.stdout.flush()
+            if verbose:
+                sys.stdout.write('\r\x1b[K' + 'Forecasting: {0}/{1}'.format(i, forecasting_data_length-1))
+                sys.stdout.flush()
             current_pred = self.model.predict(current_batch,
                                               batch_size=self.batch_size)[0]
             predictions.append(current_pred)
