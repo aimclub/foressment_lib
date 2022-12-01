@@ -1,9 +1,13 @@
 import unittest
-from aopssop import posnd
+import pandas as pd
+import numpy as np
+
+from aopssop import \
+    CheckDataTypes, ClusterFilling, Multicolinear, Informativity, __Verbose__, Data
 
 
 class PosndTestCase(unittest.TestCase):
 
     def test_smth(self):
-        result = posnd('Hello World!')
+        result = 'Hello World!'
         self.assertEqual(result, 'smth')

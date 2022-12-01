@@ -47,7 +47,7 @@ class TestAPSSOP(unittest.TestCase):
         generator = forecasting_model.data_to_generator(data.values)
         forecasting_model.train(generator, save=False)
         try:
-            forecasting_model.forecasting(forecasting_model.get_last_batch(generator),
+            forecasting_model.forecasting(forecasting_model.get_batch(generator),
                                           forecasting_data_length=10)
             print()
         except:
