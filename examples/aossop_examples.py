@@ -21,6 +21,7 @@ if dataset not in ['hai', 'edge-iiotset', 'dataport']:
 
 
 class DataLoaderHai(DataLoader):
+    """Data Loader"""
     def __init__(self, file, n, d):
         DataLoader.__init__(self, file, n, d)
 

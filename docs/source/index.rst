@@ -29,6 +29,12 @@ Welcome to AOPSSOP LIB's documentation!
 
    api/forecasting
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples:
+
+   api/examples
+
 Indices and tables
 ==================
 

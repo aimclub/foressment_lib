@@ -7,23 +7,30 @@ class Data:
     Class to storage dara for preprocessing
 
     :features_matrix: 2D array (only numeric), 1st D are objects and 2nd D are features (np.array).
-    :features_types: ().
-    :features_names: ().
-    :thresholds_min_number_of_predicted_labels: ().
+    :features_types: 1D array (only=["num", "cat", None]), with len = 2nd D features_matrix (np.array).
+    :features_names: 1D array (only str), with len = features_matrix (np.array).
+    :thresholds_min_number_of_predicted_labels: 1D int array, with len = len of 2D features (array).
     :labels_matrix: 2D array (only numeric), 1st D are objects and 2nd D are labels, with 1st D = 1st D of features_matrix (np.array).
-    :labels_types: ().
-    :labels_names: ().
-    :n_jobs: ().
-    :feature_names_substrings: ().
-    :feature_max_cat: ().
-    :types_priority: ().
-    :fill_method: ().
-    :n_clusters: ().
-    :cluster_max_iter: ().
-    :thresholds_correlation_with_label: ().
-    :thresholds_min_number_of_predicted_labels: ().
-    :thresholds_multicolinear: ().
+    :labels_types: 1D array (only=["num", "cat", None]), with len = 2nd D labels_matrix (np.array).
+    :labels_names: 1D array (only str), with len = labels_matrix (np.array).
+    :n_jobs: setting for the multiprocess parallel processing (int).
+    :feature_names_substrings: str arrays of categorical and numerical features substrings (dict).
+    :types_priority: key-value structure to define priorities of data types checking methods(dict).
+    :fill_method: setting for the selection of the clustering method (str). Possible = ["mean_mode", "centroids"]. Default = "mean_mode".
+    :n_clusters: setting for the selection of the number of clusters(int). Default = 10.
+    :cluster_max_iter: setting for the selection of the number of clustering iterations (int). Default = 10.
+    :thresholds_correlation_with_label: key-value structure for the informativity analysis settings (dict). Key "num_num" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix. Key "cat_cat" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix. Key "num_cat" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix.
+    :thresholds_min_number_of_predicted_labels: 1D int array, with len = len of 2D features (array).
+    :thresholds_multicolinear: key-value structure for the multicolinearity analysis settings (dict). Key "num_num" - float (range = [0,1]). Key "cat_cat" - float (range = [0,1]). Key "num_cat" - float (range = [0,1]).
     """
+
+    # MULTICOLINEAR SETTINGS
+    # dict with following keys
+    # {
+    #     "num_num": float (range = [0,1]),
+    #     "cat_cat": float (range = [0,1]),
+    #     "num_cat": float (range = [0,1])
+    # }
 
     def delete_features_by_idx(self, idx_to_delete) -> None:
         # Method for removing features by their idx in feature matrix

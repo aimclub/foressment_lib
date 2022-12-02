@@ -12,13 +12,13 @@ class MultiCollinear:
     # A class that remove uninformative features by multicorrelation analysis.
     # Processing preferences should be defined in Data.
     # Typical usage example:
-    # MultiCollinear.MultiCollinear.remove_uninformative_features(data)
+    # MultiCollinear.remove_uninformative_features(data)
 
     """
-    Class for the deletion of non-informative features based on the multicorrelation analysis.
+    Class for the deletion of non-informative features based on the multicorrelation analysis
 
     Typical usage example:
-    MultiCollinear.MultiCollinear.remove_uninformative_features(data)
+    MultiCollinear.remove_uninformative_features(data).
 
     :param crosstab: cross table for calculation of features informativity (np.array).
     :param stat: test statistics (np.float).

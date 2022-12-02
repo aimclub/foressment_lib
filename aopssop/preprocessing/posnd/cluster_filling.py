@@ -6,12 +6,23 @@ from aopssop.preprocessing.posnd.__verbose__ import PrintLog
 
 
 class ClusterFilling:
-    """ A class that fill Nones in features based on K-means clusters.
+    # A class that fill Nones in features based on K-means clusters.
+    # Processing preferences should be defined in Data.
+    # Typical usage example:
+    # ClusterFilling.fill(data)
 
-        Processing preferences should be defined in Data.
+    """
+    Class for the empty values filling process based on clustering
 
-        Typical usage example:
-        ClusterFilling.ClusterFilling.fill(data)
+    Typical usage example:
+    ClusterFilling.fill(data)
+
+    :param X: array of data to cluster.
+    :param n_clusters: number of clusters to form.
+    :param max_iter: Maximum number of EM iterations to perform,
+    :param column_types: list of feature types
+
+    :return X_hat: Copy of X with the missing values filled in.
     """
 
     @staticmethod
@@ -21,16 +32,13 @@ class ClusterFilling:
             max_iter=10
     ) -> np.ndarray:
         """
-        K-Means clustering with filling of missing values
-        by centroids.
+        K-Means clustering with filling of missing values by centroids
 
-        Args:
-          X: array of data to cluster.
-          n_clusters: number of clusters to form.
-          max_iter: Maximum number of EM iterations to perform.
+        :param X: array of data to cluster.
+        :param n_clusters: number of clusters to form.
+        :param max_iter: Maximum number of EM iterations to perform.
 
-        Returns:
-          X_hat: Copy of X with the missing values filled in.
+        :return X_hat: Copy of X with the missing values filled in.
         """
 
         # Initialize missing values to their column means
@@ -75,17 +83,14 @@ class ClusterFilling:
     ) -> np.ndarray:
 
         """
-            K-Means clustering with filling of missing values
-            by mean and mode in dependence on feature type.
+        K-Means clustering with filling of missing values by mean and mode in dependence on feature type.
 
-            Args:
-              X: array of data to cluster.
-              n_clusters: number of clusters to form.
-              max_iter: Maximum number of EM iterations to perform,
-              column_types: list of feature types
+        :param X: array of data to cluster.
+        :param n_clusters: number of clusters to form.
+        :param max_iter: Maximum number of EM iterations to perform,
+        :param column_types: list of feature types
 
-            Returns:
-              X_hat: Copy of X with the missing values filled in.
+        :return X_hat: Copy of X with the missing values filled in.
         """
 
         # Initialize missing values to their column means
@@ -134,12 +139,11 @@ class ClusterFilling:
             prev_centroids = cls.cluster_centers_
         return X_hat
 
-
     @staticmethod
     def fill(data: Data_Structure.Data) -> None:
 
         """
-            K-Means clustering with filling of missing values for data
+        K-Means clustering with filling of missing values for data
         """
 
         PrintLog.instance().info((

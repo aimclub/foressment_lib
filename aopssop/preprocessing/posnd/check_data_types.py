@@ -9,7 +9,7 @@ class CheckDataTypes:
     Processing preferences should be defined in Data
 
     Typical usage example:
-    CheckDataTypes.CheckDataTypes.correct_types(data)
+    CheckDataTypes.correct_types(data)
     """
 
     @staticmethod
@@ -45,8 +45,8 @@ class CheckDataTypes:
             data_columns: np.ndarray,
             feature_max_cat: int
     ) -> list:
-        """ Method that guess data type by
-            number of unique values
+        """
+        Method that guess data type by number of unique values
         """
 
         data_types = []
@@ -59,8 +59,8 @@ class CheckDataTypes:
 
     @staticmethod
     def __determite_type_by_float__(data_matrix: np.array) -> list:
-        """ Method that guess data type by
-            existence of float values
+        """
+        Method that guess data type by existence of float values
         """
 
         data_types = []
@@ -82,9 +82,8 @@ class CheckDataTypes:
                                   types_priority: str,
                                   target_type="num"
     ) -> float:
-        """ Method that guess data type by
-            previous 3 methods,
-            taking into account a weight for each method
+        """
+        Method that guess data type by previous 3 methods, taking into account a weight for each method
         """
 
         return float(
@@ -97,7 +96,7 @@ class CheckDataTypes:
     @staticmethod
     def correct_types(data: Data_Structure.Data) -> None:
         """
-            Method that correct data type
+        Method that correct data type
         """
 
         __Verbose__.PrintLog.instance().info((
@@ -112,7 +111,8 @@ class CheckDataTypes:
             data.types_priority["float"], "])"
         ))
 
-        """transpose features and labels to get columns 
+        """
+        Transpose features and labels to get columns 
         - don't forget to transpose back after analysis
         """
         data.transpose()

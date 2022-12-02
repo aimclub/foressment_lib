@@ -12,13 +12,13 @@ class Informativity:
     # A class that remove uninformative features by correlation of feature with label.
     # Processing preferences should be defined in Data.
     # Typical usage example:
-    # Informativity.Informativity.calculate_informativity(data)
+    # Informativity.calculate_informativity(data)
 
     """
     Class for the deletion of non-informative features based on the informativity analysis.
 
     Typical usage example:
-    Informativity.Informativity.calculate_informativity(data)
+    Informativity.calculate_informativity(data)
 
     :param crosstab: cross table for calculation of features informativity (np.array).
     :param stat: test statistics (np.float).
