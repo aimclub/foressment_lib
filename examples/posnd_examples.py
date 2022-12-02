@@ -57,7 +57,7 @@ def posnd_example_titanic():
     }
 
     # SET TRUE TO GET OUTPUT
-    __Verbose__.PrintLog.instance().set_print_mode(True)
+    __Verbose__.PrintLog.instance().set_print_mode(False)
     __Verbose__.PrintLog.instance().set_severity_level("status")
 
     # RUN
@@ -127,7 +127,7 @@ def posnd_example_basic():
     }
 
     # SET True TO GET OUTPUT
-    __Verbose__.PrintLog.instance().set_print_mode(True)
+    __Verbose__.PrintLog.instance().set_print_mode(False)
     __Verbose__.PrintLog.instance().set_severity_level("status")
 
     # RUN
