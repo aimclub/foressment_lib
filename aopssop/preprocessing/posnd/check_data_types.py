@@ -10,6 +10,11 @@ class CheckDataTypes:
 
     Typical usage example:
     CheckDataTypes.correct_types(data)
+
+    :func __determite_type_by_substring__: method that guess data type by substring in feature/label name.
+    :func __determite_type_by_unique__: method that guess data type by number of unique values.
+    :func __determite_type_by_float__: method that guess data type by existence of float values.
+    :func __calculate_by_priority__: method that guess data type by previous 3 methods, taking into account a weight for each method.
     """
 
     @staticmethod
@@ -37,8 +42,6 @@ class CheckDataTypes:
                 if res["cat"] >= res["num"]:
                     data_types.append("cat")
         return data_types
-
-
 
     @staticmethod
     def __determite_type_by_unique__(
@@ -72,7 +75,6 @@ class CheckDataTypes:
                     break
             data_types.append(f_type)
         return data_types
-
 
     @staticmethod
     def __calculate_by_priority__(analysed_type: str,
@@ -111,13 +113,11 @@ class CheckDataTypes:
             data.types_priority["float"], "])"
         ))
 
-        """
-        Transpose features and labels to get columns 
-        - don't forget to transpose back after analysis
-        """
+        # Transpose features and labels to get columns
+        # - don't forget to transpose back after analysis
         data.transpose()
 
-        """get data types by different methods for features"""
+        # Get data types by different methods for features
         types_by_substring = CheckDataTypes.__determite_type_by_substring__(
             data.features_matrix,
             data.features_names,
@@ -129,7 +129,7 @@ class CheckDataTypes:
             data.features_matrix)
         result_types = []
         for idx, t in enumerate(data.features_types):
-            """calculate average type using weights"""
+            # calculate average type using weights
             cat = CheckDataTypes.__calculate_by_priority__(
                 t, types_by_substring[idx], types_by_unique[idx], types_by_float[idx],
                 data.types_priority, "cat"
@@ -138,7 +138,7 @@ class CheckDataTypes:
                 t, types_by_substring[idx], types_by_unique[idx], types_by_float[idx],
                 data.types_priority, "num"
             )
-            """make decision"""
+            # make decision
             res = "cat" if cat > num else "num"
             if res != t:
                 __Verbose__.PrintLog.instance().status(
@@ -146,10 +146,10 @@ class CheckDataTypes:
                      res, " (num=", num, ",cat=", cat, ").")
                 )
             result_types.append(res)
-        """update types"""
+        # update types
         data.features_types = result_types
 
-        """get data types by different methods for labels"""
+        # get data types by different methods for labels
         types_by_substring = CheckDataTypes.__determite_type_by_substring__(
             data.labels_matrix,
             data.labels_names,
@@ -161,7 +161,7 @@ class CheckDataTypes:
             data.labels_matrix)
         result_types = []
         for idx, t in enumerate(data.labels_types):
-            """calculate average type using weights"""
+            # calculate average type using weights
             cat = CheckDataTypes.__calculate_by_priority__(
                 t, types_by_substring[idx], types_by_unique[idx], types_by_float[idx],
                 data.types_priority, "cat"
@@ -170,7 +170,7 @@ class CheckDataTypes:
                 t, types_by_substring[idx], types_by_unique[idx], types_by_float[idx],
                 data.types_priority, "num"
             )
-            """make decision"""
+            # ake decision
             res = "cat" if cat > num else "num"
             if res != t:
                 __Verbose__.PrintLog.instance().status(
@@ -180,9 +180,9 @@ class CheckDataTypes:
                      res, "(num=", num, ",cat=", cat,").")
                 )
             result_types.append(res)
-        """update types"""
+        # update types
         data.labels_types = result_types
 
-        """ transpose data back to normal state"""
+        # transpose data back to normal state
         data.transpose()
         __Verbose__.PrintLog.instance().info("ANALYSIS OF DATA TYPES IS COMPLETE")

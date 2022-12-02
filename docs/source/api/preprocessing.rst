@@ -17,9 +17,6 @@ POSND
 .. automodule:: aopssop.preprocessing.posnd.multicolinear
     :members:
 
-.. automodule:: aopssop.preprocessing.posnd.__verbose__
-    :members:
-
 ======
 IZSND
 ======
