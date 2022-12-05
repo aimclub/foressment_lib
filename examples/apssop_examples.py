@@ -1,23 +1,23 @@
 from aopssop import DataScaler, AIForecaster, ForecastEstimator
 from aopssop import AopssopData as PDATA
-import pandas as pd
-import numpy as np
-import os
-import sys
-import time
-import psutil
 
-import math
-import matplotlib.pyplot as plt
+from threading import Thread
+import psutil
+import os
+import pandas as pd
 
 pid = os.getpid()
 proc = psutil.Process(pid)
+cpu_num = psutil.cpu_count()
 proc.as_dict()
+
+from logger import Logger
+LOG0 = Logger(proc, cpu_num)
 
 
 class DataLoaderAndPreprocessor:
     """
-    Class for loading and preprocessing data
+    Class for loading and preprocessing data.
 
     :param DATA_PATH: Path to th e directory with datasets (string).
     :param drop_features: Set of features to remove from the data (list).
@@ -26,13 +26,13 @@ class DataLoaderAndPreprocessor:
     """
     def __init__(self, dataset_name, mode=1, suf=''):
         """
-        Initializing
+        Initializing.
 
         :param dataset_name: Data set name (srting).
-        :param mode:Boot mode, for developers (integer).
+        :param mode: Boot mode, for developers (integer).
         """
 
-        DATA_PATH = __file__.replace('examples/apssop_examples.py', '') + 'datasets/'
+        DATA_PATH = "../datasets/"
 
         self.features_names = []
         self.drop_features = []
@@ -42,8 +42,8 @@ class DataLoaderAndPreprocessor:
         if not os.path.exists('apssop_models/'):
             os.makedirs('apssop_models/')
 
-        self.forecasting_model_path = ''
-        self.normalization_model_path = ''
+        self.forecasting_model_path = 'apssop_models/forecasting_model_' + dataset_name + suf
+        self.normalization_model_path = 'apssop_models/scaler_' + dataset_name + suf + '.pkl'
 
         if dataset_name == 'hai':
             DATA_PATH = DATA_PATH + 'hai-22.04/train'
@@ -60,9 +60,6 @@ class DataLoaderAndPreprocessor:
             self.drop_features = ['timestamp', 'Attack']
             self.preprocessing()
             self.features_names = self.data.columns.values
-
-            self.forecasting_model_path = 'apssop_models/forecasting_model_' + dataset_name + suf
-            self.normalization_model_path = 'apssop_models/scaler_' + dataset_name + suf + '.pkl'
 
 
         # elif dataset_name == 'alarms':
@@ -100,8 +97,11 @@ class DataLoaderAndPreprocessor:
         #     self.features_names = self.data.columns.values
 
         elif dataset_name == 'smart_crane':
+            # DATA_PATH = DATA_PATH + 'IEEE_smart_crane'
+            # self.data = pd.read_csv(DATA_PATH + '/combined_csv.csv')
             self.data = pd.read_csv(DATA_PATH + 'IEEE_smart_crane.csv')
-            if mode not in range(1,9):
+
+            if mode not in range(1, 9):
                 print('Wrong cycle number')
                 exit()
             self.data = self.data[self.data['Cycle'] == mode]
@@ -109,9 +109,6 @@ class DataLoaderAndPreprocessor:
             self.drop_features = ['Date', 'Alarm', 'Cycle']
             self.preprocessing()
             self.features_names = self.data.columns.values
-
-            self.forecasting_model_path = 'apssop_models/forecasting_model_' + dataset_name + suf + '_c' + str(mode)
-            self.normalization_model_path = 'apssop_models/scaler_' + dataset_name + suf + '_c' + str(mode) + '.pkl'
 
         elif dataset_name == 'test':
             self.data = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)),
@@ -124,7 +121,7 @@ class DataLoaderAndPreprocessor:
 
     def preprocessing(self):
         """
-        Data feature preprocessing
+        Data feature preprocessing.
         """
         if len(self.drop_features) > 0:
             self.data = self.data.drop(self.drop_features, axis=1)
@@ -132,8 +129,9 @@ class DataLoaderAndPreprocessor:
         if len(self.categorical_features) > 0:
             for feature in self.categorical_features:
                 if 'ip' in feature:
-                    encoded_feature_data = pd.DataFrame([x.split('.') if x != '0' else [0, 0, 0, 0]
-                                            for x in self.data[feature].tolist()])
+                    encoded_feature_data = pd.DataFrame([x.split('.')
+                                                         if x != '0' else [0, 0, 0, 0]
+                                                         for x in self.data[feature].tolist()])
 
                     for col in encoded_feature_data.columns:
                         encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + str(col)})
@@ -159,12 +157,12 @@ class DataLoaderAndPreprocessor:
                     self.data = self.data.drop(feature, axis=1)
         self.data = self.data.fillna(0)
 
+
     def train_test_split(self, train_size=0.9):
         """
-        Split data into training and test sets
+        Split data into training and test sets.
 
         :param train_size: Share of the training sample (float). Default=0.9.
-
         :return: train: Feature matrix of training data (pd.DataFrame).
         :return test: Feature matrix of test data (pd.DataFrame).
         """
@@ -179,94 +177,40 @@ class DataLoaderAndPreprocessor:
         return train, test
 
 
-class Logger:
-    def __init__(self, filename, rewrite=False):
-        try:
-            os.makedirs('apssop_logs')
-        except:
-            pass
-
-        self.filename = 'apssop_logs/' + filename
-
-        self.log = None
-
-        if rewrite:
-            self.log = self.open('w')
-        else:
-            self.log = self.open('a')
-
-        self.start_time = None
-        self.text = ''
-
-    def start_line(self, text=None, wait=True):
-        self.start_time = time.time()
-        if text:
-            self.text = text
-
-        if not wait:
-            self.end_line()
-
-    def end_line(self, text=None, show=True):
-        if text:
-            self.text = text
-
-        if not self.start_time:
-            duration = '??? sec.'
-        else:
-            duration = str(round(time.time() - self.start_time, 2)) + ' sec.'
-
-        d = proc.as_dict(attrs=['cpu_percent', 'memory_info', 'memory_percent'])
-        cpu_num = psutil.cpu_count()
-
-        cpu_percent = 'CPU ' + str(round(d['cpu_percent']/cpu_num, 2)) + '%'
-        memory = 'RAM ' + str(round(d['memory_info'].rss / 1024 ** 2, 2)) + 'Mb'
-
-        linetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
-        text = '|'.join([linetime, self.text, duration, cpu_percent, memory]) + '\n'
-        self.log.write(text)
-        self.log.flush()
-        os.fsync(self.log.fileno())
-
-        if show:
-            print(text[:-1])
-
-    def open(self, how):
-        return open(self.filename, how)
-
-    def close(self):
-        self.log.close()
-
-    def parse_to_dataframe(self):
-        pass
-
-
 def example_appsop_model_training(dataset_name, suf='', mode=1):
     """
     Testing APPSOP module methods.
     In this example, forecasting model and  normalization model are trained on the dataset.
     """
-    LOG = Logger(dataset_name + suf + '_training.log')
-    LOG.start_line('Start with dataset "' + dataset_name + '"', wait=False)
 
-    LOG.start_line()
+    LOG0.create(dataset_name + suf + '_training_res.log', rewrite=True)
+    LOG0.run = True
+    thread1 = Thread(target=LOG0.daemon_logger)
+    thread1.start()
+
+    LOG0.event_init(text='Start with dataset "' + dataset_name + '"')
+    LOG0.event_init(event_name='preproc', text='Input data preprocessing')
     data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
     PDATA.features_names = data.features_names
-    LOG.end_line('Input data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
+    LOG0.event_init(event_name='preproc',
+                    text='Input data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
 
     PDATA.forecasting_model_path = data.forecasting_model_path
     PDATA.normalization_model_path = data.normalization_model_path
 
-    LOG.start_line()
+    LOG0.event_init(event_name='preproc', text='Input data splitting')
     train, test = data.train_test_split(train_size=0.9)
-    LOG.end_line('Data is divided into train and test samples of length {0} and {1}'.format(len(train), len(test)))
-
-    LOG.start_line()
-    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path
-                                     )
+    LOG0.event_init(event_name='preproc',
+                    text='Data is divided into train and test samples of length {0} and {1}'.format(len(train),
+                                                                                                    len(test)))
+    LOG0.event_init(event_name='norm', text='Normalization model training')
+    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path)
     normalization_model.fit(train)
+    LOG0.event_init(event_name='norm', text='Data normalization')
     scaled_train = normalization_model.transform(train)
-    LOG.end_line('Data normalized')
+    LOG0.event_init(event_name='norm', text='Data normalized')
+
+    LOG0.event_init(event_name='prepare', text='Forecasting model creation:' + PDATA.forecasting_model_path)
 
     forecasting_model = AIForecaster(n_epochs=3,
                                      time_window_length=PDATA.time_window_length,
@@ -274,229 +218,132 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
                                      model_path=PDATA.forecasting_model_path,
                                      )
 
-    LOG.start_line('Forecasting model:' + forecasting_model.model_path, wait=False)
-
-    LOG.start_line()
+    LOG0.event_init(event_name='prepare', text='Data generator creation')
     train_generator = forecasting_model.data_to_generator(scaled_train)
-    LOG.end_line('Data generator created')
+    LOG0.event_init(event_name='prepare', text='Data generator created')
 
-    LOG.start_line()
+    LOG0.event_init(event_name='train', text='Model training')
+    LOG0.show_off()
     loss = forecasting_model.train(train_generator)
-    LOG.end_line('Training completed (loss:' + str(loss) + ')')
+    LOG0.show_on()
+    LOG0.event_init(event_name='train', text='Training completed (loss:' + str(loss) + ')')
 
-    LOG.close()
+    LOG0.run = False
+    thread1.join()
+    LOG0.close()
+    print('Done')
 
 
-def example_appsop_forecasting_train_independently(dataset_name, suf = '', mode=1, train_size=0.9):
+def example_appsop_forecasting(dataset_name, suf='', mode=1,
+                                                   train_size=0.9,
+                                                   independently=True,
+                                                   sample_type='test'):
     """
-    Testing APPSOP module methods.
+    Testing APPSOP module methods
     In this example, test set samples are predicted one at a time based on incoming test set data.
     """
+    if sample_type not in ['train', 'test']:
+        print('Wrong sample type')
+        exit()
 
-    LOG = Logger(dataset_name + suf + '_forecasting_train_independently.log')
-    LOG.start_line('Start with dataset "' + dataset_name + '"', wait=False)
+    if independently:
+        file_suf = '_' + sample_type + '_independently'
+    else:
+        file_suf = '_' + sample_type + '_dependently'
 
-    LOG.start_line()
+    LOG0.create(dataset_name + suf + file_suf + '_res.log', rewrite=True)
+    LOG0.run = True
+    thread1 = Thread(target=LOG0.daemon_logger)
+    thread1.start()
+
+    LOG0.event_init(text='Start with dataset "' + dataset_name + '"')
+    LOG0.event_init(event_name='preproc', text='Input data preprocessing')
     data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
     PDATA.features_names = data.features_names
-    LOG.end_line('Inpit data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
+    LOG0.event_init(event_name='preproc',
+                    text='Inpit data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
 
     PDATA.forecasting_model_path = data.forecasting_model_path
     PDATA.normalization_model_path = data.normalization_model_path
 
-    LOG.start_line()
+    LOG0.event_init(event_name='preproc', text='Input data splitting')
     train, test = data.train_test_split(train_size=train_size)
-    LOG.end_line('Data is divided into train and test samples of length {0} and {1}'.format(len(train), len(test)))
-
-    LOG.start_line()
+    LOG0.event_init(event_name='preproc',text='Data is divided into train and test samples of length {0} and {1}'.format(len(train),
+                                                                                                    len(test)))
+    LOG0.event_init(event_name='norm', text='Normalization model open')
     normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path,
-                                     open=True
-                                     )
+                                     open=True)
+    if not normalization_model:
+        print('Wrong normalization model filename')
+        exit()
+
+    LOG0.event_init(event_name='norm', text='Data normalization')
     scaled_train = normalization_model.transform(train)
-    LOG.end_line('Data normalized')
+    scaled_test = normalization_model.transform(test)
+    LOG0.event_init(event_name='norm', text='Data normalized')
 
+    LOG0.event_init(event_name='prepare', text='Forecasting model creation:' + PDATA.forecasting_model_path)
     forecasting_model = AIForecaster(model_path=PDATA.forecasting_model_path,
-                                     open=True
-                                     )
+                                     open=True)
 
+    LOG0.event_init(event_name='prepare', text='Data generator creation')
     PDATA.time_window_length = forecasting_model.time_window_length
-
-    LOG.start_line('Forecasting model:' + forecasting_model.model_path, wait=False)
-
-    LOG.start_line()
     train_generator = forecasting_model.data_to_generator(scaled_train)
-    LOG.end_line('Data generator created')
-
-    current_batch = forecasting_model.get_batch(train_generator, 0)
-    PDATA.forecasting_time_window = len(scaled_train) - PDATA.time_window_length
+    LOG0.event_init(event_name='prepare', text='Data generator created')
 
     predictions = []
-    for i in range(PDATA.forecasting_time_window):
-        sys.stdout.write('\r\x1b[K' + 'Forecasting: {0}/{1}'.format(i, PDATA.forecasting_time_window - 1))
-        sys.stdout.flush()
-        LOG.start_line()
+    current_batch = []
+    target_true = []
 
-        current_pred = forecasting_model.forecasting(current_batch,
-                                                     forecasting_data_length=1,
-                                                     verbose=False)
-        predictions.append(current_pred[0])
-        new_event = scaled_train[i]
-        current_batch = np.append(current_batch[:, 1:, :], [[new_event]], axis=1)
+    LOG0.event_init(event_name='prepare', text='Get batch for forecasting')
+    if sample_type == 'train':
+        PDATA.forecasting_time_window = len(scaled_train) - PDATA.time_window_length
+        current_batch = forecasting_model.get_batch(train_generator, 0)
+        target_true = scaled_train[PDATA.time_window_length:]
 
-        LOG.end_line('Forecasting: {0}/{1}'.format(i, PDATA.forecasting_time_window - 1),
-                     show=False)
+    elif sample_type == 'test':
+        PDATA.forecasting_time_window = len(scaled_test)
+        current_batch = forecasting_model.get_batch(train_generator, -1)
+        target_true = scaled_test
+
+    LOG0.event_init(event_name='forecast', text='Forecasting')
+    if independently:
+        for i in range(PDATA.forecasting_time_window):
+            current_pred = forecasting_model.forecasting(current_batch,
+                                                         forecasting_data_length=1,
+                                                         verbose=True)
+            predictions.append(current_pred[0])
+            new_event = target_true[i]
+            current_batch = np.append(current_batch[:, 1:, :], [[new_event]], axis=1)
+
+            LOG0.event_init(event_name='forecast', text='Forecasting: {0}/{1}'.format(i,
+                                                                                      PDATA.forecasting_time_window - 1))
+
+    else:
+        LOG0.show_off()
+        predictions = forecasting_model.forecasting(current_batch,
+                                                    forecasting_data_length=PDATA.forecasting_time_window,
+                                                    verbose=True)
+        LOG0.show_on()
 
     predictions = pd.DataFrame(predictions).values
     PDATA.forecasting_results = normalization_model.inverse(predictions)
 
-    LOG.start_line('Forecasting complited', wait=False)
-    estimator = ForecastEstimator()
+    LOG0.event_init(event_name='forecast', text='Forecasting complited')
+    LOG0.event_init(event_name='eval', text='Evaluation')
 
-    LOG.start_line()
-    PDATA.forecasting_quality = estimator.estimate(true=scaled_train[PDATA.time_window_length:],
+    estimator = ForecastEstimator()
+    PDATA.forecasting_quality = estimator.estimate(true=target_true,
                                                    pred=predictions,
                                                    feature_names=PDATA.features_names)
 
-    estimator.save(file_name=dataset_name + suf + '_train_independently')
-    LOG.end_line('Evaluation done')
-
+    estimator.save(file_name=dataset_name + suf + file_suf)
+    LOG0.event_init(event_name='eval', text='Evaluation done')
     print(PDATA.forecasting_quality)
-    print('Done')
 
-
-def example_appsop_forecasting_test_independently(dataset_name, suf='', mode=1, train_size=0.9):
-    """
-    Testing APPSOP module methods.
-    In this example, test set samples are predicted one at a time based on incoming test set data.
-    """
-
-    LOG = Logger(dataset_name + suf + '_forecasting_test_independently.log')
-    LOG.start_line('Start with dataset "' + dataset_name + '"', wait=False)
-
-    LOG.start_line()
-    data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
-    PDATA.features_names = data.features_names
-    LOG.end_line('Input data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
-
-    PDATA.forecasting_model_path = data.forecasting_model_path
-    PDATA.normalization_model_path = data.normalization_model_path
-
-    LOG.start_line()
-    train, test = data.train_test_split(train_size=train_size)
-    LOG.end_line('Data is divided into train and test samples of length {0} and {1}'.format(len(train), len(test)))
-
-    LOG.start_line()
-    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path,
-                                     open=True
-                                     )
-    scaled_train = normalization_model.transform(train)
-    scaled_test = normalization_model.transform(test)
-    LOG.end_line('Data normalized')
-
-    forecasting_model = AIForecaster(model_path=PDATA.forecasting_model_path,
-                                     open=True
-                                     )
-
-    LOG.start_line('Forecasting model:' + forecasting_model.model_path, wait=False)
-
-    LOG.start_line()
-    train_generator = forecasting_model.data_to_generator(scaled_train)
-    LOG.end_line('Data generator created')
-
-    PDATA.forecasting_time_window = len(scaled_test)
-    current_batch = forecasting_model.get_batch(train_generator, -1)
-
-    predictions = []
-    for i in range(PDATA.forecasting_time_window):
-        sys.stdout.write('\r\x1b[K' + 'Forecasting: {0}/{1}'.format(i, PDATA.forecasting_time_window - 1))
-        sys.stdout.flush()
-        LOG.start_line()
-
-        current_pred = forecasting_model.forecasting(current_batch,
-                                                     forecasting_data_length=1,
-                                                     verbose=False)
-        predictions.append(current_pred[0])
-        new_event = scaled_test[i]
-        current_batch = np.append(current_batch[:, 1:, :], [[new_event]], axis=1)
-
-        LOG.end_line('Forecasting: {0}/{1}'.format(i, PDATA.forecasting_time_window - 1),
-                     show=False)
-
-    predictions = pd.DataFrame(predictions).values
-    PDATA.forecasting_results = normalization_model.inverse(predictions)
-
-    LOG.start_line('Forecasting complited', wait=False)
-    estimator = ForecastEstimator()
-
-    LOG.start_line()
-    PDATA.forecasting_quality = estimator.estimate(true=scaled_test, pred=predictions,
-                                                   feature_names=PDATA.features_names)
-
-    estimator.save(file_name=dataset_name + suf + '_test_independently')
-    LOG.end_line('Evaluation done')
-
-    print(PDATA.forecasting_quality)
-    print('Done')
-
-
-def example_appsop_forecasting_test_dependently(dataset_name, suf='', mode=1, train_size=0.9):
-    """
-    Testing APPSOP module methods.
-    In this example, all samples in the test set are forecasted based on the last batch of the training set.
-    Note: In such an experiment, the accumulation of prediction errors is possible.
-    """
-
-    LOG = Logger(dataset_name + suf + '_forecasting_test_dependently.log')
-    LOG.start_line('Start with dataset "' + dataset_name + '"', wait=False)
-
-    LOG.start_line()
-    data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
-    PDATA.features_names = data.features_names
-    LOG.end_line('Input data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
-
-    PDATA.forecasting_model_path = data.forecasting_model_path
-    PDATA.normalization_model_path = data.normalization_model_path
-
-    LOG.start_line()
-    train, test = data.train_test_split(train_size=train_size)
-    LOG.end_line('Data is divided into train and test samples of length {0} and {1}'.format(len(train), len(test)))
-
-    LOG.start_line()
-    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path,
-                                     open=True
-                                     )
-    scaled_train = normalization_model.transform(train)
-    scaled_test = normalization_model.transform(test)
-    LOG.end_line('Data normalized')
-
-    forecasting_model = AIForecaster(model_path=PDATA.forecasting_model_path,
-                                     open=True
-                                     )
-
-    LOG.start_line('Forecasting model:' + forecasting_model.model_path, wait=False)
-
-    LOG.start_line()
-    train_generator = forecasting_model.data_to_generator(scaled_train)
-    LOG.end_line('Data generator created')
-
-    PDATA.forecasting_time_window = len(scaled_test)
-    last_batch = forecasting_model.get_batch(train_generator, -1)
-
-    LOG.start_line()
-    pred = forecasting_model.forecasting(last_batch,
-                                         forecasting_data_length=PDATA.forecasting_time_window)
-    PDATA.forecasting_results = normalization_model.inverse(pred)
-    LOG.end_line('Forecasting completed')
-
-    LOG.start_line()
-    estimator = ForecastEstimator()
-    PDATA.forecasting_quality = estimator.estimate(true=scaled_test, pred=pred,
-                                                   feature_names=PDATA.features_names)
-
-    estimator.save(file_name=dataset_name + suf + 'test_dependently')
-    LOG.end_line('Evaluation done')
-
-    print(PDATA.forecasting_quality)
+    LOG0.run = False
+    thread1.join()
+    LOG0.close()
     print('Done')
 
 
@@ -506,15 +353,15 @@ if __name__ == '__main__':
 
     dataset_name = 'smart_crane'
     for mode in range(1, 9):
-        suf = '_ex1_c' + str(mode)
+        suf = '_ex2_c' + str(mode)
         example_appsop_model_training(dataset_name, suf, mode)
-        example_appsop_forecasting_train_independently(dataset_name, suf, mode)
-        example_appsop_forecasting_test_independently(dataset_name, suf, mode)
-        example_appsop_forecasting_test_dependently(dataset_name, suf, mode)
+        example_appsop_forecasting(dataset_name, suf, mode, sample_type='train')
+        example_appsop_forecasting(dataset_name, suf, mode, sample_type='test')
+        example_appsop_forecasting(dataset_name, suf, mode, sample_type='test', independently=False)
 
-    suf = '_ex1'
+    suf = '_ex2'
     dataset_name = 'hai'
     example_appsop_model_training(dataset_name, suf)
-    example_appsop_forecasting_train_independently(dataset_name, suf)
-    example_appsop_forecasting_test_independently(dataset_name, suf)
-    example_appsop_forecasting_test_dependently(dataset_name, suf)
+    example_appsop_forecasting(dataset_name, suf, sample_type='train')
+    example_appsop_forecasting(dataset_name, suf, sample_type='test')
+    example_appsop_forecasting(dataset_name, suf, sample_type='test', independently=False)
