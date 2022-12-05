@@ -1,9 +1,11 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from aopssop import DataScaler, AIForecaster, ForecastEstimator
 from aopssop import AopssopData as PDATA
 
 from threading import Thread
 import psutil
-import os
 import pandas as pd
 
 pid = os.getpid()
