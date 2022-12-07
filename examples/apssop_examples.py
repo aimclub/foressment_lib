@@ -7,13 +7,14 @@ from aopssop import AopssopData as PDATA
 from threading import Thread
 import psutil
 import pandas as pd
+import numpy as np
 
 pid = os.getpid()
 proc = psutil.Process(pid)
 cpu_num = psutil.cpu_count()
 proc.as_dict()
 
-from logger import Logger
+from examples.logger import Logger
 LOG0 = Logger(proc, cpu_num)
 
 
@@ -62,41 +63,6 @@ class DataLoaderAndPreprocessor:
             self.drop_features = ['timestamp', 'Attack']
             self.preprocessing()
             self.features_names = self.data.columns.values
-
-
-        # elif dataset_name == 'alarms':
-        #     DATA_PATH = DATA_PATH + 'IEEE_alarms_log_data/raw'
-        #     if mode == 'simple_test':
-        #         self.data = pd.read_csv(DATA_PATH + '/alarms.csv', nrows=10000)
-        #     else:
-        #         self.data = pd.read_csv(DATA_PATH + '/alarms.csv')
-        #     self.drop_features = ['timestamp']
-        #     self.preprocessing()
-        #     self.features_names = self.data.columns.values
-
-        # elif dataset_name == 'edge-iiotset':
-        #     DATA_PATH = DATA_PATH + 'Edge-IIoTset/'
-        #     self.data = pd.read_csv(DATA_PATH + 'Selected dataset for ML and DL/DNN-EdgeIIoT-dataset.csv',
-        #                             low_memory=False)
-        #
-        #     self.data['mqtt.conack.flags'] = self.data['mqtt.conack.flags'].map(lambda x: 0 if x == '0x00000000' else x)
-        #     self.data['mqtt.conack.flags'] = self.data['mqtt.conack.flags'].astype(float).round()
-        #
-        #     self.data['mqtt.protoname'] = self.data['mqtt.protoname'].map(lambda x: '0' if x == '0.0' else x)
-        #     self.data['mqtt.topic'] = self.data['mqtt.topic'].map(lambda x: '0' if x == '0.0' else x)
-        #
-        #     self.drop_features = ['frame.time', 'Attack_label', 'Attack_type',
-        #                          'tcp.options', 'tcp.payload',
-        #                           'http.file_data', 'http.request.uri.query', 'http.request.method',
-        #                           'http.referer', 'http.request.full_uri', 'http.request.version',
-        #                           'tcp.srcport', 'dns.qry.name.len',
-        #                           'mqtt.msg']
-        #
-        #     self.categorical_features = ['ip.src_host', 'ip.dst_host',
-        #                                  'arp.dst.proto_ipv4', 'arp.src.proto_ipv4',
-        #                                   'mqtt.protoname', 'mqtt.topic']
-        #     self.preprocessing()
-        #     self.features_names = self.data.columns.values
 
         elif dataset_name == 'smart_crane':
             # DATA_PATH = DATA_PATH + 'IEEE_smart_crane'
