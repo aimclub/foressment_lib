@@ -91,12 +91,15 @@ class AIForecaster:
             print('Incorrect data for training. Number of features must be = ' + str(self.n_features))
             exit()
 
-        self.model.fit(train_generator, epochs=self.epochs,
+        history = self.model.fit(train_generator, epochs=self.epochs,
                        validation_data=validation_generator,
                        callbacks=[self.early_stop],
                        batch_size=self.batch_size)
         if save:
             self.save_model()
+
+        loss = round(history.history['loss'][-1], 4)
+        return loss
 
     def forecasting(self, current_batch, forecasting_data_length, verbose=True):
         """
