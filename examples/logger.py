@@ -79,6 +79,15 @@ class Logger:
     def close(self):
         self.log.close()
 
+    def get_resources(self, event_name='all'):
+        logdata = self.parse_to_dataframe(self.filename)
+        resources = {'duration_sec': self.get_event_duration(logdata, event_name=event_name)}
+        for res in ['cpu%', 'ram_mb']:
+            for stat_param in ['min', 'mean', 'max']:
+                resources[res + '_' + stat_param] = self.get_resource_stat(logdata, event_name=event_name,
+                                                                           res=res, stat_param=stat_param)
+        return resources
+
     @staticmethod
     def parse_to_dataframe(filename):
         return pd.read_json(filename, lines=True)
