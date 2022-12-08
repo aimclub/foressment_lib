@@ -69,10 +69,7 @@ class DataLoaderAndPreprocessor:
             self.delete_features()
 
             if use_izdap:
-                algo = IzdapAlgo(0.1)
-                algo.fit(self.data, class_column='Alarm', positive_class_label=1)
-                rules = algo.get_rules()
-                self.data = algo.transform(self.data)
+                self.izdap()
 
             self.delete_labels()
             self.features_names = self.data.columns.values
@@ -81,6 +78,12 @@ class DataLoaderAndPreprocessor:
         else:
             print('Unknown dataset name')
             exit()
+
+    def izdap(self):
+        algo = IzdapAlgo(0.1)
+        algo.fit(self.data, class_column='Alarm', positive_class_label=1)
+        rules = algo.get_rules()
+        self.data = algo.transform(self.data)
 
     def delete_features(self):
         if len(self.drop_features) > 0:
@@ -336,8 +339,23 @@ def example_join_test_smart_crane():
     result.to_csv('appsop_logs/join_test_smart_crane.csv', index=False, sep=';', decimal=',')
 
 
+def example_join_test_hai():
+    PDATA.time_window_length = 10
+
+    result = pd.DataFrame(columns=['test', 'data_size', 'mse', 'mae', '1-mae',
+                                   'duration_sec', 'cpu%_min', 'cpu%_mean', 'cpu%_max',
+                                   'ram_mb_min', 'ram_mb_mean', 'ram_mb_max'
+                                   ])
+
+    dataset_name = 'hai'
+    PDATA.features_matrix = Loader(dataset_name, use_izdap=False)
+    PDATA.features_names = Loader.features_names
+    PDATA.forecasting_model_path = Loader.forecasting_model_path
+    PDATA.normalization_model_path = Loader.normalization_model_path
+
+
 if __name__ == '__main__':
     example_join_test_smart_crane()
-
+    Loader = DataLoaderAndPreprocessor(test_name=test_name)
 
 
