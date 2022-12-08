@@ -257,6 +257,7 @@ def example_appsop_forecasting(logname='example', train_size=0.9,
     current_batch = forecasting_model.get_batch(train_generator, -1)
 
     LOG0.event_init(event_name='forecast', text='Forecasting')
+
     if apriori:
         for i in range(PDATA.forecasting_time_window):
             current_pred = forecasting_model.forecasting(current_batch,
