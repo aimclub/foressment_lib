@@ -20,13 +20,23 @@ class MultiCollinear:
     Typical usage example:
     MultiCollinear.remove_uninformative_features(data).
 
-    :param crosstab: cross table for calculation of features informativity (np.array).
-    :param stat: test statistics (np.float).
-    :param obs: number of observations (np.int).
-    :param mini: minimum value between the columns and the rows of the cross table (int).
-    :param multicolinear_features: data structure to save multicolinear features (set).
+    :param crosstab: cross table for calculation of features informativity
+    :type crosstab: numpy.array
 
-    :return: stat / (obs * mini) (np.float).
+    :param stat: test statistics
+    :type stat: numpy.float
+
+    :param obs: number of observations
+    :type obs: numpy.int
+
+    :param mini: minimum value between the columns and the rows of the cross table
+    :type mini: int
+
+    :param multicolinear_features: data structure to save multicolinear features
+    :type multicolinear_features: set
+
+    :return: stat / (obs * mini)
+    :rtype: numpy.float
     """
 
     @staticmethod
@@ -34,10 +44,17 @@ class MultiCollinear:
         """
         Method that remove uninformative features
 
-        :param use_spearman: if True than Spearman correlation is used (recommended if type of data is unknown) (bool).
-        :param use_cramerV: if True than Cramer correlation is used (recommended for categorical data) (bool).
-        :param use_pearson: if True than Pearson correlation is used (recommend for numerical data) (bool).
-        :param multicolinear: if True than decision is made in accordance with thresholds (np.bool).
+        :param use_spearman: if True than Spearman correlation is used (recommended if type of data is unknown)
+        :type use_spearman: bool
+
+        :param use_cramerV: if True than Cramer correlation is used (recommended for categorical data)
+        :type use_cramerV: bool
+
+        :param use_pearson: if True than Pearson correlation is used (recommend for numerical data)
+        :type use_pearson: bool
+
+        :param multicolinear: if True than decision is made in accordance with thresholds
+        :type multicolinear: numpy.bool
         """
 
         def __cramers_V__(var1, var2):

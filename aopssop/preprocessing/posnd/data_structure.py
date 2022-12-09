@@ -6,22 +6,53 @@ class Data:
     """
     Class to storage dara for preprocessing
 
-    :features_matrix: 2D array (only numeric), 1st D are objects and 2nd D are features (np.array).
-    :features_types: 1D array (only=["num", "cat", None]), with len = 2nd D features_matrix (np.array).
-    :features_names: 1D array (only str), with len = features_matrix (np.array).
-    :thresholds_min_number_of_predicted_labels: 1D int array, with len = len of 2D features (array).
-    :labels_matrix: 2D array (only numeric), 1st D are objects and 2nd D are labels, with 1st D = 1st D of features_matrix (np.array).
-    :labels_types: 1D array (only=["num", "cat", None]), with len = 2nd D labels_matrix (np.array).
-    :labels_names: 1D array (only str), with len = labels_matrix (np.array).
-    :n_jobs: setting for the multiprocess parallel processing (int).
-    :feature_names_substrings: str arrays of categorical and numerical features substrings (dict).
-    :types_priority: key-value structure to define priorities of data types checking methods(dict).
-    :fill_method: setting for the selection of the clustering method (str). Possible = ["mean_mode", "centroids"]. Default = "mean_mode".
-    :n_clusters: setting for the selection of the number of clusters(int). Default = 10.
-    :cluster_max_iter: setting for the selection of the number of clustering iterations (int). Default = 10.
-    :thresholds_correlation_with_label: key-value structure for the informativity analysis settings (dict). Key "num_num" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix. Key "cat_cat" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix. Key "num_cat" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix.
-    :thresholds_min_number_of_predicted_labels: 1D int array, with len = len of 2D features (array).
-    :thresholds_multicolinear: key-value structure for the multicolinearity analysis settings (dict). Key "num_num" - float (range = [0,1]). Key "cat_cat" - float (range = [0,1]). Key "num_cat" - float (range = [0,1]).
+    :param features_matrix: 2D array (only numeric), 1st D are objects and 2nd D are features
+    :type features_matrix: numpy.array
+
+    :param features_types: 1D array (only=["num", "cat", None]), with len = 2nd D features_matrix
+    :type features_types: numpy.array
+
+    :param features_names: 1D array (only str), with len = features_matrix
+    :type features_names: numpy.array
+
+    :param thresholds_min_number_of_predicted_labels: 1D int array, with len = len of 2D features
+    :type thresholds_min_number_of_predicted_labels: array
+
+    :param labels_matrix: 2D array (only numeric), 1st D are objects and 2nd D are labels, with 1st D = 1st D of features_matrix
+    :type labels_matrix: numpy.array
+
+    :param labels_types: 1D array (only=["num", "cat", None]), with len = 2nd D labels_matrix
+    :type labels_types: numpy.array
+
+    :param labels_names: 1D array (only str), with len = labels_matrix
+    :type labels_names: numpy.array
+
+    :param n_jobs: setting for the multiprocess parallel processing
+    :type  n_jobs: int
+
+    :param feature_names_substrings: str arrays of categorical and numerical features substrings
+    :type feature_names_substrings: dict
+
+    :param types_priority: key-value structure to define priorities of data types checking methods
+    :type types_priority: dict
+
+    :param fill_method: setting for the selection of the clustering method (possible = ["mean_mode", "centroids"]. Default = "mean_mode")
+    :type fill_method: str
+
+    :param n_clusters: setting for the selection of the number of clusters (default = 10)
+    :type n_clusters: int
+
+    :param cluster_max_iter: setting for the selection of the number of clustering iterations (default = 10)
+    :type cluster_max_iter: int
+
+    :param thresholds_correlation_with_label: key-value structure for the informativity analysis settings (key "num_num" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix; key "cat_cat" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix; key "num_cat" - 1D float array (range = [0,1]) with len = 2nd D labels_matrix))
+    :type thresholds_correlation_with_label: dict
+
+    :param thresholds_min_number_of_predicted_labels: 1D int array, with len = len of 2D features
+    :type thresholds_min_number_of_predicted_labels: array
+
+    :param thresholds_multicolinear: key-value structure for the multicolinearity analysis settings (key "num_num" - float (range = [0,1]); key "cat_cat" - float (range = [0,1]); key "num_cat" - float (range = [0,1]))
+    :type thresholds_multicolinear: dict
     """
 
     # MULTICOLINEAR SETTINGS

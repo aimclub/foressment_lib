@@ -34,7 +34,6 @@ def izdap_basic_example():
 
 
 def izdap_ieee_data():
-    
     print("Experiment with IEEE_smart_crane")
               
     DATA_PATH = "../datasets/IEEE_smart_crane.csv"

@@ -11,5 +11,7 @@ from aopssop.assessment.aossop.aossop import SAIClassifier, FormatDetector, Data
 from aopssop.assessment.aossop.loader import DataLoaderHai, DataLoaderEdgeIIoTSet, DataLoaderDataPort
 from aopssop.forecasting.apssop.apssop import DataScaler, AIForecaster, ForecastEstimator
 from aopssop.forecasting.apssop.logger import Logger
-from aopssop.forecasting.apssop.loader import DataLoaderAndPreprocessor
+from aopssop.forecasting.apssop.loader import \
+    DataLoaderAndPreprocessorDefault as DataLoader, \
+    DataLoaderAndPreprocessorIZDAP as DataLoaderIZDAP
 from aopssop.data_classes import AopssopData

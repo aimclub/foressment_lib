@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from aopssop import DataScaler, AIForecaster, ForecastEstimator, Logger, DataLoaderAndPreprocessor
+from aopssop import DataScaler, AIForecaster, ForecastEstimator, Logger, DataLoader
 from aopssop import AopssopData as PDATA
 
 from threading import Thread
@@ -30,7 +30,7 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
 
     LOG0.event_init(text='Start with dataset "' + dataset_name + '"')
     LOG0.event_init(event_name='preproc', text='Input data preprocessing')
-    data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
+    data = DataLoader(dataset_name, mode=mode, suf=suf)
     PDATA.features_names = data.features_names
     LOG0.event_init(event_name='preproc',
                     text='Input data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
@@ -98,7 +98,7 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
 
     LOG0.event_init(text='Start with dataset "' + dataset_name + '"')
     LOG0.event_init(event_name='preproc', text='Input data preprocessing')
-    data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
+    data = DataLoader(dataset_name, mode=mode, suf=suf)
     PDATA.features_names = data.features_names
     LOG0.event_init(event_name='preproc',
                     text='Inpit data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))

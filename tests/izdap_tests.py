@@ -1,7 +1,6 @@
 import unittest
 
 from aopssop import IzdapAlgo
-# from aopssop import Predicate
 from sklearn.datasets import make_classification
 import pandas as pd
 import inspect

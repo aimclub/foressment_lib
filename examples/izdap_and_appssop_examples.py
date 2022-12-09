@@ -1,8 +1,8 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from aopssop import DataScaler, AIForecaster, ForecastEstimator
-from aopssop import IzdapAlgo
+from aopssop import DataScaler, AIForecaster, ForecastEstimator, \
+    Logger, DataLoaderIZDAP
 from aopssop import AopssopData as PDATA
 
 from threading import Thread
@@ -14,145 +14,21 @@ pid = os.getpid()
 proc = psutil.Process(pid)
 cpu_num = psutil.cpu_count()
 proc.as_dict()
-
-from aopssop.forecasting.apssop.logger import Logger
 LOG0 = Logger(proc, cpu_num)
-
-
-class DataLoaderAndPreprocessor:
-    """
-    Class for loading and preprocessing data.
-
-    :param DATA_PATH: Path to th e directory with datasets (string).
-    :param drop_features: Set of features to remove from the data (list).
-    :param categorical_features: A set of categorical features in the data (list).
-    :param data: Data feature matrix (pd.DataFrame).
-    """
-    def __init__(self, test_name):
-        """
-        Initializing.
-
-        :param dataset_name: Data set name (srting).
-        :param use_izdap: use preprocessing with IZDAP module or not (boolean).
-        :param mode: Boot mode, for developers (integer).
-        """
-
-        self.DATA_PATH = "../datasets/"
-        self.dataset_name = ''
-        self.suf = test_name
-
-        self.features_names = []
-        self.drop_features = []
-        self.categorical_features = []
-        self.data = None
-
-    def __call__(self, dataset_name, use_izdap=False, mode=1):
-
-        self.dataset_name = dataset_name
-
-        if not os.path.exists('../models/' + dataset_name):
-            os.makedirs('../models/' + dataset_name)
-
-        self.forecasting_model_path = '../models/' + dataset_name + '/apssop_model_' + dataset_name + '_' + self.suf
-        self.normalization_model_path = '../models/' + dataset_name + '/apssop_scaler_' + dataset_name + '_' + self.suf + '.pkl'
-
-        if dataset_name == 'smart_crane':
-            self.data = pd.read_csv(self.DATA_PATH + 'IEEE_smart_crane.csv')
-
-            if mode not in range(1, 9):
-                print('Wrong cycle number')
-                exit()
-            self.data = self.data[self.data['Cycle'] == mode]
-
-            self.drop_features = ['Date']
-            self.drop_labels = ['Alarm', 'Cycle']
-            self.delete_features()
-
-            if use_izdap:
-                self.izdap(class_column='Alarm')
-
-            self.delete_labels()
-            self.features_names = self.data.columns.values
-            return self.data
-
-        elif dataset_name == 'hai':
-            self.data = pd.read_csv(self.DATA_PATH + 'HAI_test2.csv.zip')
-            self.drop_features = ['timestamp']
-            self.drop_labels = ['Attack']
-            self.delete_features()
-
-            if use_izdap:
-                self.izdap(class_column='Attack')
-
-            self.delete_labels()
-            self.features_names = self.data.columns.values
-            return self.data
-
-        else:
-            print('Unknown dataset name')
-            exit()
-
-    def izdap(self, class_column, positive_class_label=1):
-        algo = IzdapAlgo(0.1)
-        algo.fit(self.data, class_column=class_column,
-                 positive_class_label=positive_class_label)
-        rules = algo.get_rules()
-        self.data = algo.transform(self.data)
-
-    def delete_features(self):
-        if len(self.drop_features) > 0:
-            self.data = self.data.drop(self.drop_features, axis=1)
-
-    def delete_labels(self):
-        if len(self.drop_labels) > 0:
-            try:
-                self.data = self.data.drop(self.drop_labels, axis=1)
-            except:
-                pass
-
-    def categorical_features_encoding(self):
-        """
-        Data feature preprocessing.
-        """
-        if len(self.categorical_features) > 0:
-            for feature in self.categorical_features:
-                if 'ip' in feature:
-                    encoded_feature_data = pd.DataFrame([x.split('.')
-                                                         if x != '0' else [0, 0, 0, 0]
-                                                         for x in self.data[feature].tolist()])
-
-                    for col in encoded_feature_data.columns:
-                        encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + str(col)})
-                else:
-                    try:
-                        encoded_feature_data = pd.get_dummies(self.data[feature])
-                        for col in encoded_feature_data.columns:
-                            encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + col})
-                    except:
-                        encoded_feature_data = pd.DataFrame()
-
-                if not encoded_feature_data.empty:
-                    old_data_columns = self.data.columns.tolist()
-                    feature_index = old_data_columns.index(feature)
-                    new_data_columns = old_data_columns[:feature_index] + \
-                                       encoded_feature_data.columns.tolist() + \
-                                       old_data_columns[feature_index+1:]
-
-                    self.data = pd.concat([self.data, encoded_feature_data], axis=1)
-                    self.data = self.data[new_data_columns]
-                else:
-                    print('Too many values for categorical feature "' + feature +'". Delete feature from data')
-                    self.data = self.data.drop(feature, axis=1)
-        self.data = self.data.fillna(0)
 
 
 def train_test_split(data, train_size=0.9):
         """
         Split data into training and test sets.
 
-        :param train_size: Share of the training sample (float). Default=0.9.
-        :return: train: Feature matrix of training data (pd.DataFrame).
-        :return test: Feature matrix of test data (pd.DataFrame).
+        :param train_size: Share of the training sample (default=0.9)
+        :type train_size: float
+
+        :return train: Feature matrix of training data
+        :rtype train: pandas.DataFrame
+
+        :return test: Feature matrix of test data
+        :rtype test: pandas.DataFrame
         """
         if (train_size < 0) and (train_size > 1):
             print('The proportion of the training sample is not in the interval (0, 1)')
@@ -168,7 +44,7 @@ def train_test_split(data, train_size=0.9):
 def example_appsop_model_training(logname='example'):
     """
     Testing APPSOP module methods.
-    In this example, forecasting model and  normalization model are trained on the dataset.
+    In this example, forecasting model and normalization model are trained on the dataset.
     """
     logfile = logname + '_training_res.log'
 
@@ -341,7 +217,7 @@ def example_join_test_smart_crane():
         for test_name, use_izdap in {'c' + str(mode) + '_appsop_izdap0': False,
                                      'c' + str(mode) + '_appsop_izdap1': True}.items():
 
-            Loader = DataLoaderAndPreprocessor(test_name=test_name)
+            Loader = DataLoaderIZDAP(test_name=test_name)
             PDATA.features_matrix = Loader(dataset_name, mode=mode, use_izdap=use_izdap)
             PDATA.features_names = Loader.features_names
             PDATA.forecasting_model_path = Loader.forecasting_model_path
@@ -370,7 +246,7 @@ def example_join_test_hai():
     for test_name, use_izdap in {'appsop_izdap0': False,
                                  'appsop_izdap1': True}.items():
 
-        Loader = DataLoaderAndPreprocessor(test_name=test_name)
+        Loader = DataLoaderIZDAP(test_name=test_name)
         PDATA.features_matrix = Loader(dataset_name, use_izdap=use_izdap)
         PDATA.features_names = Loader.features_names
         PDATA.forecasting_model_path = Loader.forecasting_model_path

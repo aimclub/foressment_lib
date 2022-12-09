@@ -21,5 +21,5 @@ POSND
 IZSND
 ======
 
-.. automodule:: aopssop.preprocessing.izsnd.izdap.izdap
+.. automodule:: aopssop.preprocessing.izsnd.izsnd
     :members:

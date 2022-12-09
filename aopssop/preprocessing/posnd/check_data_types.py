@@ -11,10 +11,10 @@ class CheckDataTypes:
     Typical usage example:
     CheckDataTypes.correct_types(data)
 
-    :func __determite_type_by_substring__: method that guess data type by substring in feature/label name.
-    :func __determite_type_by_unique__: method that guess data type by number of unique values.
-    :func __determite_type_by_float__: method that guess data type by existence of float values.
-    :func __calculate_by_priority__: method that guess data type by previous 3 methods, taking into account a weight for each method.
+    :func __determite_type_by_substring__: method that guess data type by substring in feature/label name
+    :func __determite_type_by_unique__: method that guess data type by number of unique values
+    :func __determite_type_by_float__: method that guess data type by existence of float values
+    :func __calculate_by_priority__: method that guess data type by previous 3 methods, taking into account a weight for each method
     """
 
     @staticmethod

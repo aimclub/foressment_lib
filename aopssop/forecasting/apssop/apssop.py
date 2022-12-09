@@ -20,13 +20,26 @@ class AIForecaster:
     """
     Class for forecasting the states of complex objects and processes
 
-    :param epochs: Number of training epochs (int).
-    :param batch_size: Training batch size (int).
-    :param early_stop: Object of the EarlyStopping class (keras.callback) responsible for prematurely stopping training.
-    :param time_window_length: Time window size during training (int).
-    :param n_features: Number of features (int).
-    :param model: Neural network model (keras.models.Sequential).
-    :param model_path: Path to the file with the forecasting model (string).
+    :param epochs: Number of training epochs
+    :type epochs: int
+
+    :param batch_size: Training batch size
+    :type batch_size: int
+
+    :param early_stop: Object of the EarlyStopping class responsible for prematurely stopping training
+    :type early_stop: keras.callback
+
+    :param time_window_length: Time window size during training
+    :type time_window_length: int
+
+    :param n_features: Number of features
+    :type n_features: int
+
+    :param model: Neural network model
+    :type model: keras.models.Sequential
+
+    :param model_path: Path to the file with the forecasting model
+    :type model_path: str
     """
     def __init__(self, time_window_length=0, n_features=0,
                  model_path='',
@@ -34,7 +47,8 @@ class AIForecaster:
         """
         Model initialization
 
-        :param open: Parameter for load model (boolean).
+        :param open: Parameter for load model
+        :type open: bool
         """
         self.model_path = model_path
 
@@ -82,9 +96,14 @@ class AIForecaster:
         """
         Training and validation of a neural network model on data
 
-        :param train_generator: Temporary training data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
-        :param validation_generator: Temporary test data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
-        :param save: Parameter fo saving model (boolean).
+        :param train_generator: Temporary training data batch generator
+        :type train_generator: keras.preprocessing.sequence.TimeseriesGenerator
+
+        :param validation_generator: Temporary test data batch generator
+        :type validation_generator: keras.preprocessing.sequence.TimeseriesGenerator
+
+        :param save: Parameter fo saving model
+        :type save: bool
         """
         generator_batch_size = train_generator[0][1].shape[1]
         if generator_batch_size != self.n_features:
@@ -105,9 +124,11 @@ class AIForecaster:
         """
         Forecasting values within a given time window
 
-        :param current_batch: Data array (batch) in the time window after which the forecasting is made (np.array).
+        :param current_batch: Data array (batch) in the time window after which the forecasting is made
+        :type current_batch: numpy.array
 
-        :return: Array of forecast data (np.array).
+        :return: Array of forecast data
+        :rtype: numpy.array
         """
         predictions = []
 
@@ -147,9 +168,11 @@ class AIForecaster:
         """
         Convert the data to a temporary data batch generator
 
-        :param data: Array of data to convert (np.array).
+        :param data: Array of data to convert
+        :type data: numpy.array
 
-        :return: Temporary data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
+        :return: Temporary data batch generator
+        :rtype: keras.preprocessing.sequence.TimeseriesGenerator
         """
         try:
             generator = TimeseriesGenerator(data, data,
@@ -163,9 +186,11 @@ class AIForecaster:
         """
         Upload the last batch of temporary data
 
-        :param generator: Temporary data batch generator (keras.preprocessing.sequence.TimeseriesGenerator).
+        :param generator: Temporary data batch generator
+        :type generator: keras.preprocessing.sequence.TimeseriesGenerator
 
-        :return: Last batch of temporary data (np.array).
+        :return: Last batch of temporary data
+        :rtype: numpy.array
         """
         if current_batch_id == -1:
             config = generator.get_config()
@@ -183,15 +208,19 @@ class DataScaler:
     """
     Class for data normalization (scaling)
 
-    :param scaler: Data normalization (scaling) model (sklearn.preprocessing)
-    :param scaler_path: Path to the normalization model file (string).
+    :param scaler: Data normalization (scaling) model
+    :type scaler: sklearn.preprocessing
+
+    :param scaler_path: Path to the normalization model file
+    :type scaler_path: string
     """
     def __init__(self, scaler_path,
                  open=False):
         """
         Model initialization.
 
-        :param: open: Parameter for load model (boolean).
+        :param open: Parameter for load model
+        :type open: bool
         """
         self.scaler_path = scaler_path
 
@@ -204,8 +233,11 @@ class DataScaler:
         """
         Training the normalization model
 
-        :param data: Training data array (np.array).
-        :param open: Parameter for saving model (boolean).
+        :param data: Training data array
+        :type data: numpy.array
+
+        :param open: Parameter for saving model
+        :type open: bool
         """
         self.scaler.fit(data)
         if save:
@@ -235,9 +267,11 @@ class DataScaler:
         """
         Data normalization
 
-        :param data: Data array (np.array).
+        :param data: Data array
+        :type data: numpy.array
 
-        :return: Array of normalized data (np.array).
+        :return: Array of normalized data
+        :rtype: numpy.array
         """
         return self.scaler.transform(data)
 
@@ -245,9 +279,11 @@ class DataScaler:
         """
         Inverse data transformation
 
-        :param data: Array of normalized data (np.array).
+        :param data: Array of normalized data
+        :type data: numpy.array
 
-        :return: Array of inverted data (np.array).
+        :return: Array of inverted data
+        :rtype: numpy.array
         """
         return self.scaler.inverse_transform(data)
 
@@ -256,7 +292,8 @@ class ForecastEstimator:
     """
     Class for evaluating the quality of the forecasting model
 
-    :param quality: Matrix of forecasting quality metrics (pd.DataFrame).
+    :param quality: Matrix of forecasting quality metrics
+    :type quality: pandas.DataFrame
     """
     def __init__(self):
         self.quality = pd.DataFrame()
@@ -265,10 +302,14 @@ class ForecastEstimator:
         """
         Quality evaluation of the forecasting model
 
-        :param true: Real data array (np.array).
-        :param pred: Array of forecasted data (np.array).
+        :param data: Real data array
+        :type data: numpy.array
 
-        :return: Matrix of forecasting quality metrics  (pd.DataFrame), MSE - mean squared error, MAE - mean absolute error.
+        :param pred: Array of forecasted data
+        :type pred: numpy.array
+
+        :return: Matrix of forecasting quality metrics, MSE - mean squared error, MAE - mean absolute error
+        :rtype: pandas.DataFrame
         """
         if len(true) != len(pred):
             print('The length of the samples is not equal')
@@ -289,7 +330,8 @@ class ForecastEstimator:
         """
         Save results to file
 
-        :param file_name: name of the file to save.
+        :param file_name: name of the file to save
+        :type file_name: str
         """
         if not os.path.exists('apssop_results/'):
             os.makedirs('apssop_results/')

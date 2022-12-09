@@ -9,11 +9,20 @@ class Predicate:
     """ 
     Class for predicates representation
 
-    :param column: Name of the column (str).
-    :param values: List of true values of the predicate (array).
-    :param class_label: True class label for the predicate (str).
-    :param metric: Metric that was calculalated to estimate predicst's quality (str).
-    :param metric_value: Value of the metric (float).
+    :param column: Name of the column
+    :type column: str
+
+    :param values: List of true values of the predicate
+    :type values: array
+
+    :param class_label: True class label for the predicate
+    :type class_label: str
+
+    :param metric: Metric that was calculalated to estimate predicst's quality
+    :type metric: str
+
+    :param metric_value: Value of the metric
+    :type metric_value: float
     """
 
     def __init__(self, column, values, class_label):
@@ -33,7 +42,8 @@ class Predicate:
         """
         Checks if predicate is true for the values
 
-        :param values: Values to check (list).
+        :param values: Values to check
+        :type values: list
 
         :return: Truthfulness of the predicate.
         """
@@ -46,9 +56,9 @@ class Predicate:
         """
         Checks if predicate is true for the value
 
-        :param value: Value to check.
+        :param value: Value to check
 
-        :return: Truthfulness of the predicate.
+        :return: Truthfulness of the predicate
         """
         return data[self.column].apply(self.__check_values)
 
@@ -56,7 +66,8 @@ class Predicate:
         """
         Return rule represented by the predicate in string format
 
-        :return: Rule represented by the predicate in string format (str).
+        :return: Rule represented by the predicate in string format
+        :rtype: str
         """
         return f'if {self.column} in {self.values} then {self.class_label} ({self.metric}={round(self.metric_value, 3)})'
 
@@ -65,16 +76,35 @@ class IzdapAlgo:
     """ 
     Class with IZDAP algo implementation 
 
-    :param threshold: Treshold for values separation for predicates building (float).
-    :param __N: Length of the dataset (int).
-    :param __rule_metric: Metric that should be used to evaluate predicates (str).
-    :param class_column: Name of column with class labels (str).
-    :param data_stats: Dictionary with all dataset's values frequncies (dict).
-    :param class_stats: Dictionary with class labels frequncies (dict).
-    :param string_columns: String columns of the dataset (list).
-    :param number_columns: Numeric columns of the dataset (list).
-    :param aggregates: Aggregates built for the dataset (list).
-    :param predicates: Predicates built for the dataset (list).
+    :param threshold: Treshold for values separation for predicates building
+    :type threshold: float
+
+    :param __N: Length of the dataset
+    :type __N: int
+
+    :param __rule_metric: Metric that should be used to evaluate predicates
+    :type __rule_metric: str
+
+    :param class_column: Name of column with class labels
+    :type class_column: str
+
+    :param data_stats: Dictionary with all dataset's values frequncies
+    :type data_stats: dict
+
+    :param class_stats: Dictionary with class labels frequncies
+    :type class_stats: dict
+
+    :param string_columns: String columns of the dataset
+    :type string_columns: list
+
+    :param number_columns: Numeric columns of the dataset
+    :type number_columns: list
+
+    :param aggregates: Aggregates built for the dataset
+    :type aggregates: list
+
+    :param predicates: Predicates built for the dataset
+    :type predicates: list
     """
 
     def __init__(self, probability_threshold=0.1, verbose=0):
@@ -85,9 +115,10 @@ class IzdapAlgo:
         """
         Transforms defaultdict to dict ()
 
-        :param d: defaultdict to transform.
+        :param d: defaultdict to transform
 
-        :return: transfromed dict (dict).
+        :return: transfromed dict
+        :rtype: dict
         """
 
         if isinstance(d, defaultdict):
@@ -98,12 +129,20 @@ class IzdapAlgo:
         """ 
         Calculates regression coefficient (pAB - pA*pB) / (pA * (1 - pA))
 
-        :param nA: Frequency of event A - left part of the rule (int).
-        :param nB: Frequency of event B - right part of the rule (int).
-        :param nAB: Frequency of event A anв B together (int).
-        :param N: Number of instances in the dataset (int).
+        :param nA: Frequency of event A - left part of the rule
+        :type nA: int
 
-        :return: value of the regression coefficient(float).
+        :param nB: Frequency of event B - right part of the rule
+        :type nB: int
+
+        :param nAB: Frequency of event A anв B together
+        :type nAB: int
+
+        :param N: Number of instances in the dataset
+        :type N: int
+
+        :return: value of the regression coefficient
+        :rtype: float
         """
 
         pA = float(nA) / N
@@ -115,11 +154,20 @@ class IzdapAlgo:
         """ 
         Calculates Klosgen meausure sqrt(pB) * (pB|A-pB))
 
-        :param nA: Frequency of event A - left part of the rule (int)
-        :param nB: Frequency of event B - right part of the rule (int)
-        :param nAB: Frequency of event A anв B together (int)
-        :param N: Number of instanec in the dataset (int).
-        :return: Value of the Klosgen meausure(float).
+        :param nA: Frequency of event A - left part of the rule
+        :type nA: int
+
+        :param nB: Frequency of event B - right part of the rule
+        :type nB: int
+
+        :param nAB: Frequency of event A anв B together
+        :type nAB: int
+
+        :param N: Number of instanec in the dataset
+        :type N: int
+
+        :return: Value of the Klosgen meausure
+        :rtype: float
         """
 
         pA = float(nA) / N
@@ -132,10 +180,17 @@ class IzdapAlgo:
         """ 
         Builds predicates and rules
 
-        :param data: Data to build predicates and rules for (pd.DataFrame).
-        :param class_column: Name of column with class labels (str).
-        :param positive_class_label: Label for positive class (str).
-        :param rule_metric: Metric that should be used to evaluate predicates (str).
+        :param data: Data to build predicates and rules for
+        :type data: pandas.DataFrame
+
+        :param class_column: Name of column with class labels
+        :type class_column: str
+
+        :param positive_class_label: Label for positive class
+        :type positive_class_label: str
+
+        :param rule_metric: Metric that should be used to evaluate predicates
+        :type rule_metric: str
         """
 
         self.__N = len(data)
@@ -148,7 +203,8 @@ class IzdapAlgo:
         """ 
         Evaluates rules represented by predicates using metric specified by rule_metric_label
 
-        :param rule_metric_label: Metric that should be used to evaluate predicates (str).
+        :param rule_metric_label: Metric that should be used to evaluate predicates
+        :type rule_metric_label: str
         """
 
         if rule_metric_label == 'regression_coef':
@@ -178,8 +234,11 @@ class IzdapAlgo:
         """ 
         Calculates data statistics
 
-        :param data: Data that is used to calculate stsatistocs for (pd.DataFrame).
-        :param bind: Number of discretization bins used to build predicates for numeric attributes (int).
+        :param data: Data that is used to calculate statistics
+        :type data: pandas.DataFrame
+
+        :param bind: Number of discretization bins used to build predicates for numeric attributes
+        :type bind: int
         """
 
         self.data_stats = {}
@@ -255,10 +314,14 @@ class IzdapAlgo:
         """ 
         Transfroms data using top rule_fraction*100% of predicates
 
-        :param rule_fraction: Fraction of rules that will be used to form new dataset (float).
-        :param data: Data to transform (pd.DataFrame).
+        :param rule_fraction: Fraction of rules that will be used to form new dataset
+        :type rule_fraction: float
 
-        :return: Transformed binary dataset (pd.DataFrame).
+        :param data: Data to transform
+        :type data: pandas.DataFrame
+
+        :return: Transformed binary dataset
+        :rtype: pandas.DataFrame
         """
 
         rule_set = self.predicates[:int(rule_fraction * len(self.predicates))]
@@ -283,7 +346,8 @@ class IzdapAlgo:
         """ 
         Outputs rules built in string format
 
-        :return: List of Rules (array).
+        :return: List of Rules
+        :rtype: array
         """
 
         rules = [predicate.get_rule() for predicate in self.predicates]

@@ -17,12 +17,12 @@ class ClusterFilling:
     Typical usage example:
     ClusterFilling.fill(data)
 
-    :param X: array of data to cluster.
-    :param n_clusters: number of clusters to form.
-    :param max_iter: Maximum number of EM iterations to perform,
+    :param X: array of data to cluster
+    :param n_clusters: number of clusters to form
+    :param max_iter: Maximum number of EM iterations to perform
     :param column_types: list of feature types
 
-    :return X_hat: Copy of X with the missing values filled in.
+    :return X_hat: Copy of X with the missing values filled in
     """
 
     @staticmethod
@@ -34,11 +34,11 @@ class ClusterFilling:
         """
         K-Means clustering with filling of missing values by centroids
 
-        :param X: array of data to cluster.
-        :param n_clusters: number of clusters to form.
-        :param max_iter: Maximum number of EM iterations to perform.
+        :param X: array of data to cluster
+        :param n_clusters: number of clusters to form
+        :param max_iter: Maximum number of EM iterations to perform
 
-        :return X_hat: Copy of X with the missing values filled in.
+        :return X_hat: Copy of X with the missing values filled in
         """
 
         # Initialize missing values to their column means
@@ -83,14 +83,14 @@ class ClusterFilling:
     ) -> np.ndarray:
 
         """
-        K-Means clustering with filling of missing values by mean and mode in dependence on feature type.
+        K-Means clustering with filling of missing values by mean and mode in dependence on feature type
 
-        :param X: array of data to cluster.
-        :param n_clusters: number of clusters to form.
-        :param max_iter: Maximum number of EM iterations to perform,
+        :param X: array of data to cluster
+        :param n_clusters: number of clusters to form
+        :param max_iter: Maximum number of EM iterations to perform
         :param column_types: list of feature types
 
-        :return X_hat: Copy of X with the missing values filled in.
+        :return X_hat: Copy of X with the missing values filled in
         """
 
         # Initialize missing values to their column means
