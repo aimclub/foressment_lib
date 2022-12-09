@@ -18,14 +18,6 @@ import os.path
 
 
 class _NNClassifier:
-    # """
-    # Класс для описания параметров глубокой нейронной сети
-    #
-    # :param model: Модель глубокой нейронной сети (keras.models.Sequential).
-    # :param out_size: Количество нейронов на выходном слое (int).
-    # :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
-    # :param num_epochs: Количество эпох обучения (int). Default = 10.
-    # """
     """
     Class for the description of deep neural network
 
@@ -36,14 +28,6 @@ class _NNClassifier:
     """
 
     def __init__(self, in_size, out_size, plot=True, num_epochs=10):
-        # """
-        # Инициализация модели глубокой нейронной сети
-        #
-        # :param in_size: Количество нейронов на распределительном слое (int).
-        # :param out_size: Количество нейронов на выходном слое (int).
-        # :param plot: Булев параметр, задающий вывод графика обучения нейронной сети (bool). Default = True.
-        # :param num_epochs: Количество эпох обучения (int). Default = 10.
-        # """
         """
         Initialization of the deep neural network model
 
@@ -63,14 +47,6 @@ class _NNClassifier:
         print(self.model.summary())
 
     def fit(self, x_train, y_train):
-        # """
-        # Обучение модели глубокой нейронной сети
-        #
-        # :param x_train: Обучающая выборка (признаки) (numpy.ndarray).
-        # :param y_train: Обучающая выборка (метки классов) (numpy.ndarray).
-        #
-        # :return: модель обученной глубокой нейронной сети.
-        # """
         """
         Training of the deep neural network model
 
@@ -87,12 +63,6 @@ class _NNClassifier:
         return self
 
     def test(self, x_test, y_test):
-        # """
-        # Тестирование модели глубокой нейронной сети
-        #
-        # :param x_test: Тестовая выборка (признаки) (numpy.ndarray).
-        # :param y_test: Тестовая выборка (метки классов) (numpy.ndarray).
-        # """
         """
         Testing of the deep neural network model
 
@@ -103,13 +73,6 @@ class _NNClassifier:
         print('Test accuracy: %.3f' % acc)
 
     def predict(self, x):
-        # """
-        # Определение класса объектов при помощи модели глубокой нейронной сети
-        #
-        # :param x: Объекты (numpy.ndarray).
-
-        # :return: Метки классов (numpy.ndarray).
-        # """
         """
         Identification of class objects with the help of deep neural network model
 
@@ -129,9 +92,6 @@ class _NNClassifier:
         return predicted_labels
 
     def draw_plot(self):
-        # """
-        # Вывод графика обучения нейронной сети
-        # """
         """
         Output of the plot of the deep neural network training process
         """
@@ -271,12 +231,6 @@ class SAIClassifier:
 
 
 class FormatDetector:
-    # """
-    # Класс для определения формата обрабатываемого набора данных
-    #
-    # :param n: Количество полей в записи (int).
-    # :param d: Разделитель полей в записи (str).
-    # """
     """
     Class for the identification of the format of the processed data
 
@@ -285,11 +239,6 @@ class FormatDetector:
     """
 
     def __init__(self, file):
-        # """
-        # Инициализация объекта класса FormatDetector
-        #
-        # :param file: Наименование файла, содержащего набор данных (str).
-        # """
         """
         Initialization of the object of FormatDetector class
 
@@ -318,15 +267,6 @@ class FormatDetector:
 
 
 class DataLoader:
-    # """
-    # Класс для загрузки набора данных
-    #
-    # :param n: Количество полей в записи (int).
-    # :param d: Разделитель полей в записи (str).
-    # :param features: Признаки (numpy.ndarray).
-    # :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
-    # :param num_labels: Метки классов (numpy.ndarray).
-    # """
     """
     Class to load the data to process
 
@@ -338,13 +278,6 @@ class DataLoader:
     """
 
     def __init__(self, file, n, d):
-        # """
-        # Инициализация объекта класса DataLoader
-        #
-        # :param file: Наименование файла, содержащего набор данных (str).
-        # :param n: Количество полей в записи (int).
-        # :param d: Разделитель полей в записи (str).
-        # """
         """
         Initialization of the object of DataLoader class
 
@@ -360,11 +293,6 @@ class DataLoader:
         self.load(file)
 
     def load(self, file):  # override this method in derived class
-        # """
-        # Загрузка набора данных
-        #
-        # :param file: Наименование файла (str).
-        # """
         """
         Load of the data to process
 
@@ -374,14 +302,6 @@ class DataLoader:
 
 
 class ClsEstimator:
-    # """
-    # Класс для оценки параметров эффективности классификаторов
-    #
-    # :param features: Признаки (numpy.ndarray).
-    # :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
-    # :param num_labels: Метки классов (numpy.ndarray).
-    # :param  classifiers: Классификаторы (list).
-    # """
     """
     Class for the assessment of the classifier effectiveness
 
@@ -392,14 +312,6 @@ class ClsEstimator:
     """
 
     def __init__(self, features, labels, num_labels, classifiers):
-        # """
-        # Инициализация объекта класса ClsEstimator
-        #
-        # :param features: Признаки (numpy.ndarray).
-        # :param labels: Метки классов (one-hot кодирование) (numpy.ndarray).
-        # :param num_labels: Метки классов (numpy.ndarray).
-        # :param classifiers: Классификаторы (list).
-        # """
         """
         Initialization of the object of the ClsEstimator class
 
@@ -414,13 +326,6 @@ class ClsEstimator:
         self.classifiers = classifiers
 
     def estimate(self, print_metrics=True):
-        # """
-        # Оценка параметров эффективности классификаторов
-        #
-        # :param print_metric: Булев параметр, задающий печать параметров эффективности классификаторов (bool).
-        #
-        # :return: Параметры эффективности классификаторов (dict).
-        # """
         """
         Assessment of the classifiers effectiveness
 

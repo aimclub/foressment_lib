@@ -15,7 +15,7 @@ proc = psutil.Process(pid)
 cpu_num = psutil.cpu_count()
 proc.as_dict()
 
-from examples.logger import Logger
+from aopssop.forecasting.apssop.logger import Logger
 LOG0 = Logger(proc, cpu_num)
 
 
@@ -389,6 +389,7 @@ def example_join_test_hai():
 
 
 if __name__ == '__main__':
-    example_join_test_hai()
+    example_join_test_smart_crane()
+    # example_join_test_hai()
 
 

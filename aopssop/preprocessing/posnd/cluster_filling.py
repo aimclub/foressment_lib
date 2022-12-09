@@ -141,7 +141,6 @@ class ClusterFilling:
 
     @staticmethod
     def fill(data: Data_Structure.Data) -> None:
-
         """
         K-Means clustering with filling of missing values for data
         """

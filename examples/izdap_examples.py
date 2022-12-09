@@ -127,6 +127,6 @@ def izdap_hai():
 
 
 if __name__ == '__main__':
-    # izdap_basic_example()
-    izdap_ieee_data()
+    izdap_basic_example()
+    # izdap_ieee_data()
     # izdap_hai()
