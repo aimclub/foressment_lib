@@ -21,10 +21,17 @@ class _NNClassifier:
     """
     Class for the description of deep neural network
 
-    :param model: model of the deep neural network (keras.models.Sequential).
-    :param out_size: number of neurons in the outer layer (int).
-    :param plot: boolean parameter that defines presentation of the neural network plot (bool). Default = True.
-    :param num_epochs: number of training epochs (int). Default = 10.
+    :param model: model of the deep neural network
+    :type: keras.models.Sequential
+
+    :param out_size: number of neurons in the outer layer
+    :type: int
+
+    :param plot: boolean parameter that defines presentation of the neural network plot (default = True)
+    :type: bool
+
+    :param num_epochs: number of training epochs (default = 10)
+    :type: int
     """
 
     def __init__(self, in_size, out_size, plot=True, num_epochs=10):
