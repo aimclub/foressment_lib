@@ -1,10 +1,16 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import pandas as pd
 
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import make_classification  
-    
+from sklearn.datasets import make_classification
+
+from aopssop import IzdapAlgo
+
+
 def izdap_basic_example():
     data = make_classification(n_samples=200, n_features=4,
                                n_informative=2, n_classes=2,
@@ -25,7 +31,8 @@ def izdap_basic_example():
 
     transformed_data = algo.transform(test_data)
     print(transformed_data.info())
-    
+
+
 def izdap_ieee_data():
     
     print("Experiment with IEEE_smart_crane")
@@ -69,7 +76,8 @@ def izdap_ieee_data():
     print(metrics.classification_report(y_true=y_test, y_pred=y_test_pred, digits=6))
     print(f"ROC-AUC: {metrics.roc_auc_score(y_true=y_test, y_score=y_test_proba[:, 1])}")
     print(f"Accuracy: {metrics.accuracy_score(y_true=y_test, y_pred=y_test_pred)}")
-    
+
+
 def izdap_hai():
     
     print("Experiment with HAI test 2")
@@ -116,8 +124,9 @@ def izdap_hai():
     print(metrics.classification_report(y_true=y_test, y_pred=y_test_pred, digits=6))
     print(f"ROC-AUC: {metrics.roc_auc_score(y_true=y_test, y_score=y_test_proba[:, 1])}")
     print(f"Accuracy: {metrics.accuracy_score(y_true=y_test, y_pred=y_test_pred)}")
-    
+
+
 if __name__ == '__main__':
     # izdap_basic_example()
-    # izdap_ieee_data()
+    izdap_ieee_data()
     # izdap_hai()
