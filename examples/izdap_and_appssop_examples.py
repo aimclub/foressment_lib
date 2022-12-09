@@ -172,51 +172,51 @@ def example_appsop_model_training(logname='example'):
     """
     logfile = logname + '_training_res.log'
 
-    # LOG0.create(logfile, rewrite=True)
-    # LOG0.run = True
-    # thread1 = Thread(target=LOG0.daemon_logger)
-    # thread1.start()
-    #
-    # LOG0.event_init(text='Start with dataset "')
-    #
-    # LOG0.event_init(event_name='preproc', text='Input data splitting')
+    LOG0.create(logfile, rewrite=True)
+    LOG0.run = True
+    thread1 = Thread(target=LOG0.daemon_logger)
+    thread1.start()
+
+    LOG0.event_init(text='Start with dataset "')
+
+    LOG0.event_init(event_name='preproc', text='Input data splitting')
     train, test = train_test_split(PDATA.features_matrix, train_size=0.9)
 
     result = {'test': logfile, 'data_size': train.shape}
-    #
-    # LOG0.event_init(event_name='preproc',
-    #                 text='Data is divided into train and test samples of length {0} and {1}'.format(len(train),
-    #                                                                                                 len(test)))
-    #
-    # LOG0.event_init(event_name='norm', text='Normalization model training')
-    # normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path)
-    # normalization_model.fit(train)
-    # LOG0.event_init(event_name='norm', text='Data normalization')
-    # scaled_train = normalization_model.transform(train)
-    # LOG0.event_init(event_name='norm', text='Data normalized')
-    #
-    # LOG0.event_init(event_name='prepare', text='Forecasting model creation:' + PDATA.forecasting_model_path)
-    #
-    # forecasting_model = AIForecaster(n_epochs=3,
-    #                                  time_window_length=PDATA.time_window_length,
-    #                                  n_features=len(PDATA.features_names),
-    #                                  model_path=PDATA.forecasting_model_path,
-    #                                  )
-    #
-    # LOG0.event_init(event_name='prepare', text='Data generator creation')
-    # train_generator = forecasting_model.data_to_generator(scaled_train)
-    # LOG0.event_init(event_name='prepare', text='Data generator created')
-    #
-    # LOG0.event_init(event_name='train', text='Model training')
-    # LOG0.show_off()
-    # result['mse'] = forecasting_model.train(train_generator)
-    # LOG0.show_on()
-    # LOG0.event_init(event_name='train', text='Training completed')
-    #
-    # LOG0.run = False
-    # thread1.join()
-    # LOG0.close()
-    LOG0.filename = 'appsop_logs/' + logfile
+
+    LOG0.event_init(event_name='preproc',
+                    text='Data is divided into train and test samples of length {0} and {1}'.format(len(train),
+                                                                                                    len(test)))
+
+    LOG0.event_init(event_name='norm', text='Normalization model training')
+    normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path)
+    normalization_model.fit(train)
+    LOG0.event_init(event_name='norm', text='Data normalization')
+    scaled_train = normalization_model.transform(train)
+    LOG0.event_init(event_name='norm', text='Data normalized')
+
+    LOG0.event_init(event_name='prepare', text='Forecasting model creation:' + PDATA.forecasting_model_path)
+
+    forecasting_model = AIForecaster(n_epochs=3,
+                                     time_window_length=PDATA.time_window_length,
+                                     n_features=len(PDATA.features_names),
+                                     model_path=PDATA.forecasting_model_path,
+                                     )
+
+    LOG0.event_init(event_name='prepare', text='Data generator creation')
+    train_generator = forecasting_model.data_to_generator(scaled_train)
+    LOG0.event_init(event_name='prepare', text='Data generator created')
+
+    LOG0.event_init(event_name='train', text='Model training')
+    LOG0.show_off()
+    result['mse'] = forecasting_model.train(train_generator)
+    LOG0.show_on()
+    LOG0.event_init(event_name='train', text='Training completed')
+
+    LOG0.run = False
+    thread1.join()
+    LOG0.close()
+
     result.update(LOG0.get_resources(event_name='train'))
 
     print('Done')
