@@ -11,7 +11,12 @@ from sklearn.datasets import make_classification
 from aopssop import IzdapAlgo
 
 
-def izdap_basic_example():
+def izdap_basic_example():    
+    """
+    Basic example of IZDAP algo work.
+    In this example, IZDAP algo is applied to generated balanced dataset with 2 classes.
+    Example rule and information about transformed dataset are printed.
+    """
     data = make_classification(n_samples=200, n_features=4,
                                n_informative=2, n_classes=2,
                                random_state=42)
@@ -34,6 +39,14 @@ def izdap_basic_example():
 
 
 def izdap_ieee_data():
+    """
+    IEEE_smart_crane example of IZDAP algo.
+    In this example, IZDAP algo is applied to IEEE_smart_crane dataset.
+    RandomForestClassifier from sklearn is trained on original and transfromed datasets.
+    Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
+    """
+    
+    
     print("Experiment with IEEE_smart_crane")
               
     DATA_PATH = "../datasets/IEEE_smart_crane.csv"
@@ -78,6 +91,13 @@ def izdap_ieee_data():
 
 
 def izdap_hai():
+    """
+    HAI example of IZDAP algo.
+    In this example, IZDAP algo is applied to HAI dataset.
+    RandomForestClassifier from sklearn is trained on original and transfromed datasets.
+    Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
+    """
+    
     
     print("Experiment with HAI test 2")
           
