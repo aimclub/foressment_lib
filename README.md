@@ -69,6 +69,7 @@ If param ```sample_type``` is ```'train'``` then forecasting time window is equa
 
 <h3 align="left">Combination of modules</h3>
 <p align="left">
+
 An example of IZSND (preprocessing) and APSSOP (forecasting) modules integration is presented in ```examples/izsnd_and_apssop_examples.py```.
 </p>
 
