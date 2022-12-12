@@ -64,7 +64,7 @@ Examples that are describing the work with APSSOP module are presented in ```exa
 
 If param ```independently``` is ```True``` then all feature value vectors are predicted independently of each other. At each forecasting stage, an element of the target sample is added to the batch. If param ```independently``` is ```False``` then each predicted vector becomes an element of a new package for subsequent forecasting.
 
-If param ```sample_type``` is ```train``` then forecasting time window is equal to the length of training sample from the second to the last batch. Batch for forecasting is the first batch of the training sample. True values for estimation is values of the training sample from the second to the last batch. If param ```sample_type``` is ```test``` then forecasting time window is equal to the length of all test sample. Batch for forecasting is the last batch of the training sample. True values is values of the test sample.
+If param ```sample_type``` is ```'train'``` then forecasting time window is equal to the length of training sample from the second to the last batch. Batch for forecasting is the first batch of the training sample. True values for estimation is values of the training sample from the second to the last batch. If param ```sample_type``` is ```'test'``` then forecasting time window is equal to the length of all test sample. Batch for forecasting is the last batch of the training sample. True values is values of the test sample.
 </p>
 
 
