@@ -57,14 +57,14 @@ This task is fulfilled with the help of the APSSOP module. It performs:
 
 To train the model, the length and sequence of features must be constant for the state of the system at any given time. The model predicts only the numerical parameters of the system states.
 
-Examples that are describing the work with APSSOP module are presented in examples/apssop_examples.py.
+Examples that are describing the work with APSSOP module are presented in ```examples/apssop_examples.py```.
 
-1. Function example_appsop_model_training(dataset_name, suf='', mode=1) – example of training prediction and data normalization models (dataset_name: name of dataset (str), suf: suffix for naming the output (str), mode: boot mode, for developers (integer)).
-2. Function example_appsop_forecasting(dataset_name, suf='', mode=1, independently=True, sample_type='test') - example of data forecasting based on an existing model, including predictive estimation (dataset_name: name of dataset (str), suf: suffix for naming the output (str), mode: boot mode, for developers (integer), independently: sequence is predicted depending on past values or not (boolean), sample_type: type of forecasting sample for estimation - train or test (str)).
+1. Function ```example_appsop_model_training(dataset_name, suf='', mode=1)``` – example of training prediction and data normalization models (```dataset_name```: name of dataset (str), ```suf```: suffix for naming the output (str), ```mode```: boot mode, for developers (integer)).
+2. Function ```example_appsop_forecasting(dataset_name, suf='', mode=1, independently=True, sample_type='test')``` - example of data forecasting based on an existing model, including predictive estimation (```dataset_name```: name of dataset (str), ```suf```: suffix for naming the output (str), ```mode```: boot mode, for developers (integer), ```independently```: sequence is predicted depending on past values or not (boolean), ```sample_type```: type of forecasting sample for estimation - train or test (str)).
 
-If param 'independently' is True then all feature value vectors are predicted independently of each other. At each forecasting stage, an element of the target sample is added to the batch. If param 'independently' is False then each predicted vector becomes an element of a new package for subsequent forecasting.
+If param ```independently``` is ```True``` then all feature value vectors are predicted independently of each other. At each forecasting stage, an element of the target sample is added to the batch. If param ```independently``` is ```False``` then each predicted vector becomes an element of a new package for subsequent forecasting.
 
-If param 'sample_type' is 'train' then forecasting time window is equal to the length of training sample from the second to the last batch. Batch for forecasting is the first batch of the training sample. True values for estimation is values of the training sample from the second to the last batch. If param 'sample_type' is 'test' then forecasting time window is equal to the length of all test sample. Batch for forecasting is the last batch of the training sample. True values is values of the test sample.
+If param ```sample_type``` is ```train``` then forecasting time window is equal to the length of training sample from the second to the last batch. Batch for forecasting is the first batch of the training sample. True values for estimation is values of the training sample from the second to the last batch. If param ```sample_type``` is ```test``` then forecasting time window is equal to the length of all test sample. Batch for forecasting is the last batch of the training sample. True values is values of the test sample.
 </p>
 
 
