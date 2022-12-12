@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import pandas as pd
 import numpy as np
 
@@ -10,7 +13,7 @@ def posnd_example_titanic():
 
     # INITIAL DATA SETTINGS
     data = Data()
-    titanic_path = __file__.replace('examples/posnd_examples.py', '') + 'datasets/titanic.csv'
+    titanic_path = '../datasets/titanic.csv'
     titanic = pd.read_csv(titanic_path)
     data.features_names = ["PassengerId", "Pclass", "Age", "SibSp", "Parch"]
     data.labels_names = ["Survived", "Fare"]
@@ -57,7 +60,7 @@ def posnd_example_titanic():
     }
 
     # SET TRUE TO GET OUTPUT
-    __Verbose__.PrintLog.instance().set_print_mode(False)
+    __Verbose__.PrintLog.instance().set_print_mode(True)
     __Verbose__.PrintLog.instance().set_severity_level("status")
 
     # RUN
@@ -127,7 +130,7 @@ def posnd_example_basic():
     }
 
     # SET True TO GET OUTPUT
-    __Verbose__.PrintLog.instance().set_print_mode(False)
+    __Verbose__.PrintLog.instance().set_print_mode(True)
     __Verbose__.PrintLog.instance().set_severity_level("status")
 
     # RUN
@@ -138,14 +141,14 @@ def posnd_example_basic():
 
 
 if __name__ == '__main__':
+    # print('===================')
+    # print('BASIC EXAMPLE')
+    # print('===================')
+    # posnd_example_basic()
+    # print('===================')
+
     print('===================')
     print('TITANIC EXAMPLE')
     print('===================')
     posnd_example_titanic()
     print('===================\n')
-
-    print('===================')
-    print('BASIC EXAMPLE')
-    print('===================')
-    posnd_example_basic()
-    print('===================')

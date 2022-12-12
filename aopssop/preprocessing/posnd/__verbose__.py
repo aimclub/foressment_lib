@@ -7,13 +7,13 @@ class PrintLog:
     """
     Class for log printing during data preprocessing
 
-    :func __init__: initialization method.
-    :func __array_to_int__: method for int array printing.
-    :func set_print_mode: method for the configuration if print mode.
-    :func set_severity_level: method for the configuration of the severity level. Possible values = ["status": 0, "info": 1, "warning": 2].
-    :func status: print method for the "status" severity level (white).
-    :func info: print method for the "info" severity level (yellow).
-    :func warn: print method for the "warning" severity level (red).
+    :func __init__: initialization method
+    :func __array_to_int__: method for int array printing
+    :func set_print_mode: method for the configuration if print mode
+    :func set_severity_level: method for the configuration of the severity level (possible values = ["status": 0, "info": 1, "warning": 2])
+    :func status: print method for the "status" severity level (white)
+    :func info: print method for the "info" severity level (yellow)
+    :func warn: print method for the "warning" severity level (red)
     """
 
     def __init__(self):

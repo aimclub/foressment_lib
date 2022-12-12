@@ -65,6 +65,8 @@ class DataLoaderAndPreprocessor:
             self.features_names = self.data.columns.values
 
         elif dataset_name == 'smart_crane':
+            # DATA_PATH = DATA_PATH + 'IEEE_smart_crane'
+            # self.data = pd.read_csv(DATA_PATH + '/combined_csv.csv')
             self.data = pd.read_csv(DATA_PATH + 'IEEE_smart_crane.csv')
 
             if mode not in range(1, 9):
@@ -147,13 +149,7 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
     """
     Testing APPSOP module methods.
     In this example, forecasting model and  normalization model are trained on the dataset.
-
-    :param dataset_name: name of dataset (str)
-    :param suf: suffix for naming the output (str)
-    :param mode: boot mode, for developers (integer).
-    :return:
     """
-
 
     LOG0.create(dataset_name + suf + '_training_res.log', rewrite=True)
     LOG0.run = True

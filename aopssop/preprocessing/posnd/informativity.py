@@ -15,18 +15,28 @@ class Informativity:
     # Informativity.calculate_informativity(data)
 
     """
-    Class for the deletion of non-informative features based on the informativity analysis.
+    Class for the deletion of non-informative features based on the informativity analysis
 
     Typical usage example:
     Informativity.calculate_informativity(data)
 
-    :param crosstab: cross table for calculation of features informativity (np.array).
-    :param stat: test statistics (np.float).
-    :param obs: number of observations (np.int).
-    :param mini: minimum value between the columns and the rows of the cross table (int).
-    :param informativity_matrix: feature-label informativity matrix (list).
+    :param crosstab: cross table for calculation of features informativity
+    :type crosstab: numpy.array
 
-    :return: stat / (obs * mini) (np.float).
+    :param stat: test statistics
+    :type stat: numpy.float
+
+    :param obs: number of observations
+    :type obs: numpy.int
+
+    :param mini: minimum value between the columns and the rows of the cross table
+    :type mini: int
+
+    :param informativity_matrix: feature-label informativity matrix
+    :type informativity_matrix: list
+
+    :return: stat / (obs * mini)
+    :rtype: numpy.float
     """
 
     @staticmethod
@@ -34,10 +44,17 @@ class Informativity:
         """
         Method that removes non-informative features
 
-        :param use_spearman: if True than Spearman correlation is used (recommended if type of data in unknown) (bool).
-        :param use_cramerV: if True than Cramer correlation is used (recommended for categorical data) (bool).
-        :param use_pearson: if True than Pearson correlation is used (recommend for numerical data) (bool).
-        :param informativity: if True than decision is made in accordance with thresholds (np.bool).
+        :param use_spearman: if True than Spearman correlation is used (recommended if type of data in unknown)
+        :type use_spearman: bool
+
+        :param use_cramerV: if True than Cramer correlation is used (recommended for categorical data)
+        :type use_cramerV: bool
+
+        :param use_pearson: if True than Pearson correlation is used (recommend for numerical data)
+        :type use_pearson: bool
+
+        :param informativity: if True than decision is made in accordance with thresholds
+        :type informativity: numpy.bool
         """
 
         def __cramers_V__(var1, var2):

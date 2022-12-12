@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from aopssop import AIForecaster, DataScaler, ForecastEstimator
-from examples.apssop_examples import DataLoaderAndPreprocessor
+from examples.apssop_examples import DataLoader
 import unittest
 import inspect
 import os.path
@@ -29,7 +29,7 @@ class TestAPSSOP(unittest.TestCase):
     def test_forecasting_model_train(self):
         print(inspect.stack()[0][3])
         message = 'Error while calling train'
-        data = DataLoaderAndPreprocessor('test').data
+        data = DataLoader('test').data
         forecasting_model = AIForecaster(10, data.shape[1],
                                           'models/test_model.h5')
         generator = forecasting_model.data_to_generator(data.values)
@@ -41,7 +41,7 @@ class TestAPSSOP(unittest.TestCase):
     def test_forecasting_model_predict(self):
         print(inspect.stack()[0][3])
         message = 'Error while calling forecasting'
-        data = DataLoaderAndPreprocessor('test').data
+        data = DataLoader('test').data
         forecasting_model = AIForecaster(10, data.shape[1],
                                           'models/test_model.h5')
         generator = forecasting_model.data_to_generator(data.values)
@@ -78,7 +78,7 @@ class TestAPSSOP(unittest.TestCase):
     def test_dataframe_split(self):
         message = 'Data split failed'
         for i in [0.1, 0.25, 0.5, 0.8, 0.99]:
-            self.assertIsNot(DataLoaderAndPreprocessor('test').train_test_split(i), (None, None), message)
+            self.assertIsNot(DataLoader('test').train_test_split(i), (None, None), message)
 
     def test_normalization_model_is_not_none(self):
         print(inspect.stack()[0][3])
@@ -88,7 +88,7 @@ class TestAPSSOP(unittest.TestCase):
     def test_normalization_model_train(self):
         print(inspect.stack()[0][3])
         message = 'Error while calling fit normalization model'
-        data = DataLoaderAndPreprocessor('test').data
+        data = DataLoader('test').data
         try:
             DataScaler(scaler_path='models/scaler.pkl').fit(data, save=False)
         except:
@@ -97,7 +97,7 @@ class TestAPSSOP(unittest.TestCase):
     def test_normalization_model_transform(self):
         print(inspect.stack()[0][3])
         message = 'Error while calling transform with normalization model'
-        data = DataLoaderAndPreprocessor('test').data
+        data = DataLoader('test').data
         scaler = DataScaler(scaler_path='models/scaler.pkl')
         scaler.fit(data, save=False)
         try:
@@ -108,7 +108,7 @@ class TestAPSSOP(unittest.TestCase):
     def test_normalization_model_inverse(self):
         print(inspect.stack()[0][3])
         message = 'Error while inverse data with normalization model'
-        data = DataLoaderAndPreprocessor('test').data
+        data = DataLoader('test').data
         scaler = DataScaler(scaler_path='models/scaler.pkl')
         scaler.fit(data, save=False)
         scaled_data = scaler.transform(data)
