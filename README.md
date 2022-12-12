@@ -19,7 +19,7 @@ Let's consider each task and its modules in more detail.
 This task is fulfilled with the help of the following modules:
 
 - POSND: .
-- IZSND: .
+- IZSND is an algorithm for extracting knowledge from the data describing the behavior of complex objects in the form of class association rules, which is designed to extract fragments of knowledge from the available data about the layer in the form of association rules (in “If <premise>, then <consequence>" form) containing only class label in the right part (consequence). The algorithm implements the functions of a strong AI in terms of building a knowledge-based model. 
 
 Examples that are describing the work with POSND module are presented in ```examples/posnd_examples.py```.
 
