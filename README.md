@@ -3,7 +3,7 @@
 
 - 🔭 We are currently working on **AOPSSOP Library**
 
-<h3 align="left">Library</h3>
+<h3 align="left">Tasks</h3>
 <p align="left">
 The developed library fulfills 3 main tasks:
 
@@ -21,11 +21,11 @@ This task is fulfilled with the help of the following modules:
 - POSND: .
 - IZSND: .
 
-Examples that are describing the work with POSND module are presented in examples/posnd_examples.py.
+Examples that are describing the work with POSND module are presented in ```examples/posnd_examples.py```.
 
 1. TBD
 
-Examples that are describing the work with IZSND module are presented in examples/izsnd_examples.py.
+Examples that are describing the work with IZSND module are presented in ```examples/izsnd_examples.py```.
 
 1. TBD
 
@@ -41,7 +41,7 @@ This task is fulfilled with the help of the AOSSOP module. Its work consists in 
 
 Within the framework of the tasks considered in the project, the first stage involves reading attributes from a text file with parsing of the corresponding fields. At the second stage, the fields are preprocessed in order to bring them to a single interval. Finally, at the third stage, a pre-trained neural network is launched, which determines whether an object belongs to a particular state based on its attributes.
 
-Examples that are describing the work with AOSSOP module are presented in examples/aossop_examples.py.
+Examples that are describing the work with AOSSOP module are presented in ```examples/aossop_examples.py```.
 
 Examples of the application of this algorithm cover the task of ensuring the cybersecurity of critical resources and objects, as well as the task of determining the trajectory of a vehicle (crane). In the first case, the data obtained from the sensors of the system of steam turbines and pumped storage power plants are considered as input data. In the second case, the input data are parameters that describe the operation and movement of the overhead crane under various loads.
 
@@ -67,7 +67,22 @@ If param ```independently``` is ```True``` then all feature value vectors are pr
 If param ```sample_type``` is ```'train'``` then forecasting time window is equal to the length of training sample from the second to the last batch. Batch for forecasting is the first batch of the training sample. True values for estimation is values of the training sample from the second to the last batch. If param ```sample_type``` is ```'test'``` then forecasting time window is equal to the length of all test sample. Batch for forecasting is the last batch of the training sample. True values is values of the test sample.
 </p>
 
+<h3 align="left">Combination of modules</h3>
+<p align="left">
+An example of IZSND (preprocessing) and APSSOP (forecasting) modules integration is presented in examples/izsnd_and_apssop_examples.py.
+</p>
 
+<h3 align="left">Documentation</h3>
+<p align="left">
+For additional information, please, check the following documents:
+
+- Programm_description.pdf
+- Guide_for_programmers.pdf
+
+Those documents are stored in the "guides" folder. Note that documents are in Russian.
+
+Documentation in English was built with the help of Sphinx Autodoc and stored in the "docs" folder.
+</p>
 
 <h3 align="left">Connect with us:</h3>
 <p align="left">labcomsec@gmail.com

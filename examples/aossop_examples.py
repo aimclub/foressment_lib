@@ -23,19 +23,18 @@ datasets = {
     # 'dataport': DATAPORT_FILE
 }
 
-
-if __name__ == '__main__':
+def aossop_dataset_examples():
     """
-    Examples of the application of this algorithm cover the task of ensuring the cybersecurity of critical resources 
-    and objects, as well as the task of determining the trajectory of a vehicle (crane). In the first case, 
-    the data obtained from the sensors of the system of steam turbines and pumped storage power plants are 
-    considered as input data. In the second case, the input data are parameters that describe the operation 
+    Examples of the application of this algorithm cover the task of ensuring the cybersecurity of critical resources
+    and objects, as well as the task of determining the trajectory of a vehicle (crane). In the first case,
+    the data obtained from the sensors of the system of steam turbines and pumped storage power plants are
+    considered as input data. In the second case, the input data are parameters that describe the operation
     and movement of the overhead crane under various loads.
-    
-    The essence of the experiment was to test the suitability of a pre-configured model as part of the task of 
-    assessing the state of a critically important object. During the experiment, two phases were distinguished: 
-    the training phase and the testing phase. At the first phase, the weights of the neural network were adjusted, 
-    and at the second phase, the calculation of performance indicators for estimating the state 
+
+    The essence of the experiment was to test the suitability of a pre-configured model as part of the task of
+    assessing the state of a critically important object. During the experiment, two phases were distinguished:
+    the training phase and the testing phase. At the first phase, the weights of the neural network were adjusted,
+    and at the second phase, the calculation of performance indicators for estimating the state
     of the analyzed object was carried out.
     """
     file = datasets[DATASET]
@@ -68,3 +67,7 @@ if __name__ == '__main__':
     ce = ClsEstimator(dl.features, dl.labels, dl.num_labels, classifiers)
     r = ce.estimate(print_metrics=True)
     print(r)
+
+
+if __name__ == '__main__':
+    aossop_dataset_examples()
