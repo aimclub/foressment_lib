@@ -69,7 +69,7 @@ If param ```sample_type``` is ```'train'``` then forecasting time window is equa
 
 <h3 align="left">Combination of modules</h3>
 <p align="left">
-An example of IZSND (preprocessing) and APSSOP (forecasting) modules integration is presented in examples/izsnd_and_apssop_examples.py.
+An example of IZSND (preprocessing) and APSSOP (forecasting) modules integration is presented in ```examples/izsnd_and_apssop_examples.py```.
 </p>
 
 <h3 align="left">Documentation</h3>
@@ -79,9 +79,9 @@ For additional information, please, check the following documents:
 - Programm_description.pdf
 - Guide_for_programmers.pdf
 
-Those documents are stored in the "guides" folder. Note that documents are in Russian.
+Those documents are stored in the ```guides``` folder. Note that documents are in Russian.
 
-Documentation in English was built with the help of Sphinx Autodoc and stored in the "docs" folder.
+Documentation in English was built with the help of Sphinx Autodoc and stored in the ```docs``` folder.
 </p>
 
 <h3 align="left">Connect with us:</h3>
