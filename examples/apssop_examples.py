@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from aopssop import DataScaler, AIForecaster, ForecastEstimator, Logger
+from aopssop import DataScaler, AIForecaster, ForecastEstimator, Logger, DataLoader
 from aopssop import AopssopData as PDATA
 
 from threading import Thread
@@ -17,133 +17,6 @@ proc.as_dict()
 LOG0 = Logger(proc, cpu_num)
 
 
-class DataLoaderAndPreprocessor:
-    """
-    Class for loading and preprocessing data.
-
-    :param DATA_PATH: Path to th e directory with datasets (string).
-    :param drop_features: Set of features to remove from the data (list).
-    :param categorical_features: A set of categorical features in the data (list).
-    :param data: Data feature matrix (pd.DataFrame).
-    """
-    def __init__(self, dataset_name, mode=1, suf=''):
-        """
-        Initializing.
-
-        :param dataset_name: Data set name (srting).
-        :param mode: Boot mode, for developers (integer).
-        """
-
-        DATA_PATH = "../datasets/"
-
-        self.features_names = []
-        self.drop_features = []
-        self.categorical_features = []
-        self.data = None
-
-        if not os.path.exists('apssop_models/'):
-            os.makedirs('apssop_models/')
-
-        self.forecasting_model_path = 'apssop_models/forecasting_model_' + dataset_name + suf
-        self.normalization_model_path = 'apssop_models/scaler_' + dataset_name + suf + '.pkl'
-
-        if dataset_name == 'hai':
-            DATA_PATH = DATA_PATH + 'hai-22.04/train'
-
-            if mode == 0:
-                self.data = pd.read_csv(DATA_PATH + '/train1.csv', nrows=10000)
-
-            else:
-                self.data = pd.DataFrame()
-                for file in os.listdir(DATA_PATH):
-                    self.data = pd.concat([self.data, pd.read_csv(DATA_PATH + '/' + file)],
-                                           ignore_index=True)
-
-            self.drop_features = ['timestamp', 'Attack']
-            self.preprocessing()
-            self.features_names = self.data.columns.values
-
-        elif dataset_name == 'smart_crane':
-            # DATA_PATH = DATA_PATH + 'IEEE_smart_crane'
-            # self.data = pd.read_csv(DATA_PATH + '/combined_csv.csv')
-            self.data = pd.read_csv(DATA_PATH + 'IEEE_smart_crane.csv')
-
-            if mode not in range(1, 9):
-                print('Wrong cycle number')
-                exit()
-            self.data = self.data[self.data['Cycle'] == mode]
-
-            self.drop_features = ['Date', 'Alarm', 'Cycle']
-            self.preprocessing()
-            self.features_names = self.data.columns.values
-
-        elif dataset_name == 'test':
-            self.data = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)),
-                                     columns=list('ABCD'))
-            self.features_names = self.data.columns.values
-
-        else:
-            print('Unknown dataset name')
-            exit()
-
-    def preprocessing(self):
-        """
-        Data feature preprocessing.
-        """
-        if len(self.drop_features) > 0:
-            self.data = self.data.drop(self.drop_features, axis=1)
-
-        if len(self.categorical_features) > 0:
-            for feature in self.categorical_features:
-                if 'ip' in feature:
-                    encoded_feature_data = pd.DataFrame([x.split('.')
-                                                         if x != '0' else [0, 0, 0, 0]
-                                                         for x in self.data[feature].tolist()])
-
-                    for col in encoded_feature_data.columns:
-                        encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + str(col)})
-                else:
-                    try:
-                        encoded_feature_data = pd.get_dummies(self.data[feature])
-                        for col in encoded_feature_data.columns:
-                            encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + col})
-                    except:
-                        encoded_feature_data = pd.DataFrame()
-
-                if not encoded_feature_data.empty:
-                    old_data_columns = self.data.columns.tolist()
-                    feature_index = old_data_columns.index(feature)
-                    new_data_columns = old_data_columns[:feature_index] + \
-                                       encoded_feature_data.columns.tolist() + \
-                                       old_data_columns[feature_index+1:]
-
-                    self.data = pd.concat([self.data, encoded_feature_data], axis=1)
-                    self.data = self.data[new_data_columns]
-                else:
-                    print('Too many values for categorical feature "' + feature +'". Delete feature from data')
-                    self.data = self.data.drop(feature, axis=1)
-        self.data = self.data.fillna(0)
-
-
-    def train_test_split(self, train_size=0.9):
-        """
-        Split data into training and test sets.
-
-        :param train_size: Share of the training sample (float). Default=0.9.
-        :return: train: Feature matrix of training data (pd.DataFrame).
-        :return test: Feature matrix of test data (pd.DataFrame).
-        """
-        if (train_size < 0) and (train_size > 1):
-            print('The proportion of the training sample is not in the interval (0, 1)')
-            return None, None
-
-        train_ind = round(train_size*self.data.shape[0])
-
-        train = self.data.iloc[:train_ind]
-        test = self.data.iloc[train_ind:]
-        return train, test
-
-
 def example_appsop_model_training(dataset_name, suf='', mode=1):
     """
     Testing APPSOP module methods.
@@ -151,8 +24,8 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
 
     :param dataset_name: name of dataset (str),
     :param suf: suffix for naming the output (str),
-    :param mode: boot mode, for developers (integer)
-    """
+    :param mode: boot mode, for developers (integer)"""
+
     # Create log file.
     LOG0.create(dataset_name + suf + '_training_res.log', rewrite=True)
     # Start logging.
@@ -163,10 +36,11 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
     LOG0.event_init(text='Start with dataset "' + dataset_name + '"')
     LOG0.event_init(event_name='preproc', text='Input data preprocessing')
     # Load data.
-    data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
+    data = DataLoader(dataset_name, mode=mode, suf=suf)
     PDATA.features_names = data.features_names
     LOG0.event_init(event_name='preproc',
                     text='Input data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
+
     PDATA.forecasting_model_path = data.forecasting_model_path
     PDATA.normalization_model_path = data.normalization_model_path
 
@@ -201,8 +75,8 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
 
     LOG0.event_init(event_name='train', text='Model training')
     LOG0.show_off()
-    # Train forecasting model.
     loss = forecasting_model.train(train_generator)
+    # Train forecasting model.
     LOG0.show_on()
     LOG0.event_init(event_name='train', text='Training completed (loss:' + str(loss) + ')')
 
@@ -214,7 +88,9 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
 
 
 def example_appsop_forecasting(dataset_name, suf='', mode=1,
-                               independently=True, sample_type='test'):
+                                                   train_size=0.9,
+                                                   independently=True,
+                                                   sample_type='test'):
     """
     Testing APPSOP module methods.
     Example of data forecasting based on an existing model, including predictive estimation
@@ -236,15 +112,15 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
 
     # Create log.
     LOG0.create(dataset_name + suf + file_suf + '_res.log', rewrite=True)
-    # Start logging.
     LOG0.run = True
+    # Start logging.
     thread1 = Thread(target=LOG0.daemon_logger)
     thread1.start()
 
     LOG0.event_init(text='Start with dataset "' + dataset_name + '"')
     LOG0.event_init(event_name='preproc', text='Input data preprocessing')
     # Data load.
-    data = DataLoaderAndPreprocessor(dataset_name, mode=mode, suf=suf)
+    data = DataLoader(dataset_name, mode=mode, suf=suf)
     PDATA.features_names = data.features_names
     LOG0.event_init(event_name='preproc',
                     text='Inpit data preprocessed. Shape ({0}, {1})'.format(data.data.shape[0], data.data.shape[1]))
@@ -258,7 +134,7 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
     LOG0.event_init(event_name='preproc',text='Data is divided into train and test samples of length {0} and {1}'.format(len(train),
                                                                                                     len(test)))
     LOG0.event_init(event_name='norm', text='Normalization model open')
-    #Load normalization model.
+    # Load normalization model.
     normalization_model = DataScaler(scaler_path=PDATA.normalization_model_path,
                                      open=True)
     if not normalization_model:
@@ -275,6 +151,7 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
     # Load forecasting model.
     forecasting_model = AIForecaster(model_path=PDATA.forecasting_model_path,
                                      open=True)
+
     LOG0.event_init(event_name='prepare', text='Data generator creation')
     PDATA.time_window_length = forecasting_model.time_window_length
     # Create train data generator.
@@ -338,7 +215,7 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
     PDATA.forecasting_quality = estimator.estimate(true=target_true,
                                                    pred=predictions,
                                                    feature_names=PDATA.features_names)
-
+    # Save evaluation result/
     estimator.save(file_name=dataset_name + suf + file_suf)
     LOG0.event_init(event_name='eval', text='Evaluation done')
     print(PDATA.forecasting_quality)
@@ -356,13 +233,13 @@ if __name__ == '__main__':
 
     dataset_name = 'smart_crane'
     for mode in range(1, 9):
-        suf = '_ex2_c' + str(mode)
+        suf = '_ex1_c' + str(mode)
         example_appsop_model_training(dataset_name, suf, mode)
         example_appsop_forecasting(dataset_name, suf, mode, sample_type='train')
         example_appsop_forecasting(dataset_name, suf, mode, sample_type='test')
         example_appsop_forecasting(dataset_name, suf, mode, sample_type='test', independently=False)
 
-    suf = '_ex2'
+    suf = '_ex1'
     dataset_name = 'hai'
     example_appsop_model_training(dataset_name, suf)
     example_appsop_forecasting(dataset_name, suf, sample_type='train')
