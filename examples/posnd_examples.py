@@ -9,6 +9,17 @@ from aopssop import \
 
 
 def posnd_example_titanic():
+    """
+    Example of the POSND algorithm work on the titanic dataset.
+    This dataset is suitable, because it contains categorical and numerical features, while some values of features are empty.
+    Moreover, the dataset is small, which helps to receive results fast.
+
+    The following features were used: "PassengerId", "Pclass", "Age", "SibSp", "Parch".
+    As well as the following labels: "Survived", "Fare".
+
+    As a result, no non-informative features were found.
+    As well as it was suggested to remove "Age" and "SibSp" features in accordance with multicolinear analysis.
+    """
     # TEST BASED ON titanic.csv DATA
 
     # INITIAL DATA SETTINGS
@@ -72,6 +83,17 @@ def posnd_example_titanic():
 
 def posnd_example_basic():
     # TEST BASED ON SYNTHETIC DATA
+    """
+    Basic example of the POSND algorithm work.
+    In this example, POSND algorithm is applied to the generated data.
+    All data reduction steps are printed in console.
+
+    The following features were used: "name", "age", "gender", "last_name" and "price".
+    As well as the following labels: "salary", "color", "id".
+
+    As a result, it was suggested to remove "gender" and "price" features due to their noninformativeness.
+    As well as to remove "age" feature in accordance with multicolinear analysis.
+    """
 
     # INITIAL DATA SETTINGS
     data = Data()

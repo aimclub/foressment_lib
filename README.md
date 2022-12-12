@@ -18,25 +18,20 @@ Let's consider each task and its modules in more detail.
 <p align="left">
 This task is fulfilled with the help of the following modules:
 
-- POSND: .
+- POSND is an algorithm for preprocessing of raw and fuzzy data. It can help with data types correction (```posnd/check_data_types.py```), filling of the empty values of features (```posnd/cluster_filling.py```), and reduction of features in accordance with their informativity (```posnd/informativity.py```) and multicolinear analysis (```posnd/multicolinear.py```).
 - IZSND is an algorithm for extracting knowledge from the data describing the behavior of complex objects in the form of class association rules, which is designed to extract fragments of knowledge from the available data about the layer in the form of association rules (in “If <premise>, then <consequence>" form) containing only class label in the right part (consequence). The algorithm implements the functions of a strong AI in terms of building a knowledge-based model. 
 
 Examples that are describing the work with POSND module are presented in ```examples/posnd_examples.py```.
 
-1. TBD
+1. Function ```posnd_example_basic()``` – basic example of the POSND algorithm work. In this example, POSND algorithm is applied to the generated data. All data reduction steps are printed in console.
+2. Function ```posnd_example_titanic()``` – example of the POSND algorithm work on the titanic dataset. This dataset is suitable, because it contains categorical and numerical features, while some values of features are empty. Moreover, the dataset is small, which helps to receive results fast. 
 
 Examples that are describing the work with IZSND module are presented in ```examples/izsnd_examples.py```.
 
-1. TBD
-
+1. Function ```izsnd_basic_example()``` – basic example of IZSND algo work. In this example, IZSND algo is applied to generated balanced dataset with 2 classes. Example rule and information about transformed dataset are printed.
+2. Function ```izsnd_ieee_data()``` - IEEE_smart_crane example of IZSND algorithm. In this example, IZSND algo is applied to IEEE_smart_crane dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
+3. Function ```izsnd_hai()``` - HAI example of IZSND algorithm. In this example, IZSND algo is applied to HAI dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
 </p>
-
-Examples that are describing the work with IZDAP algorithm are presented in ```examples/izdap_examples.py```.
-
-1. Function ```izdap_basic_example()``` – basic example of IZDAP algo work. In this example, IZDAP algo is applied to generated balanced dataset with 2 classes. Example rule and information about transformed dataset are printed.
-2. Function ```izdap_ieee_data()``` - IEEE_smart_crane example of IZDAP algorithm. In this example, IZDAP algo is applied to IEEE_smart_crane dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
-3. Function ```izdap_hai()``` - HAI example of IZDAP algorithm. In this example, IZDAP algo is applied to HAI dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
-
 
 <h3 align="left">Assessment</h3>
 <p align="left">

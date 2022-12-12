@@ -11,10 +11,10 @@ from sklearn.datasets import make_classification
 from aopssop import IzdapAlgo
 
 
-def izdap_basic_example():    
+def izsnd_basic_example():
     """
-    Basic example of IZDAP algo work.
-    In this example, IZDAP algo is applied to generated balanced dataset with 2 classes.
+    Basic example of IZSND algo work.
+    In this example, IZSND algo is applied to generated balanced dataset with 2 classes.
     Example rule and information about transformed dataset are printed.
     """
     data = make_classification(n_samples=200, n_features=4,
@@ -38,10 +38,10 @@ def izdap_basic_example():
     print(transformed_data.info())
 
 
-def izdap_ieee_data():
+def izsnd_ieee_data():
     """
-    IEEE_smart_crane example of IZDAP algo.
-    In this example, IZDAP algo is applied to IEEE_smart_crane dataset.
+    IEEE_smart_crane example of IZSND algo.
+    In this example, IZSND algo is applied to IEEE_smart_crane dataset.
     RandomForestClassifier from sklearn is trained on original and transfromed datasets.
     Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
     """
@@ -64,7 +64,7 @@ def izdap_ieee_data():
     y_test_pred = clf.predict(X_test)
     y_test_proba = clf.predict_proba(X_test)
     
-    print('Random forest without IZDAP preproccesing')
+    print('Random forest without IZSND preproccesing')
     print(metrics.classification_report(y_true=y_test, y_pred=y_test_pred, digits=6))
     print(f"ROC-AUC: {metrics.roc_auc_score(y_true=y_test, y_score=y_test_proba[:, 1])}")
     print(f"Accuracy: {metrics.accuracy_score(y_true=y_test, y_pred=y_test_pred)}")
@@ -84,16 +84,16 @@ def izdap_ieee_data():
     y_test_pred = clf.predict(X_test)
     y_test_proba = clf.predict_proba(X_test)
     
-    print('Random forest with IZDAP preproccesing')
+    print('Random forest with IZSND preproccesing')
     print(metrics.classification_report(y_true=y_test, y_pred=y_test_pred, digits=6))
     print(f"ROC-AUC: {metrics.roc_auc_score(y_true=y_test, y_score=y_test_proba[:, 1])}")
     print(f"Accuracy: {metrics.accuracy_score(y_true=y_test, y_pred=y_test_pred)}")
 
 
-def izdap_hai():
+def izsnd_hai():
     """
-    HAI example of IZDAP algo.
-    In this example, IZDAP algo is applied to HAI dataset.
+    HAI example of IZSND algo.
+    In this example, IZSND algo is applied to HAI dataset.
     RandomForestClassifier from sklearn is trained on original and transfromed datasets.
     Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
     """
@@ -116,7 +116,7 @@ def izdap_hai():
     y_test_pred = clf.predict(X_test)
     y_test_proba = clf.predict_proba(X_test)
     
-    print('Random forest without IZDAP preproccesing')
+    print('Random forest without IZSND preproccesing')
     print(metrics.classification_report(y_true=y_test, y_pred=y_test_pred, digits=6))
     print(f"ROC-AUC: {metrics.roc_auc_score(y_true=y_test, y_score=y_test_proba[:, 1])}")
     print(f"Accuracy: {metrics.accuracy_score(y_true=y_test, y_pred=y_test_pred)}")
@@ -139,13 +139,13 @@ def izdap_hai():
     y_test_pred = clf.predict(X_test)
     y_test_proba = clf.predict_proba(X_test)
     
-    print('Random forest with IZDAP preproccesing')
+    print('Random forest with IZSND preproccesing')
     print(metrics.classification_report(y_true=y_test, y_pred=y_test_pred, digits=6))
     print(f"ROC-AUC: {metrics.roc_auc_score(y_true=y_test, y_score=y_test_proba[:, 1])}")
     print(f"Accuracy: {metrics.accuracy_score(y_true=y_test, y_pred=y_test_pred)}")
 
 
 if __name__ == '__main__':
-    izdap_basic_example()
-    # izdap_ieee_data()
-    # izdap_hai()
+    izsnd_basic_example()
+    # izsnd_ieee_data()
+    # izsnd_hai()
