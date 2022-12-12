@@ -1,7 +1,6 @@
 <h1 align="center">Hi 👋, we are a ComSec Lab</h1>
 <h3 align="center">A security specialists from St. Petersburg</h3>
-
-- 🔭 We are currently working on **AOPSSOP Library**
+<h3 align="center">We are currently working on AOPSSOP Library 🔭</h3>
 
 <h3 align="left">Tasks</h3>
 <p align="left">
