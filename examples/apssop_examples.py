@@ -149,6 +149,10 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
     """
     Testing APPSOP module methods.
     In this example, forecasting model and  normalization model are trained on the dataset.
+
+    :param dataset_name: name of dataset (str),
+    :param suf: suffix for naming the output (str),
+    :param mode: boot mode, for developers (integer)
     """
 
     LOG0.create(dataset_name + suf + '_training_res.log', rewrite=True)
