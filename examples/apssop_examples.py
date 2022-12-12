@@ -230,7 +230,7 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
     PDATA.forecasting_quality = estimator.estimate(true=target_true,
                                                    pred=predictions,
                                                    feature_names=PDATA.features_names)
-    # Save evaluation result/
+    # Save evaluation result.
     estimator.save(file_name=dataset_name + suf + file_suf)
     LOG0.event_init(event_name='eval', text='Evaluation done')
     print(PDATA.forecasting_quality)
