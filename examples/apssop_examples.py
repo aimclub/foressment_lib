@@ -293,7 +293,7 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
         PDATA.forecasting_time_window = len(scaled_train) - PDATA.time_window_length
         # Batch for forecasting is the first batch of the training sample.
         current_batch = forecasting_model.get_batch(train_generator, 0)
-        # True values is values of the training sample from the second to the last batch.
+        # True values for estimation is values of the training sample from the second to the last batch.
         target_true = scaled_train[PDATA.time_window_length:]
 
     elif sample_type == 'test':
