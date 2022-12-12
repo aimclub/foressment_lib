@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from aopssop import DataScaler, AIForecaster, ForecastEstimator
+from aopssop import DataScaler, AIForecaster, ForecastEstimator, Logger
 from aopssop import AopssopData as PDATA
 
 from threading import Thread
@@ -14,7 +14,6 @@ proc = psutil.Process(pid)
 cpu_num = psutil.cpu_count()
 proc.as_dict()
 
-from examples.logger import Logger
 LOG0 = Logger(proc, cpu_num)
 
 
