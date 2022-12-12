@@ -31,6 +31,13 @@ Examples that are describing the work with IZSND module are presented in ```exam
 
 </p>
 
+Examples that are describing the work with IZDAP algorithm are presented in ```examples/izdap_examples.py```.
+
+1. Function ```izdap_basic_example()``` – basic example of IZDAP algo work. In this example, IZDAP algo is applied to generated balanced dataset with 2 classes. Example rule and information about transformed dataset are printed.
+2. Function ```izdap_ieee_data()``` - IEEE_smart_crane example of IZDAP algorithm. In this example, IZDAP algo is applied to IEEE_smart_crane dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
+3. Function ```izdap_hai()``` - HAI example of IZDAP algorithm. In this example, IZDAP algo is applied to HAI dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
+
+
 <h3 align="left">Assessment</h3>
 <p align="left">
 This task is fulfilled with the help of the AOSSOP module. Its work consists in applying a pre-trained machine learning model that allows you to determine the state of an object from its descriptive attributes. Conventionally, the algorithm can be presented in the form of three stages:
