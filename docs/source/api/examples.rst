@@ -9,7 +9,7 @@ APSSOP
 IZDAP
 ======
 
-.. automodule:: examples.izdap_examples
+.. automodule:: examples.izsnd_examples
     :members:
 
 ======
