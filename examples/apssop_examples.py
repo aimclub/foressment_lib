@@ -22,9 +22,15 @@ def example_appsop_model_training(dataset_name, suf='', mode=1):
     Testing APPSOP module methods.
     In this example, forecasting model and  normalization model are trained on the dataset.
 
-    :param dataset_name: name of dataset (str),
-    :param suf: suffix for naming the output (str),
-    :param mode: boot mode, for developers (integer)"""
+    :param dataset_name: name of dataset
+    :type dataset_name: str
+    
+    :param suf: suffix for naming the output
+    :type suf: str
+    
+    :param mode: boot mode, for developers
+    :type mode: integer
+    """
 
     # Create log file.
     LOG0.create(dataset_name + suf + '_training_res.log', rewrite=True)
@@ -95,11 +101,20 @@ def example_appsop_forecasting(dataset_name, suf='', mode=1,
     Testing APPSOP module methods.
     Example of data forecasting based on an existing model, including predictive estimation
 
-    :param dataset_name: name of dataset (str),
-    :param suf: suffix for naming the output (str),
-    :param mode: boot mode, for developers (integer),
-    :param independently: sequence is predicted depending on past values or not (boolean),
-    :param sample_type: type of forecasting sample for estimation - train or test (str)
+    :param dataset_name: name of dataset
+    :type dataset_name: str
+    
+    :param suf: suffix for naming the output
+    :type suf: str
+    
+    :param mode: boot mode, for developers
+    :type mode: integer
+    
+    :param independently: sequence is predicted depending on past values or not
+    :type independently: boolean
+    
+    :param sample_type: type of forecasting sample for estimation - train or test
+    :type sample_type: str
     """
     if sample_type not in ['train', 'test']:
         print('Wrong sample type')
