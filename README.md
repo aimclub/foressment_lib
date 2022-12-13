@@ -18,7 +18,7 @@ Let's consider each task and its modules in more detail.
 This task is fulfilled with the help of the following modules:
 
 - POSND is an algorithm for preprocessing of raw and fuzzy data. It can help with data types correction (```posnd/check_data_types.py```), filling of the empty values of features (```posnd/cluster_filling.py```), and reduction of features in accordance with their informativity (```posnd/informativity.py```) and multicolinear analysis (```posnd/multicolinear.py```).
-- IZSND is an algorithm for extracting knowledge from the data describing the behavior of complex objects in the form of class association rules, which is designed to extract fragments of knowledge from the available data about the layer in the form of association rules (in “If <premise>, then <consequence>" form) containing only class label in the right part (consequence). The algorithm implements the functions of a strong AI in terms of building a knowledge-based model. 
+- IZSND is an algorithm for extracting knowledge from the data describing the behavior of complex objects in the form of class association rules, which is designed to extract fragments of knowledge from the available data about the layer in the form of association rules (in “If \<premise\>, then \<consequence\>" form) containing only class label in the right part (consequence). The algorithm implements the functions of a strong AI in terms of building a knowledge-based model. 
 
 Examples that are describing the work with POSND module are presented in ```examples/posnd_examples.py```.
 
