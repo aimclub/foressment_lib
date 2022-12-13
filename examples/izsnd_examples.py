@@ -45,8 +45,7 @@ def izsnd_ieee_data():
     RandomForestClassifier from sklearn is trained on original and transfromed datasets.
     Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
     """
-    
-    
+
     print("Experiment with IEEE_smart_crane")
               
     DATA_PATH = "../datasets/IEEE_smart_crane.csv"
@@ -98,7 +97,6 @@ def izsnd_hai():
     Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
     """
     
-    
     print("Experiment with HAI test 2")
           
     DATA_PATH = "../datasets/HAI_test2.csv.zip"
@@ -146,6 +144,6 @@ def izsnd_hai():
 
 
 if __name__ == '__main__':
-    izsnd_basic_example()
-    # izsnd_ieee_data()
+    # izsnd_basic_example()
+    izsnd_ieee_data()
     # izsnd_hai()
