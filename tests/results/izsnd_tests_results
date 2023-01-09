@@ -1,4 +1,5 @@
-C:\Users\dmitr\PycharmProjects\aopssop_lib\venv\Scripts\python.exe "C:/Program Files/JetBrains/PyCharm 2022.2.2/plugins/python/helpers/pycharm/_jb_pytest_runner.py" --path C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\izdap_tests.py 
+IZSND TESTS RESULTS
+
 Testing started at 7:37 PM ...
 Launching pytest with arguments C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\izdap_tests.py --no-header --no-summary -q in C:\Users\dmitr\PycharmProjects\aopssop_lib\tests
 

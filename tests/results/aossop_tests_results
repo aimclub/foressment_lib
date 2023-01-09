@@ -1,3 +1,5 @@
+AOSSOP TESTS RESULTS
+
 C:\Users\dmitr\PycharmProjects\aopssop_lib\venv\Scripts\python.exe "C:/Program Files/JetBrains/PyCharm 2022.2.2/plugins/python/helpers/pycharm/_jb_pytest_runner.py" --path C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\aossop_tests.py 
 Testing started at 7:30 PM ...
 Launching pytest with arguments C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\aossop_tests.py --no-header --no-summary -q in C:\Users\dmitr\PycharmProjects\aopssop_lib\tests
