@@ -96,12 +96,12 @@ which is a part of the Research Center "Strong Artificial Intelligence in Indust
 </p>
 
 <p align="left">
-<a href="https://sai.itmo.ru/" target="_blank" rel="noreferrer">
+<a target="_blank" rel="noopener noreferrer" href="https://sai.itmo.ru/">
 <img src="https://sai.itmo.ru/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fsai-logo.89271ca7.png&w=640&q=75" alt="Сильный ИИ" width="184" height="50"/></a></p>
 
 <p align="left">
 This repository is also presented on 
-<a href="https://gitlab.actcognitive.org/itmo-sai-code/aopssop_lib/" target="_blank" rel="noreferrer">
+<a target="_blank" rel="noopener noreferrer" href="https://gitlab.actcognitive.org/itmo-sai-code/aopssop_lib/">
 GitLab</a>.
 </p>
 
