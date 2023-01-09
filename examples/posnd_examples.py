@@ -163,6 +163,8 @@ def posnd_example_basic():
 
 
 if __name__ == '__main__':
+    # This comment is added to check if the repository is linked to GitLab
+
     # print('===================')
     # print('BASIC EXAMPLE')
     # print('===================')
