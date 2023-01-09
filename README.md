@@ -99,6 +99,12 @@ which is a part of the Research Center "Strong Artificial Intelligence in Indust
 <a href="https://sai.itmo.ru/" target="_blank" rel="noreferrer">
 <img src="https://sai.itmo.ru/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fsai-logo.89271ca7.png&w=640&q=75" alt="Сильный ИИ" width="184" height="50"/></a></p>
 
+<p align="left">
+This repository is also presented on 
+<a href="https://gitlab.actcognitive.org/itmo-sai-code/aopssop_lib/" target="_blank" rel="noreferrer">
+GitLab</a>.
+</p>
+
 <h3 align="left">Languages and Tools:</h3>
 <p align="left">
 <a href="https://pandas.pydata.org/" target="_blank" rel="noreferrer">
