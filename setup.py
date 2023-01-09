@@ -9,7 +9,7 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="aopssop",
-    version="0.1.0",
+    version="0.1.2",
     description="Demo library",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -21,6 +21,8 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU GPLv3 License",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Operating System :: OS Independent"
     ],
