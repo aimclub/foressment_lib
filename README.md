@@ -1,6 +1,4 @@
-<h1 align="center">Hi 👋, we are a ComSec Lab</h1>
-<h3 align="center">A security specialists from St. Petersburg</h3>
-<h3 align="center">We are currently working on AOPSSOP Library 🔭</h3>
+<h1 align="center">AOPSSOP LIBRARY</h1>
 
 <h3 align="left">Tasks</h3>
 <p align="left">
@@ -9,6 +7,10 @@ The developed library fulfills 3 main tasks:
 - **Preprocessing** of raw and fuzzy data.
 - **Assessment** of the current state of complex technical objects.
 - **Forecasting** of the future state of complex technical objects.
+
+Those tasks were fulfilled on two main technical objects:
+- **DSC**: overhead crane when driving an L-shaped path with different loads (0kg, 120kg, 500kg, and 1000kg); each driving cycle was driven with an anti-sway system activated and deactivated; each driving cycle consisted of repeating five times the process of lifting the weight, driving from point A to point B along with the path, lowering the weight, lifting the weight, driving back to point A, and lowering the weight (based on Driving Smart Crane with Various Loads dataset).
+- **HAI**: testbed that comprises three physical control systems, namely a GE turbine, Emerson boiler, and FESTO water treatment systems, combined through a dSPACE hardware-in-the-loop; using the testbed, benign and malicious scenarios were run multiple times (based on (HIL-based Augmented ICS Security Dataset).
 
 Let's consider each task and its modules in more detail.
 </p>
