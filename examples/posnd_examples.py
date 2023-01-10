@@ -163,14 +163,14 @@ def posnd_example_basic():
 
 
 if __name__ == '__main__':
-    # print('===================')
-    # print('BASIC EXAMPLE')
-    # print('===================')
-    # posnd_example_basic()
-    # print('===================')
+    print('===================')
+    print('BASIC EXAMPLE')
+    print('===================')
+    posnd_example_basic()
+    print('===================')
 
-    print('===================')
-    print('TITANIC EXAMPLE')
-    print('===================')
-    posnd_example_titanic()
-    print('===================\n')
+    # print('===================')
+    # print('TITANIC EXAMPLE')
+    # print('===================')
+    # posnd_example_titanic()
+    # print('===================\n')
