@@ -98,7 +98,7 @@
 
 <p align="left">
 <a target="_blank" rel="noopener noreferrer" href="https://sai.itmo.ru/">
-<img src="https://sai.itmo.ru/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fsai-logo.89271ca7.png&w=640&q=75" alt="Сильный ИИ" width="184" height="50"/></a></p>
+<img src="https://gitlab.actcognitive.org/itmo-sai-code/organ/-/raw/main/docs/AIM-Strong_Sign_Norm-01_Colors.svg" alt="Сильный ИИ" width="250" height="100"/></a></p>
 
 <p align="left">
 Данный репозиторий также представлен на
