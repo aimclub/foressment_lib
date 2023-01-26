@@ -1,12 +1,12 @@
-<h1 align="center">TESTS</h1>
+<h1 align="center">ТЕСТЫ</h1>
 
 <p align="left">
-Tests are presented in separate files, while the names of files are based on the algorithms that were analysed:
+Тесты расположены в отдельных файлах, наименования которых соответствуют программным модулям, которые анализировались:
 
-- ```aossop_tests.py```: assessment of the current state of complex technical objects (AOSSOP algorithm);
-- ```apssop_tests.py```: forecasting of the current state of complex technical objects (APSSOP algorithm);
-- ```izsnd_tests.py```: preprocessing of raw and fuzzy data (IZSND algorithm);
-- ```posnd_tests.py```: preprocessing of raw and fuzzy data (POSND algorithm);
+- ```aossop_tests.py```: оценка текущего состояния сложных технических объектов (АОССОП);
+- ```apssop_tests.py```: предсказание будущего состояния сложных технических объектов (АПССОП);
+- ```izsnd_tests.py```: предобработка сырых и нечетких данных (ИЗСНД);
+- ```posnd_tests.py```: предобработка сырых и нечетких данных (ПОСНД);
 
-Console output of tests is presented in ```./results``` folder.
+Консольный вывод тестов представлен в каталоге ```./results```.
 </p>
