@@ -88,7 +88,7 @@ Those documents are stored in the ```guides``` folder. Note that documents are i
 Documentation in English was built with the help of Sphinx Autodoc and stored in the ```docs``` folder.
 </p>
 
-<h3 align="left">Connect with us:</h3>
+<h3 align="left">Connect with us</h3>
 <p align="left">labcomsec@gmail.com
 </p>
 
