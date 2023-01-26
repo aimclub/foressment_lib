@@ -141,7 +141,7 @@ class TestAPSSOP(unittest.TestCase):
         self.assertEqual(result.loc['ALL_FEATURES', 'MSE'], 0.7, message)
 
     def test_estimator(self):
-        message = 'Forecasting quality evaluation failed in MSE'
+        message = 'Forecasting quality evaluation failed'
         true = [0, 0, 1, 0, 2, 1, 1, 0, 0, 1]
         pred = [0, 1, 1, 0, 0, 0]
         result = ForecastEstimator().estimate(true, pred)
