@@ -87,6 +87,12 @@
 Документация на английском языке сформирована автоматически с помощью Sphinx Autodoc и размещена в каталоге ```docs```.
 </p>
 
+<h3 align="left">Публикации</h3>
+<p align="left">
+Levshun D., Kotenko I. A survey on artificial intelligence techniques for security event correlation: models, challenges, and opportunities // Artificial Intelligence Review. 2023. P. 1-44. DOI: 10.1007/s10462-022-10381-4. URL:
+<a href="https://link.springer.com/article/10.1007/s10462-022-10381-4 " target="_blank">https://link.springer.com/article/10.1007/s10462-022-10381-4</a>. (Scopus, WoS, Q1)
+</p>
+
 <h3 align="left">Контактные данные</h3>
 <p align="left">labcomsec@gmail.com
 </p>
