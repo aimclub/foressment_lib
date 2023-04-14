@@ -1,3 +1,26 @@
+[![SAI](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/SAI_badge_flat.svg)](https://sai.itmo.ru/)
+[![ITMO](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/ITMO_badge_flat.svg)](https://en.itmo.ru/en/)
+
+[![license](https://img.shields.io/github/license/labcomsec/aopssop_lib)](https://github.com/labcomsec/aopssop_lib/blob/main/LICENSE.md)
+[![Eng](https://img.shields.io/badge/lang-ru-yellow.svg)](/README.md)
+[![Mirror](https://camo.githubusercontent.com/9bd7b8c5b418f1364e72110a83629772729b29e8f3393b6c86bff237a6b784f6/68747470733a2f2f62616467656e2e6e65742f62616467652f6769746c61622f6d6972726f722f6f72616e67653f69636f6e3d6769746c6162)](https://gitlab.actcognitive.org/itmo-sai-code/aopssop_lib)
+
+<p align="left">
+<a href="https://pandas.pydata.org/" target="_blank" rel="noreferrer">
+<img src="https://raw.githubusercontent.com/devicons/devicon/2ae2a900d2f041da66e950e4d48052658d850630/icons/pandas/pandas-original.svg" alt="pandas" width="40" height="40"/>
+</a>
+<a href="https://www.python.org" target="_blank" rel="noreferrer">
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
+</a>
+<a href="https://scikit-learn.org/" target="_blank" rel="noreferrer">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" alt="scikit_learn" width="40" height="40"/>
+</a>
+<a href="https://www.tensorflow.org" target="_blank" rel="noreferrer">
+<img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="tensorflow" width="40" height="40"/>
+</a>
+</p>
+
+
 <h1 align="center">AOPSSOP LIBRARY</h1>
 
 <h3 align="left">Tasks</h3>
@@ -98,33 +121,8 @@ Levshun D., Kotenko I. A survey on artificial intelligence techniques for securi
 <p align="left">labcomsec@gmail.com
 </p>
 
+<h3 aligh="left">Supported by</h3>
 <p align="left">
-The project is developed and maintained by the research team of the Laboratory of Computer Security Problems (SPC RAS), 
-which is a part of the Research Center "Strong Artificial Intelligence in Industry" (ITMO University).
-</p>
-
-<p align="left">
-<a target="_blank" rel="noopener noreferrer" href="https://sai.itmo.ru/">
-<img src="https://gitlab.actcognitive.org/itmo-sai-code/organ/-/raw/main/docs/AIM-Strong_Sign_Norm-01_Colors.svg" alt="Сильный ИИ" width="250" height="100"/></a></p>
-
-<p align="left">
-This repository is also presented on 
-<a target="_blank" rel="noopener noreferrer" href="https://gitlab.actcognitive.org/itmo-sai-code/aopssop_lib/">
-GitLab</a>.
-</p>
-
-<h3 align="left">Languages and Tools:</h3>
-<p align="left">
-<a href="https://pandas.pydata.org/" target="_blank" rel="noreferrer">
-<img src="https://raw.githubusercontent.com/devicons/devicon/2ae2a900d2f041da66e950e4d48052658d850630/icons/pandas/pandas-original.svg" alt="pandas" width="40" height="40"/>
-</a>
-<a href="https://www.python.org" target="_blank" rel="noreferrer">
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
-</a>
-<a href="https://scikit-learn.org/" target="_blank" rel="noreferrer">
-<img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" alt="scikit_learn" width="40" height="40"/>
-</a>
-<a href="https://www.tensorflow.org" target="_blank" rel="noreferrer">
-<img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="tensorflow" width="40" height="40"/>
-</a>
+The study is supported by the <a href="https://sai.itmo.ru/">Research Center Strong Artificial Intelligence in Industry</a>
+of <a href="https://en.itmo.ru/">ITMO University</a> as part of the plan of the center's program: Development and testing of an experimental prototype of a library of strong AI algorithms in terms of generative design of physical and/or digital objects (components of cyberphysical/socio-cyberphysical systems) characterized by a set of interrelated parameters and satisfying the specified requirements.
 </p>
