@@ -1,0 +1,44 @@
+IZSND TESTS RESULTS
+
+Testing started at 7:37 PM ...
+Launching pytest with arguments C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\izdap_tests.py --no-header --no-summary -q in C:\Users\dmitr\PycharmProjects\aopssop_lib\tests
+
+============================= test session starts =============================
+collecting ... collected 8 items
+
+izdap_tests.py::IzdapTest::test_class_stats 
+izdap_tests.py::IzdapTest::test_data_stats 
+izdap_tests.py::IzdapTest::test_klosgen_measure 
+izdap_tests.py::IzdapTest::test_number_column 
+izdap_tests.py::IzdapTest::test_predicates 
+izdap_tests.py::IzdapTest::test_regression_coefficient 
+izdap_tests.py::IzdapTest::test_rules 
+izdap_tests.py::IzdapTest::test_string_column 
+
+============================== 8 passed in 3.33s ==============================
+
+Process finished with exit code 0
+PASSED                       [ 12%]Test 1 BEGIN
+test_class_stats
+Test 1 END
+PASSED                        [ 25%]Test 1 BEGIN
+test_data_stats
+Test 1 END
+PASSED                   [ 37%]Test 1 BEGIN
+test_klosgen_measure
+Test 1 END
+PASSED                     [ 50%]Test 1 BEGIN
+test_number_column
+Test 1 END
+PASSED                        [ 62%]Test 1 BEGIN
+test_predicates
+Test 1 END
+PASSED            [ 75%]Test 1 BEGIN
+test_regression_coefficient
+Test 1 END
+PASSED                             [ 87%]Test 1 BEGIN
+test_rules
+Test 1 END
+PASSED                     [100%]Test 1 BEGIN
+test_string_column
+Test 1 END

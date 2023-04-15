@@ -1,0 +1,85 @@
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense (Dense)               (None, 30)                1800      
+                                                                 
+ dense_1 (Dense)             (None, 15)                465       
+                                                                 
+ dense_2 (Dense)             (None, 7)                 112       
+                                                                 
+ dense_3 (Dense)             (None, 1)                 8         
+                                                                 
+=================================================================
+Total params: 2,385
+Trainable params: 2,385
+Non-trainable params: 0
+_________________________________________________________________
+None
+precision of decision_tree on training sample (233280 instances): [1. 1.]
+recall of decision_tree on training sample (233280 instances): [1. 1.]
+fscore of decision_tree on training sample (233280 instances): [1. 1.]
+accuracy of decision_tree on training sample (233280 instances): 1.0
+precision of decision_tree on testing sample (58320 instances): [0.99905339 0.98670099]
+recall of decision_tree on testing sample (58320 instances): [0.9994461  0.97747556]
+fscore of decision_tree on testing sample (58320 instances): [0.99924971 0.98206661]
+accuracy of decision_tree on testing sample (58320 instances): 0.998559670781893
+C:\Users\dmitr\PycharmProjects\aopssop_lib\venv\lib\site-packages\sklearn\utils\validation.py:1111: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
+  y = column_or_1d(y, warn=True)
+precision of naive_bayes on training sample (233280 instances): [0.98227593 0.69753668]
+recall of naive_bayes on training sample (233280 instances): [0.989973   0.56418073]
+fscore of naive_bayes on training sample (233280 instances): [0.98610944 0.62381124]
+accuracy of naive_bayes on training sample (233280 instances): 0.9732081618655692
+precision of naive_bayes on testing sample (58320 instances): [0.98174536 0.69778481]
+recall of naive_bayes on testing sample (58320 instances): [0.98976182 0.56226094]
+fscore of naive_bayes on testing sample (58320 instances): [0.98573729 0.62273476]
+accuracy of naive_bayes on testing sample (58320 instances): 0.9725137174211248
+C:\Users\dmitr\PycharmProjects\aopssop_lib\venv\lib\site-packages\sklearn\utils\validation.py:1111: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
+  y = column_or_1d(y, warn=True)
+C:\Users\dmitr\PycharmProjects\aopssop_lib\venv\lib\site-packages\sklearn\linear_model\_logistic.py:444: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+precision of logistic_regression on training sample (233280 instances): [0.97912207 0.90920321]
+recall of logistic_regression on training sample (233280 instances): [0.99803208 0.48078389]
+fscore of logistic_regression on training sample (233280 instances): [0.98848665 0.62897023]
+accuracy of logistic_regression on training sample (233280 instances): 0.9776663237311386
+precision of logistic_regression on testing sample (58320 instances): [0.97846035 0.92351974]
+recall of logistic_regression on testing sample (58320 instances): [0.99833831 0.47726307]
+fscore of logistic_regression on testing sample (58320 instances): [0.98829939 0.62930793]
+accuracy of logistic_regression on testing sample (58320 instances): 0.9773148148148149
+Epoch 1/10
+5832/5832 [==============================] - 5s 773us/step - loss: 0.0195 - accuracy: 0.9811 - binary_accuracy: 0.9811 - val_loss: 0.0108 - val_accuracy: 0.9884 - val_binary_accuracy: 0.9884
+Epoch 2/10
+5832/5832 [==============================] - 4s 753us/step - loss: 0.0090 - accuracy: 0.9904 - binary_accuracy: 0.9904 - val_loss: 0.0073 - val_accuracy: 0.9922 - val_binary_accuracy: 0.9922
+Epoch 3/10
+5832/5832 [==============================] - 4s 759us/step - loss: 0.0067 - accuracy: 0.9932 - binary_accuracy: 0.9932 - val_loss: 0.0069 - val_accuracy: 0.9929 - val_binary_accuracy: 0.9929
+Epoch 4/10
+5832/5832 [==============================] - 4s 769us/step - loss: 0.0059 - accuracy: 0.9940 - binary_accuracy: 0.9940 - val_loss: 0.0058 - val_accuracy: 0.9937 - val_binary_accuracy: 0.9937
+Epoch 5/10
+5832/5832 [==============================] - 4s 769us/step - loss: 0.0054 - accuracy: 0.9944 - binary_accuracy: 0.9944 - val_loss: 0.0050 - val_accuracy: 0.9947 - val_binary_accuracy: 0.9947
+Epoch 6/10
+5832/5832 [==============================] - 4s 756us/step - loss: 0.0050 - accuracy: 0.9948 - binary_accuracy: 0.9948 - val_loss: 0.0047 - val_accuracy: 0.9950 - val_binary_accuracy: 0.9950
+Epoch 7/10
+5832/5832 [==============================] - 4s 765us/step - loss: 0.0050 - accuracy: 0.9947 - binary_accuracy: 0.9947 - val_loss: 0.0049 - val_accuracy: 0.9948 - val_binary_accuracy: 0.9948
+Epoch 8/10
+5832/5832 [==============================] - 5s 774us/step - loss: 0.0048 - accuracy: 0.9950 - binary_accuracy: 0.9950 - val_loss: 0.0050 - val_accuracy: 0.9944 - val_binary_accuracy: 0.9944
+Epoch 9/10
+5832/5832 [==============================] - 4s 764us/step - loss: 0.0047 - accuracy: 0.9951 - binary_accuracy: 0.9951 - val_loss: 0.0052 - val_accuracy: 0.9943 - val_binary_accuracy: 0.9943
+Epoch 10/10
+5832/5832 [==============================] - 4s 768us/step - loss: 0.0045 - accuracy: 0.9953 - binary_accuracy: 0.9953 - val_loss: 0.0044 - val_accuracy: 0.9956 - val_binary_accuracy: 0.9956
+7290/7290 [==============================] - 3s 448us/step
+precision of neural_network on training sample (233280 instances): [0.99653651 0.94049217]
+recall of neural_network on training sample (233280 instances): [0.99762601 0.91540555]
+fscore of neural_network on training sample (233280 instances): [0.99708096 0.92777931]
+accuracy of neural_network on training sample (233280 instances): 0.9943887174211248
+1823/1823 [==============================] - 1s 456us/step
+precision of neural_network on testing sample (58320 instances): [0.99646416 0.92807924]
+recall of neural_network on testing sample (58320 instances): [0.9970161 0.9158521]
+fscore of neural_network on testing sample (58320 instances): [0.99674005 0.92192513]
+accuracy of neural_network on testing sample (58320 instances): 0.993741426611797
+{'decision_tree': {'training_sample': {'size': 233280, 'precision': array([1., 1.]), 'recall': array([1., 1.]), 'fscore': array([1., 1.]), 'accuracy': 1.0}, 'testing_sample': {'size': 58320, 'precision': array([0.99905339, 0.98670099]), 'recall': array([0.9994461 , 0.97747556]), 'fscore': array([0.99924971, 0.98206661]), 'accuracy': 0.998559670781893}}, 'naive_bayes': {'training_sample': {'size': 233280, 'precision': array([0.98227593, 0.69753668]), 'recall': array([0.989973  , 0.56418073]), 'fscore': array([0.98610944, 0.62381124]), 'accuracy': 0.9732081618655692}, 'testing_sample': {'size': 58320, 'precision': array([0.98174536, 0.69778481]), 'recall': array([0.98976182, 0.56226094]), 'fscore': array([0.98573729, 0.62273476]), 'accuracy': 0.9725137174211248}}, 'logistic_regression': {'training_sample': {'size': 233280, 'precision': array([0.97912207, 0.90920321]), 'recall': array([0.99803208, 0.48078389]), 'fscore': array([0.98848665, 0.62897023]), 'accuracy': 0.9776663237311386}, 'testing_sample': {'size': 58320, 'precision': array([0.97846035, 0.92351974]), 'recall': array([0.99833831, 0.47726307]), 'fscore': array([0.98829939, 0.62930793]), 'accuracy': 0.9773148148148149}}, 'neural_network': {'training_sample': {'size': 233280, 'precision': array([0.99653651, 0.94049217]), 'recall': array([0.99762601, 0.91540555]), 'fscore': array([0.99708096, 0.92777931]), 'accuracy': 0.9943887174211248}, 'testing_sample': {'size': 58320, 'precision': array([0.99646416, 0.92807924]), 'recall': array([0.9970161, 0.9158521]), 'fscore': array([0.99674005, 0.92192513]), 'accuracy': 0.993741426611797}}}
