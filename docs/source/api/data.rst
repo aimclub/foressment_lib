@@ -1,6 +1,6 @@
-=============
-AOPSSOP DATA
-=============
+===============
+FORESSMENT DATA
+===============
 
-.. automodule:: aopssop.data_classes.AopssopData
+.. automodule:: foressment_ai.data_classes.ForessmentData
     :members:

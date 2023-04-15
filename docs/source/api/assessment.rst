@@ -1,6 +1,6 @@
-=======
-AOSSOP
-=======
+========
+ASSESSOR
+========
 
-.. automodule:: aopssop.assessment.aossop.aossop
+.. automodule:: foressment_ai.assessment.assessor_ai.assessor
     :members:
