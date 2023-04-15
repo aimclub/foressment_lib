@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'AOPSSOP LIB'
+project = 'FORESSMENT AI LIB'
 copyright = '2022, ComSec Lab'
 author = 'ComSec Lab'
 release = '0.1.0'

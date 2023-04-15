@@ -1,25 +1,25 @@
-======
-POSND
-======
+============
+PREPROCESSOR
+============
 
-.. automodule:: aopssop.preprocessing.posnd.check_data_types
+.. automodule:: foressment_ai.preprocessing.preprocessor.check_data_types
     :members:
 
-.. automodule:: aopssop.preprocessing.posnd.cluster_filling
+.. automodule:: foressment_ai.preprocessing.preprocessor.cluster_filling
     :members:
 
-.. automodule:: aopssop.preprocessing.posnd.data_structure
+.. automodule:: foressment_ai.preprocessing.preprocessor.data_structure
     :members:
 
-.. automodule:: aopssop.preprocessing.posnd.informativity
+.. automodule:: foressment_ai.preprocessing.preprocessor.informativity
     :members:
 
-.. automodule:: aopssop.preprocessing.posnd.multicolinear
+.. automodule:: foressment_ai.preprocessing.preprocessor.multicolinear
     :members:
 
-======
-IZSND
-======
+=========
+EXTRACTOR
+=========
 
-.. automodule:: aopssop.preprocessing.izsnd.izsnd
+.. automodule:: foressment_ai.preprocessing.extractor.rules_extractor
     :members:

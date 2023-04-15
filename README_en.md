@@ -1,7 +1,8 @@
-<h1 align="center">AOPSSOP LIBRARY</h1>
+<h1 align="center">FORESSMENT AI LIBRARY</h1>
 
 <h3 align="left">Tasks</h3>
 <p align="left">
+
 The developed library fulfills 3 main tasks:
 
 - **Preprocessing** of raw and fuzzy data.
@@ -17,26 +18,28 @@ Let's consider each task and its modules in more detail.
 
 <h3 align="left">Preprocessing</h3>
 <p align="left">
+
 This task is fulfilled with the help of the following modules:
 
-- POSND is an algorithm for preprocessing of raw and fuzzy data. It can help with data types correction (```posnd/check_data_types.py```), filling of the empty values of features (```posnd/cluster_filling.py```), and reduction of features in accordance with their informativity (```posnd/informativity.py```) and multicolinear analysis (```posnd/multicolinear.py```).
-- IZSND is an algorithm for extracting knowledge from the data describing the behavior of complex objects in the form of class association rules, which is designed to extract fragments of knowledge from the available data about the layer in the form of association rules (in “If \<premise\>, then \<consequence\>" form) containing only class label in the right part (consequence). The algorithm implements the functions of a strong AI in terms of building a knowledge-based model. 
+- **Preprocessor** is a module for preprocessing of raw and fuzzy data. It can help with data types correction (```preprocessor/check_data_types.py```), filling of the empty values of features (```preprocessor/cluster_filling.py```), and reduction of features in accordance with their informativity (```preprocessor/informativity.py```) and multicolinear analysis (```preprocessor/multicolinear.py```).
+- **Extractor** is a module for extracting knowledge from the data describing the behavior of complex objects in the form of class association rules, which is designed to extract fragments of knowledge from the available data about the layer in the form of association rules (in “If \<premise\>, then \<consequence\>" form) containing only class label in the right part (consequence). The algorithm implements the functions of a strong AI in terms of building a knowledge-based model. 
 
-Examples that are describing the work with POSND module are presented in ```examples/posnd_examples.py```.
+Examples that are describing the work with **Preprocessor** module are presented in ```examples/preprocessor_examples.py```.
 
-1. Function ```posnd_example_basic()``` – basic example of the POSND algorithm work. In this example, POSND algorithm is applied to the generated data. All data reduction steps are printed in console.
-2. Function ```posnd_example_titanic()``` – example of the POSND algorithm work on the titanic dataset. This dataset is suitable, because it contains categorical and numerical features, while some values of features are empty. Moreover, the dataset is small, which helps to receive results fast. 
+1. Function ```preprocessor_example_basic()``` – basic example of the **Preprocessor** module work. In this example, **Preprocessor** module is applied to the generated data. All data reduction steps are printed in console.
+2. Function ```preprocessor_example_titanic()``` – example of the **Preprocessor** module work on the titanic dataset. This dataset is suitable, because it contains categorical and numerical features, while some values of features are empty. Moreover, the dataset is small, which helps to receive results fast. 
 
-Examples that are describing the work with IZSND module are presented in ```examples/izsnd_examples.py```.
+Examples that are describing the work with **Extractor** module are presented in ```examples/extractor_examples.py```.
 
-1. Function ```izsnd_basic_example()``` – basic example of IZSND algo work. In this example, IZSND algo is applied to generated balanced dataset with 2 classes. Example rule and information about transformed dataset are printed.
-2. Function ```izsnd_ieee_data()``` - IEEE_smart_crane example of IZSND algorithm. In this example, IZSND algo is applied to IEEE_smart_crane dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
-3. Function ```izsnd_hai()``` - HAI example of IZSND algorithm. In this example, IZSND algo is applied to HAI dataset. RandomForestClassifier from sklearn is trained on original and transfromed datasets. Information about original and transforemed datasets are printed, as well as accuracy metrics for both classifiers.
+1. Function ```extractor_basic_example()``` – basic example of **Extractor** module work. In this example, **Extractor** module is applied to generated balanced dataset with 2 classes. Example rule and information about transformed dataset are printed.
+2. Function ```extractor_ieee_data()``` - IEEE_smart_crane example of **Extractor** module. In this example, **Extractor** module is applied to IEEE_smart_crane dataset. RandomForestClassifier from sklearn is trained on original and transformed datasets. Information about original and transformed datasets are printed, as well as accuracy metrics for both classifiers.
+3. Function ```extractor_hai()``` - HAI example of **Extractor** module. In this example, **Extractor** module is applied to HAI dataset. RandomForestClassifier from sklearn is trained on original and transformed datasets. Information about original and transformed datasets are printed, as well as accuracy metrics for both classifiers.
 </p>
 
 <h3 align="left">Assessment</h3>
 <p align="left">
-This task is fulfilled with the help of the AOSSOP module. Its work consists in applying a pre-trained machine learning model that allows you to determine the state of an object from its descriptive attributes. Conventionally, the algorithm can be presented in the form of three stages:
+
+This task is fulfilled with the help of the **Assessor** module. Its work consists in applying a pre-trained machine learning model that allows you to determine the state of an object from its descriptive attributes. Conventionally, the algorithm can be presented in the form of three stages:
 
 1. Extracting the attributes of the analyzed object.
 2. Normalizing the attributes.
@@ -44,7 +47,7 @@ This task is fulfilled with the help of the AOSSOP module. Its work consists in 
 
 Within the framework of the tasks considered in the project, the first stage involves reading attributes from a text file with parsing of the corresponding fields. At the second stage, the fields are preprocessed in order to bring them to a single interval. Finally, at the third stage, a pre-trained neural network is launched, which determines whether an object belongs to a particular state based on its attributes.
 
-Examples that are describing the work with AOSSOP module are presented in ```examples/aossop_examples.py```.
+Examples that are describing the work with **Assessor** module are presented in ```examples/assessor_examples.py```.
 
 Examples of the application of this algorithm cover the task of ensuring the cybersecurity of critical resources and objects, as well as the task of determining the trajectory of a vehicle (crane). In the first case, the data obtained from the sensors of the system of steam turbines and pumped storage power plants are considered as input data. In the second case, the input data are parameters that describe the operation and movement of the overhead crane under various loads.
 
@@ -53,17 +56,18 @@ The essence of the experiment was to test the suitability of a pre-configured mo
 
 <h3 align="left">Forecasting</h3>
 <p align="left">
-This task is fulfilled with the help of the APSSOP module. It performs:
+
+This task is fulfilled with the help of the **Forecaster** module. It performs:
 
 - training a model for forecasting the states of complex systems based on historical data in the form of a time series, which is a sequence of feature vectors of system states;
 - autonomous forecasting of system states described by a certain feature vector for a given period of time.
 
 To train the model, the length and sequence of features must be constant for the state of the system at any given time. The model predicts only the numerical parameters of the system states.
 
-Examples that are describing the work with APSSOP module are presented in ```examples/apssop_examples.py```.
+Examples that are describing the work with **Forecaster** module are presented in ```examples/forecaster_examples.py```.
 
-1. Function ```example_appsop_model_training(dataset_name, suf='', mode=1)``` – example of training prediction and data normalization models (```dataset_name```: name of dataset (str), ```suf```: suffix for naming the output (str), ```mode```: boot mode, for developers (integer)).
-2. Function ```example_appsop_forecasting(dataset_name, suf='', mode=1, independently=True, sample_type='test')``` - example of data forecasting based on an existing model, including predictive estimation (```dataset_name```: name of dataset (str), ```suf```: suffix for naming the output (str), ```mode```: boot mode, for developers (integer), ```independently```: sequence is predicted depending on past values or not (boolean), ```sample_type```: type of forecasting sample for estimation - train or test (str)).
+1. Function ```example_forecaster_model_training(dataset_name, suf='', mode=1)``` – example of training prediction and data normalization models (```dataset_name```: name of dataset (str), ```suf```: suffix for naming the output (str), ```mode```: boot mode, for developers (integer)).
+2. Function ```example_forecaster_forecasting(dataset_name, suf='', mode=1, independently=True, sample_type='test')``` - example of data forecasting based on an existing model, including predictive estimation (```dataset_name```: name of dataset (str), ```suf```: suffix for naming the output (str), ```mode```: boot mode, for developers (integer), ```independently```: sequence is predicted depending on past values or not (boolean), ```sample_type```: type of forecasting sample for estimation - train or test (str)).
 
 If param ```independently``` is ```True``` then all feature value vectors are predicted independently of each other. At each forecasting stage, an element of the target sample is added to the batch. If param ```independently``` is ```False``` then each predicted vector becomes an element of a new package for subsequent forecasting.
 
@@ -73,7 +77,7 @@ If param ```sample_type``` is ```'train'``` then forecasting time window is equa
 <h3 align="left">Combination of modules</h3>
 <p align="left">
 
-An example of IZSND (preprocessing) and APSSOP (forecasting) modules integration is presented in ```examples/izsnd_and_apssop_examples.py```.
+An example of **Extractor** (preprocessing) and **Forecaster** (forecasting) modules integration is presented in ```examples/extractor_and_forecaster_examples.py```.
 </p>
 
 <h3 align="left">Documentation</h3>
@@ -109,7 +113,7 @@ which is a part of the Research Center "Strong Artificial Intelligence in Indust
 
 <p align="left">
 This repository is also presented on 
-<a target="_blank" rel="noopener noreferrer" href="https://gitlab.actcognitive.org/itmo-sai-code/aopssop_lib/">
+<a target="_blank" rel="noopener noreferrer" href="https://gitlab.actcognitive.org/itmo-sai-code/foressment_lib/">
 GitLab</a>.
 </p>
 

@@ -1,7 +1,0 @@
-test;data_size;mse;mae;1-mae;duration_sec;cpu%_min;cpu%_mean;cpu%_max;ram_mb_min;ram_mb_mean;ram_mb_max
-0_hai_appsop_izdap0_training_res.log;(74520, 86);0,0035;;;2602,342305;0,0;33,808;69,25;106,7;166,525;441,73
-0_hai_appsop_izdap1_training_res.log;(74520, 82);0,0021;;;2727,340602;0,0;34,912;64,51;104,99;213,998;431,19
-1_hai_appsop_izdap0_apriori_forecasting_res.log;(1000, 86);0,0028015554409698976;0,03005836136539442;0,9699416386346056;61,726962;5,38;13,74;24,86;264,44;316,591;328,26
-1_hai_appsop_izdap1_apriori_forecasting_res.log;(1000, 82);0,0;0,0;1,0;60,809464;7,81;13,824;23,3;446,71;466,201;475,98
-2_hai_appsop_izdap0_aposteriori_forecasting_res.log;(1000, 86);0,06792441520545514;0,13893914644314334;0,8610608535568567;66,907204;0,0;13,343;23,3;275,92;314,685;327,89
-2_hai_appsop_izdap1_aposteriori_forecasting_res.log;(1000, 82);0,0;0,0;1,0;55,929125;8,96;14,046;25,09;462,16;470,343;477,97

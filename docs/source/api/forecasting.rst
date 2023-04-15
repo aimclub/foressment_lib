@@ -1,6 +1,6 @@
-=======
-APSSOP
-=======
+==========
+FORECASTER
+==========
 
-.. automodule:: aopssop.forecasting.apssop.apssop
+.. automodule:: foressment_ai.forecasting.forecaster_ai.forecaster
     :members:
