@@ -1,0 +1,171 @@
+APSSOP TESTS RESULTS
+
+Testing started at 7:36 PM ...
+Launching pytest with arguments C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\apssop_tests.py --no-header --no-summary -q in C:\Users\dmitr\PycharmProjects\aopssop_lib\tests
+
+============================= test session starts =============================
+collecting ... collected 16 items
+
+apssop_tests.py::TestAPSSOP::test_dataframe_split 
+apssop_tests.py::TestAPSSOP::test_estimator 
+apssop_tests.py::TestAPSSOP::test_estimator_mae_results 
+apssop_tests.py::TestAPSSOP::test_estimator_mse_results 
+apssop_tests.py::TestAPSSOP::test_forecasting_model_is_not_none 
+apssop_tests.py::TestAPSSOP::test_forecasting_model_open PASSED                 [  6%]Test 1 BEGIN
+Test 1 END
+PASSED                       [ 12%]Test 1 BEGIN
+The length of the samples is not equal
+Test 1 END
+PASSED           [ 18%]Test 1 BEGIN
+Test 1 END
+PASSED           [ 25%]Test 1 BEGIN
+Test 1 END
+PASSED   [ 31%]Test 1 BEGIN
+test_forecasting_model_is_not_none
+Test 1 END
+2023-01-09 19:36:12.556606: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2023-01-09 19:36:12.557791: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cublas64_11.dll'; dlerror: cublas64_11.dll not found
+2023-01-09 19:36:12.558929: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cublasLt64_11.dll'; dlerror: cublasLt64_11.dll not found
+2023-01-09 19:36:12.560121: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cufft64_10.dll'; dlerror: cufft64_10.dll not found
+2023-01-09 19:36:12.561087: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'curand64_10.dll'; dlerror: curand64_10.dll not found
+2023-01-09 19:36:12.561615: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cusolver64_11.dll'; dlerror: cusolver64_11.dll not found
+2023-01-09 19:36:12.562140: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cusparse64_11.dll'; dlerror: cusparse64_11.dll not found
+2023-01-09 19:36:12.562665: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cudnn64_8.dll'; dlerror: cudnn64_8.dll not found
+2023-01-09 19:36:12.562942: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1934] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+2023-01-09 19:36:12.563759: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+FAILED          [ 37%]Test 1 BEGIN
+test_forecasting_model_open
+File with foreasting model does not exist
+Test 1 END
+
+tests\apssop_tests.py:61 (TestAPSSOP.test_forecasting_model_open)
+self = <tests.apssop_tests.TestAPSSOP testMethod=test_forecasting_model_open>
+
+    def test_forecasting_model_open(self):
+        print(inspect.stack()[0][3])
+        message = 'File with forecasting model does not exist'
+>       self.assertIsNotNone(AIForecaster(10, 10, 'models/test_model.h5', open=True), message)
+
+apssop_tests.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\aopssop\forecasting\apssop\apssop.py:56: in __init__
+    self.open_model()
+..\aopssop\forecasting\apssop\apssop.py:165: in open_model
+    exit()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Use exit() or Ctrl-Z plus Return to exit, code = None
+
+    def __call__(self, code=None):
+        # Shells like IDLE catch the SystemExit, but listen when their
+        # stdin wrapper is closed.
+        try:
+            sys.stdin.close()
+        except:
+            pass
+>       raise SystemExit(code)
+E       SystemExit: None
+
+..\..\..\AppData\Local\Programs\Python\Python39\lib\_sitebuiltins.py:26: SystemExit
+FAILED       [ 43%]Test 1 BEGIN
+test_forecasting_model_predict
+Epoch 1/2
+90/90 [==============================] - 2s 4ms/step - loss: 3142.0513
+Epoch 2/2
+90/90 [==============================] - 0s 4ms/step - loss: 3140.4336
+Test 1 END
+
+tests\apssop_tests.py:40 (TestAPSSOP.test_forecasting_model_predict)
+self = <tests.apssop_tests.TestAPSSOP testMethod=test_forecasting_model_predict>
+
+    def test_forecasting_model_predict(self):
+        print(inspect.stack()[0][3])
+        message = 'Error while calling forecasting'
+        data = DataLoader('test').data
+        forecasting_model = AIForecaster(10, data.shape[1],
+                                          'models/test_model.h5')
+        generator = forecasting_model.data_to_generator(data.values)
+        forecasting_model.train(generator, save=False)
+        try:
+>           forecasting_model.forecasting(forecasting_model.get_batch(generator),
+                                          forecasting_data_length=10)
+E                                         TypeError: get_batch() missing 1 required positional argument: 'current_batch_id'
+
+apssop_tests.py:50: TypeError
+
+During handling of the above exception, another exception occurred:
+
+self = <tests.apssop_tests.TestAPSSOP testMethod=test_forecasting_model_predict>
+
+    def test_forecasting_model_predict(self):
+        print(inspect.stack()[0][3])
+        message = 'Error while calling forecasting'
+        data = DataLoader('test').data
+        forecasting_model = AIForecaster(10, data.shape[1],
+                                          'models/test_model.h5')
+        generator = forecasting_model.data_to_generator(data.values)
+        forecasting_model.train(generator, save=False)
+        try:
+            forecasting_model.forecasting(forecasting_model.get_batch(generator),
+                                          forecasting_data_length=10)
+            print()
+        except:
+>           self.assertTrue(False, message)
+E           AssertionError: False is not true : Error while calling forecasting
+
+apssop_tests.py:54: AssertionError
+PASSED          [ 50%]Test 1 BEGIN
+test_forecasting_model_save
+Test 1 END
+PASSED         [ 56%]Test 1 BEGIN
+test_forecasting_model_train
+Epoch 1/2
+90/90 [==============================] - 3s 5ms/step - loss: 3371.9612
+Epoch 2/2
+90/90 [==============================] - 0s 5ms/step - loss: 3365.2747
+Test 1 END
+PASSED                [ 62%]Test 1 BEGIN
+
+Test 1 END
+PASSED     [ 68%]Test 1 BEGIN
+test_normalization_model_inverse
+Test 1 END
+PASSED [ 75%]Test 1 BEGIN
+test_normalization_model_is_not_none
+Test 1 END
+PASSED        [ 81%]Test 1 BEGIN
+test_normalization_model_open
+File with normalization model does not exist
+Test 1 END
+PASSED        [ 87%]Test 1 BEGIN
+test_normalization_model_save
+Test 1 END
+PASSED       [ 93%]Test 1 BEGIN
+test_normalization_model_train
+Test 1 END
+PASSED   [100%]Test 1 BEGIN
+test_normalization_model_transform
+Test 1 END
+
+
+
+
+
+
+
+apssop_tests.py::TestAPSSOP::test_forecasting_model_predict 
+apssop_tests.py::TestAPSSOP::test_forecasting_model_save 
+apssop_tests.py::TestAPSSOP::test_forecasting_model_train 
+apssop_tests.py::TestAPSSOP::test_generator_create 
+apssop_tests.py::TestAPSSOP::test_normalization_model_inverse 
+apssop_tests.py::TestAPSSOP::test_normalization_model_is_not_none 
+apssop_tests.py::TestAPSSOP::test_normalization_model_open 
+apssop_tests.py::TestAPSSOP::test_normalization_model_save 
+apssop_tests.py::TestAPSSOP::test_normalization_model_train 
+apssop_tests.py::TestAPSSOP::test_normalization_model_transform 
+
+======================== 2 failed, 14 passed in 10.21s ========================
+
+Process finished with exit code 1

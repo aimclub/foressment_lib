@@ -1,0 +1,17 @@
+POSND TESTS RESULTS
+
+Testing started at 7:41 PM ...
+Launching pytest with arguments C:\Users\dmitr\PycharmProjects\aopssop_lib\tests\posnd_tests.py --no-header --no-summary -q in C:\Users\dmitr\PycharmProjects\aopssop_lib\tests
+
+============================= test session starts =============================
+collecting ... collected 4 items
+
+posnd_tests.py::PosndTestCase::test_check_data_types 
+posnd_tests.py::PosndTestCase::test_cluster_filling 
+posnd_tests.py::PosndTestCase::test_informativity 
+posnd_tests.py::PosndTestCase::test_multicolinearity 
+
+======================== 4 passed, 4 warnings in 2.57s ========================
+
+Process finished with exit code 0
+PASSED              [ 25%]PASSED               [ 50%]PASSED                 [ 75%]PASSED              [100%]
