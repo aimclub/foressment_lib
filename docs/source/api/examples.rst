@@ -1,34 +1,34 @@
-=======
-AOSSOP
-=======
+========
+ASSESSOR
+========
 
-.. automodule:: examples.aossop_examples
+.. automodule:: examples.assessor_examples
     :members:
 
-=======
-APSSOP
-=======
+==========
+FORECASTER
+==========
 
-.. automodule:: examples.apssop_examples
+.. automodule:: examples.forecaster_examples
     :members:
 
-======
-IZDAP
-======
+=========
+EXTRACTOR
+=========
 
-.. automodule:: examples.izsnd_examples
+.. automodule:: examples.extractor_examples
     :members:
 
-======
-POSND
-======
+============
+PREPROCESSOR
+============
 
-.. automodule:: examples.posnd_examples
+.. automodule:: examples.preprocessor_examples
     :members:
 
-==============
-IZDAP + APSSOP
-==============
+======================
+EXTRACTOR + FORECASTER
+======================
 
-.. automodule:: examples.izsnd_and_apssop_examples
+.. automodule:: examples.extractor_and_forecaster_examples
     :members:

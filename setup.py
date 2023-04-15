@@ -8,12 +8,12 @@ with open(path.join(HERE, 'README_en.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name="aopssop",
+    name="foressment_ai",
     version="0.1.2",
     description="Demo library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://aopssop.readthedocs.io/",
+    url="https://foressment_ai.readthedocs.io/",
     author="ComSec Lab",
     author_email="labcomsec@gmail.com",
     license="GNU GPLv3",
@@ -26,7 +26,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Operating System :: OS Independent"
     ],
-    packages=["aopssop"],
+    packages=["foressment_ai"],
     include_package_data=True,
     install_requires=[
         "sklearn", "scipy", "numpy",
