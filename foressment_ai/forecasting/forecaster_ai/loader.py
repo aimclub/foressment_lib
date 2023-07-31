@@ -21,7 +21,8 @@ class DataLoaderAndPreprocessorDefault:
     :param data: Data feature matrix
     :type data: pandas.DataFrame
     """
-    def __init__(self, dataset_name, nrows=None, suf='', data_configs_path="../datasets/configs", label_format='binary'):
+    def __init__(self, dataset_name, nrows=None, suf='', data_configs_path="../datasets/configs",
+                 label_format='binary', train_size=0.9):
         """
         Initializing
 
@@ -36,11 +37,7 @@ class DataLoaderAndPreprocessorDefault:
 
         self.__load_data__(data_configs_path, label_format, nrows)
 
-        # if not os.path.exists('forecaster_models/'):
-        #     os.makedirs('forecaster_models/')
-
-        # self.forecasting_model_path = 'forecaster_models/forecasting_model_' + dataset_name + suf
-        self.normalization_model_path = 'forecaster_models/scaler_' + dataset_name + suf + '.pkl'
+        self.set_train_size(train_size)
 
     def __load_data__(self, data_configs_path, label_format, nrows):
         """
@@ -72,14 +69,14 @@ class DataLoaderAndPreprocessorDefault:
 
         self.data.columns = [c.strip() for c in self.data.columns]
 
-        self.timestamp_feature = config.get('Features', 'timestamp_feature', fallback=None)
+        timestamp_feature = config.get('Features', 'timestamp_feature', fallback=None)
         self.binaries_features = self.__config_get_list__(config, 'binaries_features')
         self.drop_features = self.__config_get_list__(config, 'drop_features')
         self.categorical_features = self.__config_get_list__(config, 'categorical_features')
         self.important_features = self.__config_get_list__(config, 'important_features')
 
-        if self.timestamp_feature:
-            self.timestamps = self.data[self.timestamp_feature].squeeze()
+        if timestamp_feature:
+            self.timestamps = self.data[timestamp_feature].squeeze()
 
             time_format = config.get('Other', 'time_format', fallback='')
             timestamp_unit = config.get('Other', 'timestamp_unit', fallback='')
@@ -90,7 +87,7 @@ class DataLoaderAndPreprocessorDefault:
             if timestamp_unit:
                 self.timestamps = self.float_data_to_time(self.timestamps, timestamp_unit)
 
-            self.data = self.data.drop(self.timestamp_feature, axis=1)
+            self.data = self.data.drop(timestamp_feature, axis=1)
 
         label_section = 'Labels.' + label_format
         label_config = config[label_section]
@@ -106,6 +103,12 @@ class DataLoaderAndPreprocessorDefault:
         self.drop_features = [f for f in self.drop_features if f in self.data.columns]
         if len(self.drop_features) > 0:
             self.data = self.data.drop(self.drop_features, axis=1)
+
+        if len(self.categorical_features) > 0:
+            self.__categorical_feature_encoding__()
+
+        self.feature_names = list(self.data.columns)
+        self.data = self.data.fillna(0)
 
     @staticmethod
     def __config_get_list__(config, feature_name):
@@ -146,62 +149,54 @@ class DataLoaderAndPreprocessorDefault:
 
         self.labels = self.labels.map(lambda x: labels_dictionary[x])
 
-    def categorical_feature_encoding(self):
+    def __categorical_feature_encoding__(self):
         """
         Data categorical feature encoding
         """
-        if len(self.categorical_features) > 0:
-            new_categorical_features = []
-            for feature in self.categorical_features:
-                try:
-                    self.data[feature] = self.data[feature].astype(str)
-                    categorical_feature_values = self.data[feature].unique().tolist()
-                    if ('0.0' in categorical_feature_values) and ('0' in categorical_feature_values):
-                        self.data[feature] = self.data[feature].map(lambda x: '0'if x == '0.0'else x)
-                    encoded_feature_data = pd.get_dummies(self.data[feature])
-                    for col in encoded_feature_data.columns:
-                        encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + col})
-                        new_categorical_features.append(feature + '_' + col)
-                except:
-                    encoded_feature_data = pd.DataFrame()
+        new_categorical_features = []
+        for feature in self.categorical_features:
+            try:
+                self.data[feature] = self.data[feature].astype(str)
+                categorical_feature_values = self.data[feature].unique().tolist()
+                if ('0.0' in categorical_feature_values) and ('0' in categorical_feature_values):
+                    self.data[feature] = self.data[feature].map(lambda x: '0'if x == '0.0'else x)
+                encoded_feature_data = pd.get_dummies(self.data[feature])
+                for col in encoded_feature_data.columns:
+                    encoded_feature_data = encoded_feature_data.rename(columns={col: feature + '_' + col})
+                    new_categorical_features.append(feature + '_' + col)
+            except:
+                encoded_feature_data = pd.DataFrame()
 
-                if not encoded_feature_data.empty:
-                    old_data_columns = self.data.columns.tolist()
-                    feature_index = old_data_columns.index(feature)
-                    new_data_columns = old_data_columns[:feature_index] + \
-                                       encoded_feature_data.columns.tolist() + \
-                                       old_data_columns[feature_index+1:]
+            if not encoded_feature_data.empty:
+                old_data_columns = self.data.columns.tolist()
+                feature_index = old_data_columns.index(feature)
+                new_data_columns = old_data_columns[:feature_index] + \
+                                   encoded_feature_data.columns.tolist() + \
+                                   old_data_columns[feature_index+1:]
 
-                    self.data = pd.concat([self.data, encoded_feature_data], axis=1)
-                    self.data = self.data[new_data_columns]
-                else:
-                    print('Too many values for categorical feature "' + feature +'". Delete feature from data')
-                    self.data = self.data.drop(feature, axis=1)
-            self.categorical_features = new_categorical_features
-        self.data = self.data.fillna(0)
+                self.data = pd.concat([self.data, encoded_feature_data], axis=1)
+                self.data = self.data[new_data_columns]
+            else:
+                print('Too many values for categorical feature "' + feature +'". Delete feature from data')
+                self.data = self.data.drop(feature, axis=1)
+        self.categorical_features = new_categorical_features
 
-    def train_test_split(self, train_size=0.9):
+    def set_train_size(self, train_size):
         """
-        Split data into training and test sets
 
-        :param train_size: Share of the training sample (default = 0.9)
-        :type train_size: float
-
-        :return train: Feature matrix of training data
-        :rtype train: pandas.DataFrame
-
-        :return test: Feature matrix of test data
-        :rtype test: pandas.DataFrame
         """
         if (train_size < 0) and (train_size > 1):
             print('The proportion of the training sample is not in the interval (0, 1)')
-            return None, None
+            exit()
 
-        train_ind = round(train_size*self.data.shape[0])
+        self.train_size = train_size
+        self.train_end_index = round(train_size * self.data.shape[0])
 
-        train = self.data.iloc[:train_ind]
-        test = self.data.iloc[train_ind:]
-        return train, test
+    def get_train_data(self):
+        return self.data.loc[:self.train_end_index]
+
+    def get_test_data(self):
+        return self.data.loc[self.train_end_index:]
 
 
 class DataLoaderAndPreprocessorExtractor:
