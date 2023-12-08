@@ -1,9 +1,13 @@
+import math
 import os
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 import configparser
+import pickle
 from foressment_ai import RulesExtractor
+from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
 
 class DataLoaderAndPreprocessorDefault:
     """
@@ -19,37 +23,50 @@ class DataLoaderAndPreprocessorDefault:
     :type categorical_features: list
 
     :param data: Data feature matrix
-    :type data: pandas.DataFrame
+    :type data: np.array
+
+    :param feature_names:
+    :type feature_names: list
     """
-    def __init__(self, dataset_name, nrows=None, suf='', data_configs_path="../datasets/configs",
-                 label_format='binary', train_size=0.9):
+    def __init__(self, data=np.array([]), feature_names=None):
         """
         Initializing
 
-        :param dataset_name: Data set name
-        :type dataset_name: string
-
-        :param mode: Boot mode, for developers
-        :type mode: int
         """
+        self.data = data
+        self.shape = self.data.shape
+        if not feature_names:
+            self.feature_names = []
+        else:
+            self.feature_names = feature_names
+        self.set_train_size(0.9)
 
-        self.dataset_name = dataset_name
+    def generate_test_data(self, shape=(1000, 1)):
+        self.dataset_name = 'test'
+        self.data = np.empty(shape=shape)
+        self.shape = shape
+        self.feature_names = []
 
-        self.__load_data__(data_configs_path, label_format, nrows)
+        self.timestamps = np.arange(0, shape[0] * 0.1, 0.1)
+        for i in range(shape[1]):
+            new_col = np.sin(self.timestamps) + np.random.normal(scale=0.5, size=len(self.timestamps))
+            self.data[:, i] = new_col
+            self.feature_names.append('feature_' + str(i))
 
-        self.set_train_size(train_size)
 
-    def __load_data__(self, data_configs_path, label_format, nrows):
+    def load_data(self,  dataset_name='', nrows=None, suf='', data_configs_path="../datasets/configs",
+                 label_format=None):
         """
         Import data with configuration file.
         """
+        self.dataset_name = dataset_name
+
         config = configparser.ConfigParser()
 
-        try:
-            config.read(data_configs_path + '/' + self.dataset_name + '.ini')
-        except:
-            print('Unknown dataset name!')
-            exit()
+        config = configparser.ConfigParser()
+        config_filename = data_configs_path + '/' + self.dataset_name + '.ini'
+        assert os.path.isfile(config_filename), 'Unknown dataset configuration'
+        config.read(config_filename)
 
         dataset_path = config.get('Params', 'data_path')
         dataset_filename = config.get('Params', 'filename',  fallback='')
@@ -59,15 +76,15 @@ class DataLoaderAndPreprocessorDefault:
         if dataset_filename:
             self.data = pd.read_csv(dataset_path + '/' + dataset_filename, sep=sep, decimal=decimal, nrows=nrows)
         else:
-            for file in os.listdir(dataset_path):
-                self.data = pd.concat([self.data, pd.read_csv(dataset_path  + '/' + file, sep=sep, decimal=decimal)],
+            self.data = pd.concat([pd.read_csv(dataset_path  + '/' + file, sep=sep, decimal=decimal)
+                                       for file in os.listdir(dataset_path)],
                                       ignore_index=True)
-                if nrows:
-                    if self.data.shape[0] > nrows:
-                        self.data = self.data.loc[:nrows]
-                        break
+            self.data = self.data.loc[:nrows]
 
         self.data.columns = [c.strip() for c in self.data.columns]
+
+        start_id = int(config.get('Other', 'start_id', fallback='0'))
+        self.data = self.data[start_id:].reset_index(drop=True)
 
         timestamp_feature = config.get('Features', 'timestamp_feature', fallback=None)
         self.binaries_features = self.__config_get_list__(config, 'binaries_features')
@@ -89,16 +106,17 @@ class DataLoaderAndPreprocessorDefault:
 
             self.data = self.data.drop(timestamp_feature, axis=1)
 
-        label_section = 'Labels.' + label_format
-        label_config = config[label_section]
+        if label_format:
+            label_section = 'Labels.' + label_format
+            label_config = config[label_section]
 
-        self.label_feature = label_config.get('label', fallback=None)
-        normal_label = label_config.get('normal_label', fallback='Normal')
-        self.labels = self.data[self.label_feature]
-        self.data = self.data.drop(self.label_feature, axis=1)
+            self.label_feature = label_config.get('label', fallback=None)
+            normal_label = label_config.get('normal_label', fallback='Normal')
+            self.labels = self.data[self.label_feature]
+            self.data = self.data.drop(self.label_feature, axis=1)
 
-        if not is_numeric_dtype(self.labels):
-            self.__encoding_labels__(normal_label)
+            if not is_numeric_dtype(self.labels):
+                self.__encoding_labels__(normal_label)
 
         self.drop_features = [f for f in self.drop_features if f in self.data.columns]
         if len(self.drop_features) > 0:
@@ -109,6 +127,8 @@ class DataLoaderAndPreprocessorDefault:
 
         self.feature_names = list(self.data.columns)
         self.data = self.data.fillna(0)
+        self.data = self.data.values
+        self.shape = self.data.shape
 
     @staticmethod
     def __config_get_list__(config, feature_name):
@@ -181,6 +201,42 @@ class DataLoaderAndPreprocessorDefault:
                 self.data = self.data.drop(feature, axis=1)
         self.categorical_features = new_categorical_features
 
+    def scale(self, scaler=None, scaler_from_file='', scaler_to_file=''):
+        if scaler:
+            self.scaler = scaler
+
+        if scaler_from_file:
+            if os.path.isfile(scaler_from_file):
+                with open(scaler_from_file, 'rb') as file:
+                    self.scaler = pickle.load(file)
+                    file.close()
+
+        else:
+            if not hasattr(self, 'scaler'):
+                self.scaler = MinMaxScaler()
+                self.scaler.fit(self.data)
+
+            if scaler_to_file:
+                with open(scaler_to_file, 'wb') as file:
+                    pickle.dump(self.scaler, file)
+                    file.close()
+
+        self.data = self.scaler.transform(self.data)
+
+
+    def inverse(self, scaler_from_file=''):
+        if scaler_from_file:
+            if os.path.isfile(scaler_from_file):
+                with open(scaler_from_file, 'rb') as file:
+                    self.scaler = pickle.load(file)
+                    file.close()
+        try:
+            return self.scaler.inverse_transform(self.data)
+        except:
+            'No scaler to inverse'
+            return 1
+
+
     def set_train_size(self, train_size):
         """
 
@@ -188,15 +244,53 @@ class DataLoaderAndPreprocessorDefault:
         if (train_size < 0) and (train_size > 1):
             print('The proportion of the training sample is not in the interval (0, 1)')
             exit()
-
         self.train_size = train_size
-        self.train_end_index = round(train_size * self.data.shape[0])
+
 
     def get_train_data(self):
-        return self.data.loc[:self.train_end_index]
+        train_end_index = round(self.train_size * self.data.shape[0])
+        return DataLoaderAndPreprocessorDefault(self.data[:train_end_index], feature_names=self.feature_names)
 
     def get_test_data(self):
-        return self.data.loc[self.train_end_index:]
+        train_end_index = round(self.train_size * self.data.shape[0])
+        return DataLoaderAndPreprocessorDefault(self.data[train_end_index:], feature_names=self.feature_names)
+
+    def draw(self, size=1000):
+        n = len(self.feature_names)
+        nrows = 1
+        ncols = 1
+        if n <= 3:
+            nrows = n
+        elif n % 3 == 0:
+            ncols = 3
+            nrows = int(n / 3)
+        elif n % 2 == 0:
+            ncols = 2
+            nrows = int(n / 2)
+        else:
+            ncols = 2
+            nrows = int(math.floor(n / 2))
+
+        fig, axs = plt.subplots(nrows, ncols, sharex='col', figsize=(ncols*5, nrows*2))
+        fig.tight_layout(pad=2.3)
+        fig.supxlabel('Time')
+        i_feature = 0
+
+        color_map = plt.cm.get_cmap('plasma', n)
+
+        for i in range(nrows):
+            if ncols == 1:
+                axs[i].plot(self.data[:size, i_feature], color=color_map(i_feature))
+                axs[i].set_ylabel(self.feature_names[i_feature])
+                i_feature = i_feature + 1
+            else:
+                for j in range(ncols):
+                    if i_feature > n:
+                        break
+                    axs[i, j].plot(self.data[:size, i_feature], color=color_map(i_feature))
+                    axs[i, j].set_ylabel(self.feature_names[i_feature])
+                    i_feature = i_feature + 1
+        plt.show()
 
 
 class DataLoaderAndPreprocessorExtractor:
@@ -337,4 +431,5 @@ class DataLoaderAndPreprocessorExtractor:
                     print('Too many values for categorical feature "' + feature + '". Delete feature from data')
                     self.data = self.data.drop(feature, axis=1)
         self.data = self.data.fillna(0)
+
 
