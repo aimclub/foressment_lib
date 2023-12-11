@@ -1,6 +1,7 @@
 from inspect import getmembers, isfunction, signature
 import keras.activations as activations
 from keras import optimizers
+import tensorflow as tf
 import os
 from typing import Type
 
@@ -31,7 +32,7 @@ class ParamChecker:
                 'dropout': {'is_type': (float, int), 'in_range': [0, 1]},
                 'hidden_activation': {'is_type': str, 'in_list': activations_names},
                 'output_activation': {'is_type': str, 'in_list': activations_names},
-                'optimizer': {'is_type': optimizers.legacy.Adam},
+                'optimizer': {'is_type': tf.keras.optimizers.legacy.Adam},
                 'loss': {'is_type': str, 'in_list': ['mse', 'mae']}
             }
 
