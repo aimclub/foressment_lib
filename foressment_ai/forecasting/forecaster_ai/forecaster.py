@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from typing import Type
 from tqdm import tqdm
 
-from foressment_ai.forecasting.forecaster_ai.сhecker import ParamChecker
+from .checker import ParamChecker
 
 checker = ParamChecker()
 

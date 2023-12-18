@@ -11,12 +11,14 @@ import os.path
 import numpy as np
 import pandas as pd
 import tempfile
-
+import shutil
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 
 from keras.utils import to_categorical
 
+import matplotlib
+matplotlib.use('Agg')
 
 class TestAssessor(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -268,7 +270,9 @@ class TestFeatureSelector(unittest.TestCase):
 
 class TestDeepCNN(unittest.TestCase):
     def setUp(self):
-        # 'smart_crane.csv'
+        self.current_directory = os.path.dirname(os.path.realpath(__file__))
+        self.temp_dir = tempfile.TemporaryDirectory(dir=self.current_directory)
+        self.temp_model_path = os.path.join(self.temp_dir.name, "model.h5")
         X, y = make_classification(n_samples=1000, n_features=20, n_classes=5, n_clusters_per_class=4, n_informative=5, random_state=42)
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
         X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
@@ -277,14 +281,14 @@ class TestDeepCNN(unittest.TestCase):
         y_train = to_categorical(y_train, self.classes)
         y_val = to_categorical(y_val, self.classes)
         self.X_train, self.X_val, self.y_train, self.y_val = X_train, X_val, y_train, y_val
-
+        self.model = foras.DeepCNN(input_shape=self.input_shape, blocks=1, units=64, classes=self.classes)
+            
     def test_model_build(self):
         model = foras.DeepCNN(input_shape=self.input_shape, blocks=1, units=64, classes=self.classes)
         self.assertIsNotNone(model.model)
 
     def test_model_fit(self):
-        model = foras.DeepCNN(input_shape=self.input_shape, blocks=1, units=64, classes=self.classes)
-        history = model.fit(self.X_train, self.y_train, validation_data=(self.X_val, self.y_val), epochs=10, batch_size=128, verbose=0)
+        history = self.model.fit(self.X_train, self.y_train, validation_data=(self.X_val, self.y_val), epochs=10, batch_size=128, verbose=0)
         self.assertIsInstance(history.history, dict)
         self.assertGreater(len(history.history), 0)
 
@@ -293,6 +297,29 @@ class TestDeepCNN(unittest.TestCase):
         model.fit(self.X_train, self.y_train, validation_data=(self.X_val, self.y_val), epochs=10, batch_size=128, verbose=0)
         y_pred = model.predict(self.X_val)
         self.assertEqual(y_pred.shape[1], self.classes)
+
+    def test_classification_report(self):
+        model = foras.DeepCNN(input_shape=self.input_shape, blocks=2, units=128, classes=self.classes)
+        model.fit(self.X_train, self.y_train, validation_data=(self.X_val, self.y_val), epochs=10, batch_size=128, verbose=0)
+        model.print_classification_report(self.X_val, self.y_val)
+
+    def test_plot(self):
+        model = foras.DeepCNN(input_shape=self.input_shape, blocks=3, units=64, classes=self.classes)
+        model.fit(self.X_train, self.y_train, validation_data=(self.X_val, self.y_val), epochs=10, batch_size=128, verbose=0)
+        model.draw_plot(plot_type="accuracy")
+
+    def test_save_load_model(self):
+        self.assertIsNone(self.model.save_model(self.temp_model_path))
+
+    #def test_load_model(self):
+        loaded_model = foras.DeepCNN.load_model(self.temp_model_path)
+        self.assertIsInstance(loaded_model, foras.DeepCNN)
+        
+    def tearDown(self):
+        self.temp_dir.cleanup()
+        cache_dir = os.path.join(os.getcwd(), '__pycache__')
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
 
 
 def get_hv_data(param="clf"):
@@ -309,9 +336,11 @@ def get_hv_data(param="clf"):
 class HybridVariationTestCase(unittest.TestCase):
     def __init__(self, methodName: str = 'runTest'):
         super().__init__(methodName=methodName)
+        self.current_directory = os.path.dirname(os.path.realpath(__file__))
+        self.temp_dir = tempfile.TemporaryDirectory(dir=self.current_directory)
+        self.temp_model_path = os.path.join(self.temp_dir.name, "model.h5")
         X_train, X_val, y_train, y_val = get_hv_data("clf")
-        X_train, X_val = X_train.reshape(X_train.shape[0], X_train.shape[1], 1), X_val.reshape(X_val.shape[0],
-                                                                                               X_val.shape[1], 1)
+        X_train, X_val = X_train.reshape(X_train.shape[0], X_train.shape[1], 1), X_val.reshape(X_val.shape[0],                                                                                 X_val.shape[1], 1)
         self.input_shape = X_train.shape[1:]
         self.classes = len(set(y_train))
         self.X_train, self.X_val, self.y_train, self.y_val = X_train, X_val, y_train, y_val
@@ -347,16 +376,31 @@ class HybridVariationTestCase(unittest.TestCase):
                   verbose=0)
         model.print_classification_report(X_test, y_test)
 
+    def test_print_classification_report(self):
+        X_test, y_test = make_classification(n_samples=100, n_features=15, random_state=42)
+        model = foras.hybrid_variation(input_shape=self.input_shape, units=64, classes=2)
+        model.fit(self.X_train, self.y_train, validation_data=(self.X_val,self.y_val), epochs=5, batch_size=32, verbose=0)
+        model.print_classification_report(X_test, y_test)
 
-    def test_save_model(self):
-        filepath = "model_save_test.h5"
-        self.assertIsNone(self.model.save_model(filepath))
+    def test_draw_plot(self):
+        model = foras.hybrid_variation(input_shape=self.input_shape, units=64, classes=2)
+        model.fit(self.X_train, self.y_train, validation_data=(self.X_val,self.y_val), epochs=5, batch_size=32, verbose=0)
+        self.assertIsNone(model.draw_plot("accuracy"))
+        self.assertIsNone(model.draw_plot("loss"))
+        self.assertIsNone(model.draw_plot("auc"))
+        self.assertIsNone(model.draw_plot("invalid"))
 
-    def test_load_model(self):
-        filepath = "model_save_test.h5"
-        loaded_model = foras.hybrid_variation.load_model(filepath)
+    def test_save_and_load_model(self):
+        self.assertIsNone(self.model.save_model(self.temp_model_path))
+    #def test_load_model(self):
+        loaded_model = foras.hybrid_variation.load_model(self.temp_model_path)
         self.assertIsInstance(loaded_model, foras.hybrid_variation)
-
+    
+    def tearDown(self):
+        self.temp_dir.cleanup()
+        cache_dir = os.path.join(os.getcwd(), '__pycache__')
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
 
 def get_cnnh_data(param="clf"):
     if param == "re":
@@ -372,6 +416,9 @@ def get_cnnh_data(param="clf"):
 class TestCNNGRU(unittest.TestCase):
     def __init__(self, methodName: str = 'runTest'):
         super().__init__(methodName=methodName)
+        self.current_directory = os.path.dirname(os.path.realpath(__file__))
+        self.temp_dir = tempfile.TemporaryDirectory(dir=self.current_directory)
+        self.temp_model_path = os.path.join(self.temp_dir.name, "model.h5")
         X_train, X_val, y_train, y_val = get_cnnh_data("clf")
         X_train, X_val = X_train.reshape(X_train.shape[0], X_train.shape[1], 1), X_val.reshape(X_val.shape[0], X_val.shape[1], 1)
         self.input_shape = X_train.shape[1:]
@@ -395,22 +442,35 @@ class TestCNNGRU(unittest.TestCase):
         print(loss)
         assert len(loss) == 5 # should have 5 items
 
-    def test_predict(self):
-        X, _ = make_classification(n_samples=10, n_features=15, random_state=42)
-        predictions = self.model.predict(X)
-        self.assertIsNotNone(predictions)
-        assert len(predictions) == 10
+    def test_print_classification_report(self):
+        X_test, y_test = make_classification(n_samples=100, n_features=15, random_state=42)
+        model = foras.Hybrid_CNN_GRU(input_shape=self.input_shape, units=64, classes=2)
+        model.fit(self.X_train, self.y_train, validation_data=(self.X_val,self.y_val), epochs=5, batch_size=32, verbose=0)
+        model.print_classification_report(X_test, y_test)
 
-    def test_save_model(self):
+    def test_draw_plot(self):
+        model = foras.Hybrid_CNN_GRU(input_shape=self.input_shape, units=64, classes=2)
+        model.fit(self.X_train, self.y_train, validation_data=(self.X_val,self.y_val), epochs=5, batch_size=32, verbose=0)
+        model.draw_plot("accuracy")
+        model.draw_plot("loss")
+        model.draw_plot("auc")
+        model.draw_plot("invalid")  # Should print "Invalid plot_type. Choose 'accuracy', 'loss', or 'auc'."
+
+    def test_save_load_model(self):
         self.model.save_model("model_save_test.h5")
 
-    def test_load_model(self):
+    #def test_load_model(self):
         loaded_model = foras.Hybrid_CNN_GRU.load_model(filepath="model_save_test.h5")
         assert isinstance(loaded_model, foras.Hybrid_CNN_GRU)
         print("==========test loading model with false info=========")
         loaded_model = foras.Hybrid_CNN_GRU.load_model(filepath="model_save_test.h5",units=128,classes=5)
         assert isinstance(loaded_model, foras.Hybrid_CNN_GRU)
 
+    def tearDown(self):
+        self.temp_dir.cleanup()
+        cache_dir = os.path.join(os.getcwd(), '__pycache__')
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
 
 def get_ae_data(param="clf"):
     if param == "re":
@@ -426,7 +486,9 @@ def get_ae_data(param="clf"):
 class TestAutoEncoder(unittest.TestCase):
 
     def setUp(self):
-        #set up data for classifier
+        self.current_directory = os.path.dirname(os.path.realpath(__file__))
+        self.temp_dir = tempfile.TemporaryDirectory(dir=self.current_directory)
+        self.temp_model_path = os.path.join(self.temp_dir.name, "model.h5")
         X_train, X_val, y_train, y_val = get_ae_data("clf")
         #X_train, X_val = X_train.reshape(X_train.shape[0], X_train.shape[1], 1), X_val.reshape(X_val.shape[0], X_val.shape[1], 1)
         self.input_shape = (X_train.shape[1],1)
@@ -480,6 +542,21 @@ class TestAutoEncoder(unittest.TestCase):
         clf.fit(self.X_train, self.y_train, validation_data = (self.X_val, self.y_val), epochs=2)
         pred_y = clf.predict(X_test)
         self.assertIsNotNone(pred_y)
+        
+    def test_draw_plot(self):
+        re = self.autoencoder
+        re.fit(self.X_train_, self.X_train_, validation_data = (self.X_val_, self.X_val_), epochs=2)
+        re.draw_mse_plot(plot_type="loss")
+
+        clf = self.autoencoder_clf
+        clf.fit(self.X_train, self.y_train, validation_data = (self.X_val, self.y_val), epochs=2)
+        clf.draw_clf_plot(plot_type="auc")
+        
+    def tearDown(self):
+        self.temp_dir.cleanup()
+        cache_dir = os.path.join(os.getcwd(), '__pycache__')
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
 
 
 if __name__ == '__main__':
