@@ -2,7 +2,7 @@
 [![ITMO](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/ITMO_badge_flat_rus.svg)](https://en.itmo.ru/en/)
 
 [![license](https://img.shields.io/github/license/labcomsec/aopssop_lib)](https://github.com/labcomsec/foressment_lib/blob/master/LICENSE.md)
-[![Eng](https://img.shields.io/badge/lang-ru-red.svg)](/README_en.md)
+[![Eng](https://img.shields.io/badge/lang-en-yellow.svg)](/README_en.md)
 [![Mirror](https://img.shields.io/badge/github-mirror-orange)](https://github.com/labcomsec/foressment_lib/)
 
 <p align="left">
