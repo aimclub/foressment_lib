@@ -1,5 +1,5 @@
-[![SAI](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/SAI_badge_flat.svg)](https://sai.itmo.ru/)
-[![ITMO](https://github.com/ITMO-NSS-team/open-source-ops/blob/master/badges/ITMO_badge_flat_rus.svg)](https://en.itmo.ru/en/)
+[![SAI](https://raw.githubusercontent.com/aimclub/open-source-ops/43bb283758b43d75ec1df0a6bb4ae3eb20066323/badges/SAI_badge.svg)](https://sai.itmo.ru/)
+[![ITMO](https://raw.githubusercontent.com/aimclub/open-source-ops/43bb283758b43d75ec1df0a6bb4ae3eb20066323/badges/ITMO_badge.svg)](https://en.itmo.ru/en/)
 
 [![license](https://img.shields.io/github/license/labcomsec/aopssop_lib)](https://github.com/labcomsec/foressment_lib/blob/master/LICENSE.md)
 [![Eng](https://img.shields.io/badge/lang-en-yellow.svg)](/README_en.md)
