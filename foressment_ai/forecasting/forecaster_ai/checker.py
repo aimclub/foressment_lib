@@ -1,7 +1,6 @@
 from inspect import getmembers, isfunction, signature
 import keras.activations as activations
 from keras import optimizers
-import tensorflow as tf
 import os
 from typing import Type
 
@@ -13,11 +12,6 @@ class ParamChecker:
 
         activations_names = [name[0] for name in getmembers(activations, isfunction)
                              if 'x' in signature(name[1]).parameters.keys()]
-
-        optimization_names = ['adadelta', 'adagrad', 'adam', 'adamax', 'experimentaladadelta', 'experimentaladagrad',
-                              'experimentaladam', 'experimentalsgd', 'nadam', 'rmsprop', 'sgd', 'ftrl',
-                              'lossscaleoptimizer',
-                              'lossscaleoptimizerv3', 'lossscaleoptimizerv1']
 
         if model_type == 'forecaster':
             self.params_requirements = {
@@ -32,7 +26,7 @@ class ParamChecker:
                 'dropout': {'is_type': (float, int), 'in_range': [0, 1]},
                 'hidden_activation': {'is_type': str, 'in_list': activations_names},
                 'output_activation': {'is_type': str, 'in_list': activations_names},
-                'optimizer': {'is_type': tf.keras.optimizers.legacy.Adam},
+                'optimizer': {'is_type': optimizers.Adam},
                 'loss': {'is_type': str, 'in_list': ['mse', 'mae']}
             }
 

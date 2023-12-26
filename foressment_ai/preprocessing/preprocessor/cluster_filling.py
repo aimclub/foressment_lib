@@ -1,7 +1,7 @@
 import numpy as np
 import scipy
 from sklearn.cluster import KMeans
-from foressment_ai.preprocessing.preprocessor import data_structure as Data_Structure
+from foressment_ai.preprocessing.preprocessor.data_structure import Data as Data_Structure
 from foressment_ai.preprocessing.preprocessor.__verbose__ import PrintLog
 
 
@@ -140,7 +140,7 @@ class ClusterFilling:
         return X_hat
 
     @staticmethod
-    def fill(data: Data_Structure.Data) -> None:
+    def fill(data: Data_Structure) -> None:
         """
         K-Means clustering with filling of missing values for data
         """

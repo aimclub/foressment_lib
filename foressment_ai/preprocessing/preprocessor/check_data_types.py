@@ -1,5 +1,6 @@
+# import __verbose__ as __Verbose__
 from foressment_ai.preprocessing.preprocessor import __verbose__ as __Verbose__
-from foressment_ai.preprocessing.preprocessor import data_structure as Data_Structure
+from foressment_ai.preprocessing.preprocessor.data_structure import Data as Data_Structure
 import numpy as np
 
 
@@ -96,7 +97,7 @@ class CheckDataTypes:
         )
 
     @staticmethod
-    def correct_types(data: Data_Structure.Data) -> None:
+    def correct_types(data: Data_Structure) -> None:
         """
         Method that correct data type
         """

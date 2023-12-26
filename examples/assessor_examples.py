@@ -8,19 +8,18 @@ from foressment_ai import DataLoaderHai, DataLoaderEdgeIIoTSet, DataLoaderDataPo
 
 # set value of DATASET
 DATASET = 'hai'
-#DATASET = 'edge-iiotset'
-#DATASET = 'dataport'
+# DATASET = 'edge-iiotset'
+# DATASET = 'dataport'
 
-# set value of HAI_FILE
-HAI_FILE = '../datasets/HAI_test1.csv.gz'
-
-# EDGE_IIOTSET_FILE = '../edge-iiotset/ML-EdgeIIoT-dataset.csv'
-# DATAPORT_FILE = '../dataport/combined_csv.csv'
+# # set value of HAI_FILE
+HAI_FILE = '../datasets/HAI_test2.csv.gz'
+EDGE_IIOTSET_FILE = '../datasets/iiot_sample.csv'
+DATAPORT_FILE = '../datasets/dataport.csv'
 
 datasets = {
     'hai': HAI_FILE,
-    # 'edge-iiotset': EDGE_IIOTSET_FILE,
-    # 'dataport': DATAPORT_FILE
+    'edge-iiotset': EDGE_IIOTSET_FILE,
+    'dataport': DATAPORT_FILE
 }
 
 def assessor_dataset_examples():
@@ -44,20 +43,29 @@ def assessor_dataset_examples():
     if DATASET == 'hai':
         dl = DataLoaderHai(file, fd.n, fd.d)
 
-    # elif DATASET == 'edge-iiotset':
-    #     dl = DataLoaderEdgeIIoTSet(file, fd.n, fd.d)
-    #
-    # elif DATASET == 'dataport':
-    #     dl = DataLoaderDataPort(file, fd.n, fd.d)
+    elif DATASET == 'edge-iiotset':
+        dl = DataLoaderEdgeIIoTSet(file, fd.n, fd.d)
+
+    elif DATASET == 'dataport':
+        dl = DataLoaderDataPort(file, fd.n, fd.d)
 
     else:
         assert False
 
+    try:
+        in_size = np.shape(dl.features)[1]
+    except:
+        in_size = 1
+    try:
+        out_size = np.shape(dl.labels)[1]
+    except:
+        out_size = 1
+
     classifiers = [
         SAIClassifier(
             cls_type=c,
-            in_size=np.shape(dl.features)[1],
-            out_size=np.shape(dl.labels)[1]
+            in_size=in_size,
+            out_size=out_size
         )
         for c in [
             'decision_tree', 'naive_bayes',

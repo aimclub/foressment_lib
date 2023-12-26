@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from collections import OrderedDict
 from sklearn.utils import shuffle
-from foressment_ai import DataLoader
+from foressment_ai.assessment.assessor_ai.assessor import DataLoader
 
 
 class DataLoaderHai(DataLoader):

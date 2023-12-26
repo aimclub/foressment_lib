@@ -18,8 +18,8 @@ from foressment_ai.assessment.assessor_ai.cnn_gru_hybridmodel import Hybrid_CNN_
 from foressment_ai.assessment.assessor_ai.autoencoder import AutoEncoder
 
 from foressment_ai.forecasting.forecaster_ai.forecaster import (
-    ForecastEstimator, ForecasterParameters, NaiveForecaster, AIForecaster, AIForecasterParameters, AIForecasterTuner,
-    TSGenerator,  )
+    ForecastEstimator, ForecasterParameters, NaiveForecaster, TSGenerator, DeepForecasterParameters,
+    DeepForecasterTuner, DeepForecaster)
 from foressment_ai.forecasting.forecaster_ai.logger import Logger
 from foressment_ai.forecasting.forecaster_ai.loader import \
     DataLoaderAndPreprocessorDefault as DataLoader, \

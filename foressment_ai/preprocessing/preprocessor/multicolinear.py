@@ -4,7 +4,7 @@ import numpy as np
 import scipy
 import pandas as pd
 
-from foressment_ai.preprocessing.preprocessor import data_structure as Data_Structure
+import foressment_ai.preprocessing.preprocessor.data_structure as Data_Structure
 from foressment_ai.preprocessing.preprocessor.__verbose__ import PrintLog
 
 

@@ -302,5 +302,3 @@ def example_join_test_hai():
 if __name__ == '__main__':
     example_join_test_smart_crane()
     # example_join_test_hai()
-
-
