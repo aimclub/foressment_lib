@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-# from foressment_ai.forecasting.forecaster_ai.forecaster import *
 import unittest
 import inspect
 import numpy as np
-
 import foressment_ai as foras
 
 
@@ -32,38 +30,45 @@ class TestForecasterParameters(unittest.TestCase):
         message = 'The object of class ForecasterParameters sets incorrect parameters'
         params = foras.ForecasterParameters()
         incorrect_value = -100
-        for i, param in enumerate(params.param_names):
-            with self.subTest(i=i):
+        for param_name in params.__slots__:
+            with self.subTest():
                 with self.assertRaises(AssertionError, msg=message):
-                    params.__setattr__(name=param, val=incorrect_value)
+                    params.__setattr__(name=param_name, val=incorrect_value)
+
+    def test_set_incorrect_argument(self):
+        print(inspect.stack()[0][3])
+        message = 'The object of class ForecasterParameters sets incorrect argument'
+        params = foras.ForecasterParameters()
+        with self.assertRaises(AttributeError, msg=message):
+            params.block_type = 'GRU'
 
 
-class TestAIForecasterParameters(unittest.TestCase):
+class TestDeepForecasterParameters(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestAIForecasterParameters, self).__init__(*args, **kwargs)
-        TestAIForecasterParameters.n = 1
+        super(TestDeepForecasterParameters, self).__init__(*args, **kwargs)
+        TestDeepForecasterParameters.n = 1
 
     def setUp(self):
-        print('Test {} BEGIN'.format(TestAIForecasterParameters.n))
+        print('Test {} BEGIN'.format(TestDeepForecasterParameters.n))
 
     def tearDown(self):
-        print('Test {} END'.format(TestAIForecasterParameters.n))
-        TestAIForecasterParameters.n += 1
+        print('Test {} END'.format(TestDeepForecasterParameters.n))
+        TestDeepForecasterParameters.n += 1
 
     def test_is_not_none(self):
         print(inspect.stack()[0][3])
         message = 'The object of class ForecasterParameters can\'t not be created'
-        self.assertIsNotNone(foras.AIForecasterParameters(), message)
+        self.assertIsNotNone(foras.DeepForecasterParameters(), message)
 
     def test_set_incorrect_params(self):
         print(inspect.stack()[0][3])
         message = 'The object of class ForecasterParameters sets incorrect parameters'
-        params = foras.AIForecasterParameters()
+        params = foras.DeepForecasterParameters()
         incorrect_value = -100
-        for i, param in enumerate(params.param_names):
-            with self.subTest(i=i):
+        for param_name in params.__slots__:
+            with self.subTest():
                 with self.assertRaises(AssertionError, msg=message):
-                    params.__setattr__(name=param, val=incorrect_value)
+                    params.__setattr__(name=param_name, val=incorrect_value)
 
 
 class TestTSGenerator(unittest.TestCase):
@@ -166,34 +171,34 @@ class TestNaiveForecaster(unittest.TestCase):
             nf.forecasting(data, forecasting_data_length=-10)
 
 
-class TestAIForecaster(unittest.TestCase):
+class TestDeepForecaster(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestAIForecaster, self).__init__(*args, **kwargs)
-        TestAIForecaster.n = 1
+        super(TestDeepForecaster, self).__init__(*args, **kwargs)
+        TestDeepForecaster.n = 1
 
     def setUp(self):
-        print('Test {} BEGIN'.format(TestAIForecaster.n))
+        print('Test {} BEGIN'.format(TestDeepForecaster.n))
 
     def tearDown(self):
-        print('Test {} END'.format(TestAIForecaster.n))
-        TestAIForecaster.n += 1
+        print('Test {} END'.format(TestDeepForecaster.n))
+        TestDeepForecaster.n += 1
 
     def test_is_not_none(self):
         print(inspect.stack()[0][3])
-        message = 'The object of class AIForecaster can\'t not be created'
-        params = foras.AIForecasterParameters()
-        self.assertIsNotNone(foras.AIForecaster(params), message)
+        message = 'The object of class DeepForecaster can\'t not be created'
+        params = foras.DeepForecasterParameters()
+        self.assertIsNotNone(foras.DeepForecaster(params), message)
 
     def test_forecasting_model(self):
         print(inspect.stack()[0][3])
-        params = foras.AIForecasterParameters()
+        params = foras.DeepForecasterParameters()
         ts = foras.TSGenerator(np.random.randint(1, 10, 10000), params)
         x = ts.get_data()
         y = ts.get_data()
         with self.subTest(0):
-            aif = foras.AIForecaster(params)
+            aif = foras.DeepForecaster(params)
             aif.build_model()
-            self.assertIsNotNone(aif.model, 'The model of class AIForecaster can\'t not be created')
+            self.assertIsNotNone(aif.model, 'The model of class DeepForecaster can\'t not be created')
         with self.subTest(1):
             aif.train(x, y, n_epochs=3, batch_size=256)
             self.assertIsNotNone(aif.history, 'Model training failed')
@@ -204,27 +209,27 @@ class TestAIForecaster(unittest.TestCase):
             self.assertIsNotNone(aif.forecasting(new_data, 10), 'Forecasting failed')
 
 
-class TestAIForecasterTuner(unittest.TestCase):
+class TestDeepForecasterTuner(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestAIForecasterTuner, self).__init__(*args, **kwargs)
-        TestAIForecasterTuner.n = 1
+        super(TestDeepForecasterTuner, self).__init__(*args, **kwargs)
+        TestDeepForecasterTuner.n = 1
 
     def setUp(self):
-        print('Test {} BEGIN'.format(TestAIForecasterTuner.n))
+        print('Test {} BEGIN'.format(TestDeepForecasterTuner.n))
 
     def tearDown(self):
-        print('Test {} END'.format(TestAIForecasterTuner.n))
-        TestAIForecasterTuner.n += 1
+        print('Test {} END'.format(TestDeepForecasterTuner.n))
+        TestDeepForecasterTuner.n += 1
 
     def test_is_not_none(self):
         print(inspect.stack()[0][3])
-        message = 'The object of class AIForecaster can\'t not be created'
-        params = foras.AIForecasterParameters()
-        self.assertIsNotNone(foras.AIForecasterTuner(params), message)
+        message = 'The object of class DeepForecaster can\'t not be created'
+        params = foras.DeepForecasterParameters()
+        self.assertIsNotNone(foras.DeepForecasterTuner(params), message)
 
     def test_set_tuned_hps(self):
-        params = foras.AIForecasterParameters()
-        tuner = foras.AIForecasterTuner(params)
+        params = foras.DeepForecasterParameters()
+        tuner = foras.DeepForecasterTuner(params)
         tuner.set_tuned_hps(units=[[512, 400, 316], [256, 160, 80], [64, 32, 16]],
                             n_rec_layers=[1, 2, 3],
                             dropout=[0.0, 0.01, 0.5],
@@ -233,12 +238,12 @@ class TestAIForecasterTuner(unittest.TestCase):
         self.assertIsNotNone(tuner.hp_choices)
 
     def test_find_best_models(self):
-        params = foras.AIForecasterParameters()
+        params = foras.DeepForecasterParameters()
         ts = foras.TSGenerator(np.random.randint(1, 10, 1000), params)
         x = ts.get_data()
         y = ts.get_data()
 
-        tuner = foras.AIForecasterTuner(params)
+        tuner = foras.DeepForecasterTuner(params)
         tuner.find_best_models(x, y, epochs=3, n_models=1, max_trials=3)
 
 
