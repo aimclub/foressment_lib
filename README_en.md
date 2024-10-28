@@ -3,7 +3,7 @@
 
 [![license](https://img.shields.io/github/license/labcomsec/aopssop_lib)](https://github.com/labcomsec/foressment_lib/blob/master/LICENSE.md)
 [![Eng](https://img.shields.io/badge/lang-ru-red.svg)](/README_en.md)
-[![Mirror](https://camo.githubusercontent.com/9bd7b8c5b418f1364e72110a83629772729b29e8f3393b6c86bff237a6b784f6/68747470733a2f2f62616467656e2e6e65742f62616467652f6769746c61622f6d6972726f722f6f72616e67653f69636f6e3d6769746c6162)](https://gitlab.actcognitive.org/itmo-sai-code/foressment_lib)
+[![Mirror](https://img.shields.io/badge/mirror-GitLab-orange)](https://gitlab.actcognitive.org/itmo-sai-code/foressment_lib)
 
 <p align="left">
 <a href="https://pandas.pydata.org/" target="_blank" rel="noreferrer">
