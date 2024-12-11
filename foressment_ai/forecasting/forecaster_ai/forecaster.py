@@ -1,14 +1,11 @@
 import os
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 from keras.models import load_model, Sequential
 from keras.layers import Dense, Reshape, LSTM, Input, Dropout, SimpleRNN, GRU
-from keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping
 from keras import optimizers
 import keras_tuner  # keras-tuner + grpcio (ver. 1.27.2)
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-
+from sklearn.metrics import (
+    mean_squared_error, mean_absolute_error, r2_score, root_mean_squared_error)
 import pandas as pd
 import numpy as np
 import sys
@@ -16,18 +13,16 @@ import json
 import math
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from typing import Union
+from typing import List
 
-from foressment_ai.forecasting.forecaster_ai.checker import ParamChecker
-
-checker = ParamChecker()
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class ForecasterParameters:
     """
     Main parameters for forecasting models.
-
-    Args:
+    
+    Params:
         n_features: Integer, number of features. Defaults to 1.
         look_back_length: Integer, width (number of time steps) of the input time windows. Defaults to 10.
         horizon: Integer, output time window length. Defaults to 1.
@@ -41,7 +36,6 @@ class ForecasterParameters:
         model_params = ForecasterParameters()
         model_params.read_json('params.json')
     """
-    __slots__ = ['n_features', 'look_back_length', 'horizon']
 
     def __init__(self,
                  n_features: int = 1,
@@ -60,33 +54,53 @@ class ForecasterParameters:
         self.horizon = horizon
 
     def __setattr__(self, name, val):
-        super().__setattr__(name, checker.check_param(val, name))
+        assert name in ['n_features', 'look_back_length', 'horizon'], f"Invalid attribute '{name}'"
+        assert isinstance(val, int), f"Attribute '{name}' must be an integer"
+        super().__setattr__(name, val)
 
     def read_json(self, filename: str):
+        """
+        Read parameters from JSON-file.
+        Args:
+            filename: String, name of JSON-file to read.
+        """
         with open(filename) as f:
             params = json.load(f)
-
-        for k, v in params.items():
-            self.__setattr__(k, v)
+        self.from_dict(params)
 
     def save_json(self, filename: str):
         """
         Save model parameters to file.
-        Params:
+        Args:
             filename: String, name of file with parameters and their values
         """
         with open(filename, 'w') as outfile:
-            class_dict = self.__dict__.copy()
-            del class_dict['param_names']
-            json_string = json.dumps(class_dict)
+            json_string = json.dumps(self.to_dict())
             outfile.write(json_string)
+
+    def to_dict(self) -> dict:
+        """
+        Convert parameters to dictionary.
+        Returns:
+            Dictionary, dictionary of parameters.
+        """
+        return self.__dict__
+
+    def from_dict(self, params: dict):
+        """
+        Load parameters from dictionary.
+        Args:
+            params: Dictionary, dictionary of parameters.
+        """
+        for k, v in params.items():
+            self.__setattr__(k, v)
 
 
 class DeepForecasterParameters(ForecasterParameters):
     """
     Configuration parameters and hyperparameters for deep forecasting models.
 
-    Args:
+    Params:
         n_features: Integer, number of features. Defaults to 1.
         look_back_length: Integer, width (number of time steps) of the input time windows. Defaults to 10.
         horizon: Integer, output time window length. Defaults to 1.
@@ -96,7 +110,7 @@ class DeepForecasterParameters(ForecasterParameters):
         hidden_activation: String, activation function on hidden layers. Defaults to 'tanh'.
         output_activation: String, activation function on output layer. Defaults to 'linear'.
         loss: String, loss function. Defaults to 'mse'.
-        optimizer: keras.optimizers.Adam, optimizer that implements the Adam algorithm.
+        optimizer: keras.optimizers.legacy.Adam, optimizer that implements the Adam algorithm.
 
     Note:
         Unit values are initialized by passing a list of values for each layer in order.
@@ -108,18 +122,17 @@ class DeepForecasterParameters(ForecasterParameters):
         ```
         model_params = DeepForecasterParameters(4, 100, 10, block_type = 'GRU', units=[512, 128])
     """
-    __slots__ = ['n_features', 'look_back_length', 'horizon', 'units', 'block_type', 'dropout',
-                 'hidden_activation', 'output_activation', 'loss', 'optimizer']
 
     def __init__(self,
                  n_features: int = 1,
                  look_back_length: int = 10,
                  horizon: int = 1,
-                 units: Union[list, dict] = None,
+                 units: list | dict = None,
                  block_type: str = 'LSTM',
-                 dropout: float = 0,
+                 dropout: float | None = None,
                  hidden_activation: str = 'tanh',
                  output_activation: str = 'linear',
+                 optimizer: optimizers.Optimizer | str = optimizers.legacy.Adam(),
                  loss: str = 'mse'):
         """
         Initialization.
@@ -136,6 +149,8 @@ class DeepForecasterParameters(ForecasterParameters):
             dropout: Float, dropout rate. Defaults to 0.
             hidden_activation: String, activation function on hidden layers. Defaults to 'tanh'.
             output_activation: String, activation function on output layer. Defaults to 'linear'.
+            optimizer: String or keras.src.optimizers, optimizer of recurrent layers.
+                    Defaults to optimizers.legacy.Adam().
             loss: String, loss function. Defaults to 'mse'.
         """
 
@@ -145,28 +160,40 @@ class DeepForecasterParameters(ForecasterParameters):
             self.units = [512]
         else:
             self.units = units
+        self.n_rec_layers = len(self.units.keys())
         self.block_type = block_type
         self.dropout = dropout
         self.hidden_activation = hidden_activation
         self.output_activation = output_activation
-        self.optimizer = optimizers.Adam(clipvalue=0.5)
+        self.optimizer = optimizer
         self.loss = loss
 
-    def n_rec_layers(self) -> int:
-        """
-        Return number of hidden recurrent layers.
-        """
-        return len(self.units.keys())
-
     def __setattr__(self, name, val):
-        if name != 'units':
-            super().__setattr__(name, checker.check_param(val, name))
-        else:
-            assert ((type(val) == list) or (type(val) == dict)), "Type if units must be list or dict"
-            if type(val) == list:
-                super().__setattr__(name, self._units_to_dict(val))
+        assert name in ['n_features', 'look_back_length', 'horizon', 'units', 'block_type', 'dropout',
+                        'hidden_activation', 'output_activation', 'loss', 'optimizer', 'n_rec_layers'], \
+            f"Invalid attribute '{name}'"
+        if name == 'units':
+            assert isinstance(val, (list, dict)), f"Attribute '{name}' must be an list or dictionary"
+            if isinstance(val, list):
+                for v in val:
+                    assert isinstance(v, int), f"Values of attribute '{name} must be integers"
+                self.__dict__[name] = {f'units_{i}': u for i, u in enumerate(val)}
             else:
+                for v in val.values():
+                    assert isinstance(v, int), f"Values of attribute '{name} must be integers"
+                self.__dict__[name] = val
+        else:
+            if name in ['n_features', 'look_back_length', 'horizon']:
                 super().__setattr__(name, val)
+            if name in ['block_type', 'hidden_activation', 'output_activation', 'loss']:
+                assert isinstance(val, str), f"Attribute '{name}' must be string"
+                if name == 'block_type':
+                    assert val in ['SimpleRNN', 'LSTM',
+                                   'GRU'], f"Attribute '{name}' must be 'SimpleRNN' or 'LSTM' or 'GRU'"
+            if name == 'dropout':
+                if val is not None:
+                    assert isinstance(val, (float, int)), f"Attribute '{name}' must be float or int or None"
+            self.__dict__[name] = val
 
     def save_json(self, filename: str):
         """
@@ -175,45 +202,32 @@ class DeepForecasterParameters(ForecasterParameters):
             filename: String, name of file with parameters and their values
         """
         with open(filename, 'w') as outfile:
-            class_dict = self.__dict__.copy()
-            del class_dict['param_names']
-            units = list(class_dict['units'].values())
-            class_dict['units'] = units
+            class_dict = self.to_dict()
             json_string = json.dumps(class_dict)
             outfile.write(json_string)
-
-    @staticmethod
-    def _units_to_dict(units: list):
-        """
-        Reformat units to dictionary.
-
-        Args:
-            units: List of integers, number of units on each recurrent layer.
-
-        Returns:
-            Dict, number of units on each recurrent layer.
-        """
-        units = [checker.check_param(u, 'units_of_layer') for u in units]
-        return {'units_{0}'.format(i): u for i, u in enumerate(units)}
 
 
 class TSGenerator:
     """
     Time series generator.
 
-    Args:
-       model_params: ForecasterParameters or DeepForecasterParameters, parameters of forecasting models.
+    Params:
        data: Numpy array, input time windows for forecasting.
        targets: Numpy array, output time windows as target results of forecasting.
+       look_back_length: Integer, width (number of time steps) of the input time windows.
+       horizon: Integer, output time window length.
 
     Examples:
         x = np.random.rand(1000, 2)
         model_params = ForecasterParameters(2, 100, 1)
         ts = TSGenerator(x, model_params)
     """
-    __slots__ = ['model_params', 'data', 'targets']
 
-    def __init__(self, x: np.ndarray, model_params: Union[ForecasterParameters, DeepForecasterParameters]):
+    def __init__(self,
+                 x: np.ndarray,
+                 model_params: ForecasterParameters = None,
+                 look_back_length: int | None = None,
+                 horizon: int | None = None):
         """
         Create time series generator.
 
@@ -221,10 +235,18 @@ class TSGenerator:
             x: Numpy array, input data for generator.
             model_params: ForecasterParameters or DeepForecasterParameters, parameters of forecasting models.
         """
-        self.model_params = model_params
+        if model_params is not None:
+            self.horizon = model_params.horizon
+            self.look_back_length = model_params.look_back_length
+        else:
+            assert look_back_length is not None, "If 'model_params' is None then 'look_back_length' is required"
+            assert horizon is not None, "If 'model_params' is None then 'horizon' is required"
+            self.horizon = horizon
+            self.look_back_length = look_back_length
         self.data = None
         self.targets = None
-        self._temporalize(x)
+        assert isinstance(x, np.ndarray), f"Expected numpy array, got {type(x)}"
+        self._temporality(x)
 
     def change_horizon(self, horizon: int):
         """
@@ -233,51 +255,45 @@ class TSGenerator:
         Args:
             horizon: Integer, new forecasting horizon (time steps)
         """
-        self.model_params.horizon = checker.check_param(horizon, 'horizon')
-
+        self.horizon = horizon
         data = self.get_data(flatten=True)
         targets = self.get_targets(window_id=-1, flatten=True)
         x = np.append(data, targets, axis=0)
-        self._temporalize(x)
+        self._temporality(x)
 
-    def _temporalize(self, x: np.ndarray):
+    def _temporality(self, x: np.ndarray):
         """
         Reformat data to time windows.
 
         Args:
             x: Numpy array, input data for generator
         """
-        x = checker.check_is_type_param(x, 'data for TSGenerator', np.ndarray)
         assert len(x.shape) in [1, 2], 'Data for TSGenerator must be 1D or 2D numpy array'
         if len(x.shape) == 1:
             x = np.reshape(x, (x.shape[0], 1))
-        self.model_params.look_back_length = checker.check_in_range_param(self.model_params.look_back_length,
-                                                                          'look_back_length',
-                                                                          (0, x.shape[0]))
-        self.model_params.horizon = checker.check_in_range_param(self.model_params.horizon,
-                                                                 'horizon',
-                                                                 (0,
-                                                                  x.shape[0] - self.model_params.look_back_length + 1))
+        assert self.look_back_length in range(0, x.shape[0]), f'Look back length must be between 0 and {x.shape[0]}'
+        assert self.horizon in range(0, x.shape[0] - self.look_back_length + 1), \
+            f'Horizon must be between 0 and {x.shape[0] - self.look_back_length + 1}'
 
-        self.data = np.empty(shape=(0, self.model_params.look_back_length, self.model_params.n_features))
-        self.targets = np.empty(shape=(0, self.model_params.horizon, self.model_params.n_features))
+        n_features = x.shape[1]
+        self.data = np.empty(shape=(0, self.look_back_length, n_features))
+        self.targets = np.empty(shape=(0, self.horizon, n_features))
 
-        data_length = x.shape[0] - self.model_params.look_back_length - self.model_params.horizon + 1
+        data_length = x.shape[0] - self.look_back_length - self.horizon + 1
         p, q = x.shape
         m, n = x.strides
         strided = np.lib.stride_tricks.as_strided
-
         self.data = strided(x,
-                            shape=(data_length, self.model_params.look_back_length, q),
+                            shape=(data_length, self.look_back_length, q),
                             strides=(m, m, n))
-        self.targets = strided(x[self.model_params.look_back_length:],
-                               shape=(data_length, self.model_params.horizon, q),
+        self.targets = strided(x[self.look_back_length:],
+                               shape=(data_length, self.horizon, q),
                                strides=(m, m, n))
 
     def get_data(self,
                  flatten: bool = False,
-                 window_id: int = None,
-                 sample: int = None) -> np.ndarray:
+                 window_id: int | None = None,
+                 sample: tuple | None = None) -> np.ndarray:
         """
         Return input time windows data.
 
@@ -288,13 +304,13 @@ class TSGenerator:
 
         Returns:
             Numpy array, input time windows for forecasting.
-=        """
+        """
         return self._get_x(self.data, flatten, window_id, sample)
 
     def get_targets(self,
                     flatten: bool = False,
-                    window_id: int = None,
-                    sample: int = None) -> np.ndarray:
+                    window_id: int | None = None,
+                    sample: tuple | None = None) -> np.ndarray:
         """
         Return output time windows data.
 
@@ -305,10 +321,10 @@ class TSGenerator:
 
         Returns:
             Numpy array, output time windows.
-=        """
+        """
         return self._get_x(self.targets, flatten, window_id, sample)
 
-    def _get_x(self, x, flatten: bool, window_id: int, sample: int) -> np.ndarray:
+    def _get_x(self, x, flatten: bool, window_id: int, sample: tuple) -> np.ndarray:
         """
         Return time windows data.
 
@@ -320,15 +336,16 @@ class TSGenerator:
 
         Returns:
             Numpy array, time windows.
-=        """
+        """
         x_to_get = None
         if window_id is not None:
-            window_id = checker.check_is_type_param(window_id, 'window_id', int)
-            window_id = checker.check_in_range_param(window_id, 'window_id', (-1 * (x.shape[0] - 1), x.shape[0] - 1))
+            assert isinstance(window_id, int), "Argument 'window_id' must be an integer"
+            assert window_id in range(-1 * (x.shape[0] - 1), x.shape[0] - 1), \
+                f"Argument 'window_id' must be in {range(-1 * (x.shape[0] - 1), x.shape[0])}"
             x_to_get = x[window_id]
             x_to_get = np.reshape(x_to_get, (1,) + x_to_get.shape)
         elif sample is not None:
-            sample = checker.check_is_type_param(sample, 'sample', tuple)
+            assert isinstance(sample, tuple), "Argument 'sample' must be tuple"
             if sample[0]:
                 sample_min = sample[0]
             else:
@@ -374,14 +391,13 @@ class NaiveForecaster:
     """
     Baseline forecasting model.
 
-    Args:
+    Params:
         model_params: ForecasterParameters, parameters of forecasting model
 
     Examples:
         model_params = ForecasterParameters(4, 100, 10)
         model = NaiveForecaster(model_params)
     """
-    __slots__ = ['model_params']
 
     def __init__(self, model_params: ForecasterParameters):
         self.model_params = model_params
@@ -431,11 +447,7 @@ class NaiveForecaster:
         """
         if not forecasting_data_length:
             forecasting_data_length = self.model_params.horizon
-
-        forecasting_data_length = checker.check_is_type_param(forecasting_data_length, 'forecasting_data_length', int)
-        forecasting_data_length = checker.check_in_range_param(forecasting_data_length, 'forecasting_data_length',
-                                                               (0, None))
-
+        assert isinstance(forecasting_data_length, int), f"Argument 'forecasting_data_length' must be an integer"
         assert len(data.shape) in [1, 2, 3], 'Data must be 1D, 2D or 3d numpy array'
         if len(data.shape) == 1:
             data = np.reshape(data, (1, data.shape[0], 1))
@@ -454,29 +466,13 @@ class NaiveForecaster:
 
         # Multi-step prediction.
         else:
-            predictions = np.empty(shape=(data.shape[0], forecasting_data_length, data.shape[2]))
-
-            if verbose == 1:
-                pbar = tqdm(desc='Forecasting', total=data.shape[0], file=sys.stdout)
-            else:
-                pbar = None
-
-            for i in range(data.shape[0]):
-                batch = np.reshape(data[i], (1,) + data[i].shape)
-
-                pred_to_batch = np.empty(shape=(0, data.shape[2]))
-                while len(pred_to_batch) < forecasting_data_length:
-                    current_pred = self._predict(batch)
-                    current_pred = current_pred[0]
-                    pred_to_batch = np.append(pred_to_batch, current_pred, axis=0)
-                    batch = np.append(batch[:, self.model_params.horizon:, :], [current_pred], axis=1)
-                if verbose == 1:
-                    pbar.update(1)
-                pred_to_batch = pred_to_batch[:forecasting_data_length]
-                pred_to_batch = np.reshape(pred_to_batch, (1,) + pred_to_batch.shape)
-                predictions[i] = pred_to_batch
-            if verbose == 1:
-                pbar.close()
+            predictions = np.empty(shape=(data.shape[0], 0, data.shape[2]))
+            batch = data
+            while predictions.shape[1] < forecasting_data_length:
+                current_pred = self._predict(batch, verbose=1)
+                predictions = np.append(predictions, current_pred, axis=1)
+                batch = np.append(batch[:, self.model_params.horizon:, :], current_pred, axis=1)
+            predictions = predictions[:, :forecasting_data_length, :]
             return predictions
 
 
@@ -484,7 +480,7 @@ class DeepForecaster(NaiveForecaster):
     """
     Deep forecasting models based on RNNs.
 
-    Args:
+    Params:
         model_params: DeepForecasterParameters, parameters of forecasting model. Defaults to `None`.
         model: keras Sequential, groups of layers. Defaults to `None`.
         model_config: Dict, model configuration. Defaults to `None`.
@@ -518,6 +514,8 @@ class DeepForecaster(NaiveForecaster):
         self.default_name = ''
         if model is not None:
             self._init_model()
+        if model_params is not None:
+            self.build_model()
         if from_file:
             self.load_from_file(from_file)
         if from_file_config:
@@ -539,7 +537,7 @@ class DeepForecaster(NaiveForecaster):
         Args:
             filename: A string, name of keras model file
         """
-        checker.check_file_is_exist(filename)
+        # checker.check_file_is_exist(filename)
         self.model = load_model(filename)
         self._init_model()
 
@@ -561,7 +559,6 @@ class DeepForecaster(NaiveForecaster):
 
         self.model = Sequential.from_config(self.model_config)
         self._init_model()
-        # print(self.model.summary())
         self.model.compile(optimizer=self.model_params.optimizer, loss=self.model_params.loss)
 
     def _set_model_params_from_config(self):
@@ -574,7 +571,6 @@ class DeepForecaster(NaiveForecaster):
             block_type=self.model_config['layers'][1]['class_name'],
             hidden_activation=self.model_config['layers'][1]['config']['activation']
         )
-
         n = 0
         units = []
         dropout = 0
@@ -618,51 +614,21 @@ class DeepForecaster(NaiveForecaster):
 
     def build_model(self):
         """
-        Build model by parameters.
+        Build model in keras format.
         """
-        self.model = Sequential()
-        self.model.add(Input(shape=(self.model_params.look_back_length, self.model_params.n_features)))
-
-        for n in range(self.model_params.n_rec_layers()):
-            units = self.model_params.units['units_' + str(n)]
-            activation = self.model_params.hidden_activation
-            last_layer = False
-            if n == (self.model_params.n_rec_layers() - 1):
-                last_layer = True
-            self._add_hidden_layer(units, activation, last_layer)
-
-            if self.model_params.dropout > 0:
-                self.model.add(Dropout(self.model_params.dropout))
-
-        output_activation = self.model_params.output_activation
-        self.model.add(Dense(self.model_params.horizon * self.model_params.n_features,
-                             activation=output_activation))
-        # Shape => [batch, out_steps, features].
-        self.model.add(Reshape([self.model_params.horizon, self.model_params.n_features]))
-
-        self.model.compile(optimizer=self.model_params.optimizer, loss=self.model_params.loss)
+        self.model = DeepModel(self.model_params).model
         self.model_config = self.model.get_config()
+        self.default_name = self.model_params.block_type.lower() + '_' + \
+                            '_'.join(str(u) for u in self.model_params.units.values()) + \
+                            '_d' + str(self.model_params.dropout).replace('.', '')
 
-    def _add_hidden_layer(self, units: int, activation: str, last_layer: bool = False):
+    def summary(self):
         """
-        Add new hidden recurrent layer into the model.
+        Get summary of the model.
+        Returns:
 
-        Args:
-            units: Integer, number of units of layer.
-            activation: String, hidden layer activation function.
-            last_layer: Boolean, it's last layer or not. Defaults to `False`.
         """
-        return_sequences = not last_layer
-
-        if self.model_params.block_type == 'SimpleRNN':
-            self.model.add(SimpleRNN(units=units, activation=activation,
-                                     return_sequences=return_sequences))
-        if self.model_params.block_type == 'LSTM':
-            self.model.add(LSTM(units=units, activation=activation,
-                                return_sequences=return_sequences))
-        if self.model_params.block_type == 'GRU':
-            self.model.add(GRU(units=units, activation=activation,
-                               return_sequences=return_sequences))
+        return self.model.summary()
 
     def train(self,
               x: np.ndarray,
@@ -695,7 +661,6 @@ class DeepForecaster(NaiveForecaster):
             monitor = 'loss'
 
         early_stop = EarlyStopping(monitor=monitor, patience=early_stop_patience)
-
         self.history = self.model.fit(x, y, epochs=n_epochs,
                                       callbacks=[early_stop],
                                       batch_size=batch_size,
@@ -718,12 +683,170 @@ class DeepForecaster(NaiveForecaster):
         return self.model.predict(data, batch_size=10, verbose=verbose)
 
 
+class DeepForecasterParametersTuned(DeepForecasterParameters):
+    """
+    Hyperparameters for deep learning model tuned. See parameters in DeepForecasterParameters.
+
+    Params:
+        n_features: Integer, number of features.
+        look_back_length: Integer, width (number of time steps) of the input time windows.
+        horizon: Integer, output time window length.
+        units: Dict of lists, number of units on each recurrent layer.
+        block_type: String or list of strings, recurrent block type.
+        dropout: Float or list of floats, dropout rate.
+        hidden_activation: String or list of strings, activation function on hidden layers.
+        output_activation: String or list of strings, activation function on output layer.
+        loss: String, loss function.
+        optimizer: keras.optimizers.legacy.Adam, optimizer that implements the Adam algorithm.
+
+    Examples:
+        tuned_params = DeepForecasterParametersTuned(block_type=['LSTM', 'GRU'],
+                                                    n_rec_layers=[1,2],
+                                                    units=[[64, 32], [24, 16]])
+    """
+    def __init__(self,
+                 n_rec_layers: list = None,
+                 **kwargs
+                 ):
+        if 'units' in kwargs.keys():
+            if kwargs['units'] is None:
+                kwargs['units'] = [[512]]
+        super().__init__(**kwargs)
+
+        if n_rec_layers:
+            assert isinstance(n_rec_layers, list), f"Argument 'n_rec_layers' must be a list"
+            assert (max(n_rec_layers) >= len(self.units)), \
+                'The number of layers should be no more than {0} (the number of transferred units). ' \
+                'Found {1}.'.format(len(self.units), max(n_rec_layers))
+            self.n_rec_layers = n_rec_layers
+        else:
+            self.n_rec_layers = len(self.units.keys())
+
+    def set_hp(self, hp: keras_tuner.HyperParameters):
+        for key, val in self.__dict__.items():
+            if key != 'units':
+                if isinstance(val, list):
+                    self.__dict__[key] = hp.Choice(key, val)
+            else:
+                if isinstance(val[f'units_0'], list):
+                    self.__dict__[key] = {units_n: hp.Choice(units_n, units_of_layers)
+                                          for units_n, units_of_layers in val.items()}
+
+    def __setattr__(self, name, val):
+        assert name in ['n_features', 'look_back_length', 'horizon', 'units', 'block_type', 'dropout',
+                        'hidden_activation', 'output_activation', 'loss', 'optimizer', 'n_rec_layers'], \
+            f"Invalid attribute '{name}'"
+        if name == 'units':
+            assert isinstance(val, (list, dict)), f"Attribute '{name}' must be an list or dictionary"
+            if isinstance(val, list):
+                if not isinstance(val[0], list):
+                    super().__setattr__(name, val)
+                else:
+                    for v_list in val:
+                        for v in v_list:
+                            assert isinstance(v, int), f"Values of attribute '{name}' must be a list of integers"
+                    self.__dict__[name] = {f'units_{i}': u for i, u in enumerate(val)}
+            else:
+                if not isinstance(val[0], list):
+                    super().__setattr__(name, val)
+                else:
+                    for v_list in val.values():
+                        for v in v_list:
+                            assert isinstance(v, list), f"Values of attribute '{name} must be a list of integers"
+                self.__dict__[name] = val
+        elif name == 'n_rec_layers':
+            self.__dict__[name] = val
+        else:
+            if name in ['block_type', 'hidden_activation', 'output_activation', 'dropout']:
+                if not isinstance(val, list):
+                    super().__setattr__(name, val)
+                else:
+                    for v in val:
+                        if name in ['block_type', 'hidden_activation', 'output_activation', ]:
+                            assert isinstance(v, str), f"Attribute '{name}' must be list of strings or string"
+                        if name == 'block_type':
+                            assert v in ['SimpleRNN', 'LSTM', 'GRU'], \
+                                f"Attribute '{name}' must be 'SimpleRNN' or 'LSTM' or 'GRU'"
+                        if name == 'dropout':
+                            assert isinstance(v, float), f"Attribute '{name}' must be"
+
+                    self.__dict__[name] = val
+            else:
+                super().__setattr__(name, val)
+
+
+class DeepModel:
+    """
+    Deep model builder by parameters.
+
+    Params:
+        model_params: DeepForecasterParameters, parameters of forecasting model. Defaults to `None`.
+        model: keras Sequential, groups of layers. Defaults to `None`.
+
+    Examples:
+        model_params = DeepForecasterParameters(4, 100, 10, block_type = 'GRU', units=[512, 128])
+        model = DeepModel(model_params)
+    """
+
+    def __init__(self, model_params: DeepForecasterParameters | DeepForecasterParametersTuned):
+        self.model = None
+        self.model_params = model_params
+        self.build_model()
+
+    def build_model(self):
+        """
+        Build model by parameters.
+        """
+        self.model = Sequential()
+        self.model.add(Input(shape=(self.model_params.look_back_length,
+                                    self.model_params.n_features)))
+
+        for n in range(self.model_params.n_rec_layers):
+            units = self.model_params.units[f'units_{n}']
+            activation = self.model_params.hidden_activation
+            last_layer = False
+            if n == (self.model_params.n_rec_layers - 1):
+                last_layer = True
+            self._add_hidden_layer(units, activation, last_layer)
+
+            if self.model_params.dropout:
+                self.model.add(Dropout(self.model_params.dropout))
+
+        output_activation = self.model_params.output_activation
+        self.model.add(Dense(self.model_params.horizon * self.model_params.n_features,
+                             activation=output_activation))
+        # Shape => [batch, out_steps, features].
+        self.model.add(Reshape([self.model_params.horizon, self.model_params.n_features]))
+
+        self.model.compile(optimizer=self.model_params.optimizer, loss=self.model_params.loss)
+
+    def _add_hidden_layer(self, units: int, activation: str, last_layer: bool = False):
+        """
+        Add new hidden recurrent layer into the model.
+
+        Args:
+            units: Integer, number of units of layer.
+            activation: String, hidden layer activation function.
+            last_layer: Boolean, it's last layer or not. Defaults to `False`.
+        """
+        return_sequences = not last_layer
+
+        if self.model_params.block_type == 'SimpleRNN':
+            self.model.add(SimpleRNN(units=units, activation=activation,
+                                     return_sequences=return_sequences))
+        if self.model_params.block_type == 'LSTM':
+            self.model.add(LSTM(units=units, activation=activation,
+                                return_sequences=return_sequences))
+        if self.model_params.block_type == 'GRU':
+            self.model.add(GRU(units=units, activation=activation,
+                               return_sequences=return_sequences))
+
+
 class DeepForecasterTuner:
     """
     Tuner for optimizing forecasting model hyperparameters.
 
-    Args:
-        hp_choices: Dictionary, predefined sets of possible hyperparameters values.
+    Params:
         model_params: DeepForecasterParameters, parameters of forecasting model.
         tuner: Tuner keras class or 'None', model for hyperparameters optimization.
 
@@ -732,73 +855,36 @@ class DeepForecasterTuner:
         tuner = DeepForecasterTuner()
     """
 
-    def __init__(self, model_params: DeepForecasterParameters):
-        self.hp_choices = {}
+    def __init__(self, model_params):
         self.model_params = model_params
         self.tuner = None
 
-    def set_tuned_hps(self,
-                      block_type: list = None,
-                      units: list = None,
-                      n_rec_layers: list = None,
-                      dropout: list = None,
-                      hidden_activation: list = None,
-                      output_activation: list = None):
+    def set_tuned_hps(self, **kwargs):
         """
         Set parameters variables for tuning.
 
         Args:
-            block_type: List of strings or `None`, possible recurrent block types.
-            units: List of a list of integers or `None`, possible numbers of units on each recurrent layer.
-            n_rec_layers: List of integers or `None`, possible numbers of hidden layers.
-            dropout: List of floats or `None`, possible dropout rate values.
-            hidden_activation: List of strings or `None`, possible activation functions on hidden layers.
-            output_activation: List of strings or `None`,possible activation functions on output layer.
+            kwargs: Dictionary of hyperparameters, see DeepForecasterParameters class.
+            The following hyperparameters are currently supported for tuning:
+                block_type: List of strings, possible recurrent block types.
+                units: List of a list of integers, possible numbers of units on each recurrent layer.
+                n_rec_layers: List of integers, possible numbers of hidden layers.
+                dropout: List of floats, possible dropout rate values.
+                hidden_activation: List of strings, possible activation functions on hidden layers.
+                output_activation: List of strings,possible activation functions on output layer.
 
         Examples:
             model_params = DeepForecasterParameters(4, 100, 10, block_type = 'GRU')
             tuner = DeepForecasterTuner()
             tuner.set_tuned_hps(n_rec_layers=[1,2], units=[[512, 256],[132, 80]])
         """
+        new_model_params = self.model_params.__dict__
+        for arg_name, arg_val in kwargs.items():
+            if arg_name in new_model_params.keys():
+                new_model_params[arg_name] = arg_val
 
-        self.hp_choices = {}
-
-        if block_type:
-            assert checker.check_is_type_param(block_type, 'block_type', list)
-            self.hp_choices['block_type'] = [checker.check_param(val, param_name='block_type') for val in block_type]
-
-        if units:
-            assert checker.check_is_type_param(units, 'units', list)
-            if n_rec_layers:
-                assert checker.check_is_type_param(n_rec_layers, 'n_rec_layers', list)
-                assert (max(n_rec_layers) >= len(units)), \
-                    'The number of layers should be no more than {0} (the number of transferred units). ' \
-                    'Found {1}.'.format(len(units), max(n_rec_layers))
-
-            self.hp_choices['units'] = {f'units_{i}': [checker.check_param(u, param_name='units_of_layer')
-                                                       for u in
-                                                       checker.check_is_type_param(units_of_layers, 'units_of_layers',
-                                                                                   list)]
-                                        for i, units_of_layers in enumerate(units)}
-
-        if dropout:
-            assert checker.check_is_type_param(dropout, 'dropout', list)
-            self.hp_choices['dropout'] = [checker.check_param(val, param_name='dropout') for val in dropout]
-
-        if n_rec_layers:
-            assert checker.check_is_type_param(n_rec_layers, 'n_rec_layers', list)
-            self.hp_choices['n_rec_layers'] = [checker.check_param(val, param_name='n_rec_layers') for val in
-                                               n_rec_layers]
-
-        if hidden_activation:
-            assert checker.check_is_type_param(hidden_activation, 'hidden_activation', list)
-            self.hp_choices['hidden_activation'] = [checker.check_param(val, param_name='hidden_activation')
-                                                    for val in hidden_activation]
-
-        if output_activation:
-            assert checker.check_is_type_param(output_activation, 'output_activation', list)
-            self.hp_choices['output_activation'] = [checker.check_param(val, param_name='output_activation')
-                                                    for val in output_activation]
+        self.model_params = DeepForecasterParametersTuned()
+        self.model_params.from_dict(new_model_params)
 
     def build_hypermodel(self, hp: keras_tuner.HyperParameters) -> Sequential:
         """
@@ -811,82 +897,9 @@ class DeepForecasterTuner:
         Returns:
             Keras `Sequential` model, forecasting hypermodel.
         """
-        model = Sequential()
-        model.add(Input(shape=(self.model_params.look_back_length,
-                               self.model_params.n_features)))
-
-        if 'n_rec_layers' in self.hp_choices:
-            layers_range = range(hp.Choice('n_rec_layers', self.hp_choices['n_rec_layers']))
-        else:
-            layers_range = range(self.model_params.n_rec_layers())
-
-        if 'block_type' in self.hp_choices:
-            block_type = hp.Choice('block_type', self.hp_choices['block_type'])
-        else:
-            block_type = self.model_params.block_type
-
-        for n in layers_range:
-            if 'units' in self.hp_choices:
-                units = hp.Choice(f'units_{n}', self.hp_choices['units'][f'units_{n}'])
-            else:
-                units = self.model_params.units[f'units_{n}']
-            if 'hidden_activation' in self.hp_choices:
-                activation = hp.Choice('hidden_activation', self.hp_choices['hidden_activation'])
-            else:
-                activation = self.model_params.hidden_activation
-            last_layer = False
-            if n == (layers_range.stop - 1):
-                last_layer = True
-            model = self._add_hidden_layer(model, block_type, units, activation, last_layer)
-
-            if 'dropout' in self.hp_choices:
-                dropout = hp.Choice('dropout', self.hp_choices['dropout'])
-                model.add(Dropout(dropout))
-            else:
-                if self.model_params.dropout > 0:
-                    model.add(Dropout(self.model_params.dropout))
-
-        if 'output_activation' in self.hp_choices:
-            output_activation = hp.Choice('output_activation', self.hp_choices['output_activation'])
-        else:
-            output_activation = self.model_params.output_activation
-
-        model.add(Dense(self.model_params.horizon * self.model_params.n_features,
-                        activation=output_activation))
-        # Shape => [batch, out_steps, features].
-        model.add(Reshape([self.model_params.horizon, self.model_params.n_features]))
-
-        model.compile(optimizer=self.model_params.optimizer, loss=self.model_params.loss)
-        return model
-
-    @staticmethod
-    def _add_hidden_layer(model: Sequential, block_type: str,
-                          units: int, activation: str, last_layer: bool = False) -> Sequential:
-        """
-        Add new hidden recurrent layer into the model.
-
-        Args:
-            model: Keras `Sequential` model, forecasting hypermodel.
-            block_type: String, recurrent block type.
-            units: Integer, number of units of layer.
-            activation: String, hidden layer activation function.
-            last_layer: Boolean, it's last layer or not. Defaults to False.
-
-        Returns:
-            Keras `Sequential` model, forecasting hypermodel.
-        """
-        return_sequences = not last_layer
-
-        if block_type == 'SimpleRNN':
-            model.add(SimpleRNN(units=units, activation=activation,
-                                return_sequences=return_sequences))
-        if block_type == 'LSTM':
-            model.add(LSTM(units=units, activation=activation,
-                           return_sequences=return_sequences))
-        if block_type == 'GRU':
-            model.add(GRU(units=units, activation=activation,
-                          return_sequences=return_sequences))
-        return model
+        self.model_params.set_hp(hp)
+        model = DeepModel(self.model_params)
+        return model.model
 
     def _create_tuner(self, tuner_type: str, max_trials: int, project_name: str, use_validation_data: bool):
         """
@@ -899,18 +912,9 @@ class DeepForecasterTuner:
             use_validation_data: Boolean, use validation data.
                 on which to evaluate the loss at the end of each epoch or not.
         """
-        if not self.hp_choices:
-            # Default tuned parameters.
-            self.set_tuned_hps(
-                units=[[int(u) for u in np.arange(checker.max_num_units,
-                                                  checker.default_units_step,
-                                                  -checker.default_units_step)]
-                       for n in range(self.model_params.n_rec_layers())],
-                hidden_activation=['tanh', 'relu'],
-                output_activation=['linear', 'sigmoid'])
+        assert tuner_type in ['GridSearch', 'RandomSearch', 'BayesianOptimization', 'Hyperband'], \
+            f'Invalid tuner type, should be GridSearch or RandomSearch or BayesianOptimization or Hyperband'
 
-        tuner_type = checker.check_in_list_param(tuner_type, 'tuner_type',
-                                                 ['GridSearch', 'RandomSearch', 'BayesianOptimization', 'Hyperband'])
         # Initialize tuner to run the model.
         if use_validation_data:
             objective = 'val_loss'
@@ -948,7 +952,13 @@ class DeepForecasterTuner:
                 overwrite=True
             )
 
-    def _search(self, x: np.ndarray, y: np.ndarray, validation_data: tuple, batch_size: int, epochs: int):
+    def _search(self,
+                x: np.ndarray,
+                y: np.ndarray,
+                validation_data: tuple,
+                batch_size: int,
+                epochs: int,
+                patience: int):
         """
         Performs a search for best hyperparameter configuations.
 
@@ -960,17 +970,31 @@ class DeepForecasterTuner:
             batch_size: Integer, number of samples per gradient update.
             epochs: Integer, number of epochs to train the model.
         """
-        print(self.tuner.search_space_summary())
+        # print(self.tuner.search_space_summary())
         # Run the search
         if validation_data is not None:
-            self.tuner.search(x, y, validation_data=validation_data,
-                              batch_size=batch_size, epochs=epochs,
-                              shuffle=False,
-                              callbacks=[EarlyStopping('val_loss', patience=1)])
+            if patience != 0:
+                self.tuner.search(x, y, validation_data=validation_data,
+                                  batch_size=batch_size, epochs=epochs,
+                                  shuffle=False,
+                                  callbacks=[EarlyStopping(monitor='val_loss',
+                                                           patience=patience, restore_best_weights=True)])
+            else:
+                self.tuner.search(x, y, validation_data=validation_data,
+                                  batch_size=batch_size, epochs=epochs,
+                                  shuffle=False)
         else:
-            self.tuner.search(x, y, batch_size=batch_size, epochs=epochs,
-                              shuffle=False,
-                              callbacks=[EarlyStopping('loss', patience=1)])
+            if patience != 0:
+                self.tuner.search(x, y, batch_size=batch_size, epochs=epochs,
+                                  shuffle=False,
+                                  callbacks=[EarlyStopping(monitor='loss',
+                                                           patience=patience, restore_best_weights=True)])
+            else:
+                self.tuner.search(x, y, batch_size=batch_size, epochs=epochs,
+                                  shuffle=False)
+
+    def search_space_summary(self):
+        return self.tuner.search_space_summary()
 
     def find_best_models(self,
                          x: np.ndarray,
@@ -981,7 +1005,8 @@ class DeepForecasterTuner:
                          max_trials: int = 10,
                          batch_size: int = 128,
                          epochs: int = 10,
-                         project_name: str = 'forecastate_tuner') -> list:
+                         patience: int = 5,
+                         project_name: str = 'forecastate_tuner') -> List[DeepForecaster]:
         """
         Returns the best forecasting model(s), as determined by the objective.
 
@@ -996,13 +1021,14 @@ class DeepForecasterTuner:
             max_trials: Integer, the total number of trials (model configurations) to test at most. Defaults to 10.
             batch_size: Integer, number of samples per gradient update. Defaults to 128.
             epochs: Integer, number of epochs to train the model. Defaults to 10.
+            patience: Integer, TBD
             project_name: A string, the name to use as prefix for files saved by this `Tuner`.
 
         Returns:
-            List of trained models sorted from the best to the worst.
+            List[DeepForecaster], list of trained models sorted from the best to the worst.
         """
         self._create_tuner(tuner_type, max_trials, project_name, validation_data is not None)
-        self._search(x, y, validation_data, batch_size, epochs)
+        self._search(x, y, validation_data, batch_size, epochs, patience)
 
         print("Results summary")
         print("Showing %d best trials" % n_models)
@@ -1025,16 +1051,44 @@ class DeepForecasterTuner:
             if trial.score is not None:
                 print(f"Score: {trial.score}")
 
-        best_tuner_models = self.tuner.get_best_models(n_models)
-        best_models = [DeepForecaster(from_config=tuner_model.get_config()) for tuner_model in best_tuner_models]
+        best_deep_forecaster_parameters = self.get_best_deep_forecaster_parameters(n_models)
+        best_models = [DeepForecaster(model_params=df_params) for df_params in best_deep_forecaster_parameters]
         return best_models
+
+    def get_best_deep_forecaster_parameters(self, n_models: int) -> List[DeepForecasterParameters]:
+        """
+        Get the best model parameters for a given number of models.
+        Args:
+            n_models: Integer, number of models.
+
+        Returns:
+            List[DeepForecasterParameters], the best model parameters for a given number of models.
+        """
+        best_tuner_hps = self.tuner.get_best_hyperparameters(n_models)
+        result = []
+        for i, hps in enumerate(best_tuner_hps):
+            model_params_dict = self.model_params.to_dict()
+            for key in hps.values.keys():
+                if 'units' in key:
+                    model_params_dict['units'] = {}
+                    break
+            for key, value in hps.values.items():
+                if 'units' in key:
+                    model_params_dict['units'][key] = value
+                else:
+                    model_params_dict[key] = value
+
+            model_params = DeepForecasterParameters()
+            model_params.from_dict(model_params_dict)
+            result.append(model_params)
+        return result
 
 
 class ForecastEstimator:
     """
     Class for evaluating the quality of the forecasting model.
 
-    Args:
+    Params:
         quality: Pandas `DataFrame`, matrix of forecasting quality metrics.
         features_names: List, name of features.
         true: Numpy array, data of true values.
@@ -1072,7 +1126,9 @@ class ForecastEstimator:
             true = np.reshape(true, (1, true.shape[0], true.shape[1]))
         self.true = true
 
-    def set_pred_values(self, pred: np.ndarray, model_name: str = 'naive'):
+    def set_pred_values(self,
+                        pred: np.ndarray,
+                        model_name: str = 'naive'):
         """
         Set forecasted output data.
 
@@ -1080,7 +1136,6 @@ class ForecastEstimator:
             pred: Numpy array, data of predicted values.
             model_name: A string, name of forecasting model. Defaults to 'naive'.
         """
-        model_name = checker.check_is_type_param(model_name, model_name, str)
         assert len(pred.shape) in [1, 2, 3], 'Predicted data must be 1D, 2D or 3d numpy array'
         if len(pred.shape) == 1:
             pred = np.reshape(pred, (1, pred.shape[0], 1))
@@ -1098,16 +1153,16 @@ class ForecastEstimator:
         """
         self.first_batch = first_batch
 
-    def estimate(self, how='features'):
+    def estimate(self, how: str = 'features'):
         """
         Evaluation.
 
         Args:
             how: 'features' or 'timesteps', method of evaluation. Default to 'features'.
                If 'features', then metrics are calculated for each feature and for all data.
-               If 'timesteps', then metrics are calculated for each time step.
+               If 'time_steps', then metrics are calculated for each time step.
         """
-        assert how in ['features', 'timesteps'], 'Unknown "how" argument'
+        assert how in ['features', 'time_steps'], 'Unknown "how" argument'
 
         assert self.true is not None, 'No true values for estimate'
         self.quality = pd.DataFrame()
@@ -1126,12 +1181,12 @@ class ForecastEstimator:
                                                            ' result not equal to true values'
                 pred_reshaped = pred_vals.reshape((self.true.shape[0] * self.true.shape[1], self.true.shape[2]))
 
-                mse = mean_squared_error(true_reshaped, pred_reshaped, multioutput='raw_values', squared=True)
-                mse = np.append(mse, mean_squared_error(true_reshaped, pred_reshaped, squared=True))
+                mse = mean_squared_error(true_reshaped, pred_reshaped, multioutput='raw_values')
+                mse = np.append(mse, mean_squared_error(true_reshaped, pred_reshaped))
                 self.quality[model_name + '_MSE'] = mse
 
-                rmse = mean_squared_error(true_reshaped, pred_reshaped, multioutput='raw_values', squared=False)
-                rmse = np.append(rmse, mean_squared_error(true_reshaped, pred_reshaped, squared=False))
+                rmse = root_mean_squared_error(true_reshaped, pred_reshaped, multioutput='raw_values')
+                rmse = np.append(rmse, root_mean_squared_error(true_reshaped, pred_reshaped))
                 self.quality[model_name + '_RMSE'] = rmse
 
                 mae = mean_absolute_error(true_reshaped, pred_reshaped, multioutput='raw_values')
@@ -1141,10 +1196,9 @@ class ForecastEstimator:
                 r2 = r2_score(true_reshaped, pred_reshaped, multioutput='raw_values')
                 r2 = np.append(r2, r2_score(true_reshaped, pred_reshaped))
                 self.quality[model_name + '_R2'] = r2
-
             self.quality.index = features_names
 
-        if how == 'timesteps':
+        if how == 'time_steps':
             self.quality.index = range(self.true.shape[0])
             true_reshaped = self.true.reshape((self.true.shape[0], self.true.shape[1] * self.true.shape[2]))
             for model_name, pred_vals in self.pred.items():
@@ -1181,7 +1235,7 @@ class ForecastEstimator:
             np.save(filename, pred_vals)
             print('Save ' + filename)
 
-    def _draw_feature(self, i_feature: int, ax: object, data_size: int, draw_horizon: int):
+    def _draw_feature(self, i_feature: int, ax, data_size: int, draw_horizon: int):
         """
         Draw forecasting results for all models and one feature.
         Args:
@@ -1190,7 +1244,6 @@ class ForecastEstimator:
             data_size: Integer, number of drawing points in data.
             draw_horizon: Integer, number of drawing points for each time windows.
         """
-
         def draw_windows(data, start_x=0, color='indigo', label='Data', alpha=1.0):
             timeline = []
             for p in range(data.shape[0]):
@@ -1227,9 +1280,12 @@ class ForecastEstimator:
                 model_names.remove('naive')
                 color_dicts['naive'] = 'grey'
 
-            color_map = plt.cm.get_cmap('twilight', len(model_names) + 2)
-            for i, model_name in enumerate(model_names):
-                color_dicts[model_name] = color_map(i)
+            if len(model_names) == 1:
+                color_dicts[model_names[0]] = 'orange'
+            else:
+                color_map = plt.cm.get_cmap('twilight', len(model_names) + 2)
+                for i, model_name in enumerate(model_names):
+                    color_dicts[model_name] = color_map(i)
 
             for model_name, pred_vals in self.pred.items():
                 if connection_line:
@@ -1241,13 +1297,14 @@ class ForecastEstimator:
 
         ax.legend(fontsize=8)
 
-    def draw(self, size=1000, draw_horizon=None, features_names=None):
+    def draw(self, size: int = 1000, draw_horizon: int = None, features_names: list | None = None, title: str = ''):
         """
         Draw forecasting results.
         Args:
             size: Integer, number of drawing points in data. Defaults to 1000.
             draw_horizon: Integer, number of drawing points for each time windows. Defaults to forecasting horizon.
             features_names: List or `None`, list of feature for drawing.
+            title: String, title of the figure.
         """
         if features_names is None:
             if self.features_names is None:
@@ -1259,29 +1316,28 @@ class ForecastEstimator:
             draw_horizon = self.true.shape[1]
 
         n = len(features_names)
-        nrows = 1
-        ncols = 1
+        n_cols = 1
         if n <= 3:
-            nrows = n
+            n_rows = n
         elif n % 3 == 0:
-            ncols = 3
-            nrows = int(n / 3)
+            n_cols = 3
+            n_rows = int(n / 3)
         elif n % 2 == 0:
-            ncols = 2
-            nrows = int(n / 2)
+            n_cols = 2
+            n_rows = int(n / 2)
         else:
-            ncols = 2
-            nrows = int(math.floor(n / 2))
+            n_cols = 2
+            n_rows = int(math.floor(n / 2))
 
-        fig, axs = plt.subplots(nrows, ncols, sharex='col', figsize=(ncols * 6, nrows * 3))
+        fig, axs = plt.subplots(n_rows, n_cols, sharex='col', figsize=(n_cols * 6, n_rows * 3))
         fig.tight_layout(pad=2.3)
         fig.supxlabel('Time')
+        fig.suptitle(title)
 
         i_feature = 0
-
-        for i in range(nrows):
-            if ncols == 1:
-                if nrows == 1:
+        for i in range(n_rows):
+            if n_cols == 1:
+                if n_rows == 1:
                     self._draw_feature(i_feature, axs, size, draw_horizon)
                     axs.set_ylabel(features_names[i_feature])
                 else:
@@ -1289,7 +1345,7 @@ class ForecastEstimator:
                     axs[i].set_ylabel(features_names[i_feature])
                 i_feature = i_feature + 1
             else:
-                for j in range(ncols):
+                for j in range(n_cols):
                     if i_feature > n:
                         break
                     self._draw_feature(i_feature, axs[i, j], size, draw_horizon)

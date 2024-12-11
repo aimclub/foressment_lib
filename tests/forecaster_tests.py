@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import foressment_ai as foras
 import unittest
 import inspect
 import numpy as np
-import foressment_ai as foras
 
 
 class TestForecasterParameters(unittest.TestCase):
@@ -27,19 +27,20 @@ class TestForecasterParameters(unittest.TestCase):
 
     def test_set_incorrect_params(self):
         print(inspect.stack()[0][3])
-        message = 'The object of class ForecasterParameters sets incorrect parameters'
+        message = 'The object of class ForecasterParameters sets incorrect parameter'
         params = foras.ForecasterParameters()
-        incorrect_value = -100
-        for param_name in params.__slots__:
-            with self.subTest():
-                with self.assertRaises(AssertionError, msg=message):
-                    params.__setattr__(name=param_name, val=incorrect_value)
+        with self.assertRaises(AssertionError, msg=message + ' <n_features>'):
+            params.n_features = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <look_back_length>'):
+            params.look_back_length = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <horizon>'):
+            params.horizon = 0.5
 
     def test_set_incorrect_argument(self):
         print(inspect.stack()[0][3])
         message = 'The object of class ForecasterParameters sets incorrect argument'
         params = foras.ForecasterParameters()
-        with self.assertRaises(AttributeError, msg=message):
+        with self.assertRaises(AssertionError, msg=message):
             params.block_type = 'GRU'
 
 
@@ -57,18 +58,38 @@ class TestDeepForecasterParameters(unittest.TestCase):
 
     def test_is_not_none(self):
         print(inspect.stack()[0][3])
-        message = 'The object of class ForecasterParameters can\'t not be created'
+        message = 'The object of class DeepForecasterParameters can\'t not be created'
         self.assertIsNotNone(foras.DeepForecasterParameters(), message)
 
     def test_set_incorrect_params(self):
         print(inspect.stack()[0][3])
-        message = 'The object of class ForecasterParameters sets incorrect parameters'
+        message = 'The object of class DeepForecasterParameters sets incorrect parameters'
         params = foras.DeepForecasterParameters()
-        incorrect_value = -100
-        for param_name in params.__slots__:
-            with self.subTest():
-                with self.assertRaises(AssertionError, msg=message):
-                    params.__setattr__(name=param_name, val=incorrect_value)
+        with self.assertRaises(AssertionError, msg=message + ' <n_features>'):
+            params.n_features = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <look_back_length>'):
+            params.look_back_length = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <horizon>'):
+            params.horizon = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <units>'):
+            params.units = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <block_type>'):
+            params.block_type = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <dropout>'):
+            params.dropout = '0.5'
+        with self.assertRaises(AssertionError, msg=message + ' <hidden_activation>'):
+            params.hidden_activation = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <output_activation>'):
+            params.output_activation = 0.5
+        with self.assertRaises(AssertionError, msg=message + ' <loss>'):
+            params.loss = 0.5
+
+    def test_set_incorrect_argument(self):
+        print(inspect.stack()[0][3])
+        message = 'The object of class DeepForecasterParameterssets incorrect argument'
+        params = foras.DeepForecasterParameters()
+        with self.assertRaises(AssertionError, msg=message):
+            params.new_var = 1000
 
 
 class TestTSGenerator(unittest.TestCase):
@@ -235,7 +256,7 @@ class TestDeepForecasterTuner(unittest.TestCase):
                             dropout=[0.0, 0.01, 0.5],
                             hidden_activation=['tanh', 'relu'],
                             output_activation=['linear', 'sigmoid'])
-        self.assertIsNotNone(tuner.hp_choices)
+        self.assertIsNotNone(tuner.model_params)
 
     def test_find_best_models(self):
         params = foras.DeepForecasterParameters()
@@ -244,6 +265,7 @@ class TestDeepForecasterTuner(unittest.TestCase):
         y = ts.get_data()
 
         tuner = foras.DeepForecasterTuner(params)
+        tuner.set_tuned_hps(n_rec_layers=[1, 2], units=[[64, 32], [24, 16]])
         tuner.find_best_models(x, y, epochs=3, n_models=1, max_trials=3)
 
 

@@ -14,4 +14,16 @@ Examples are using two datasets:
 - **HAI**: testbed that comprises three physical control systems, namely a GE turbine, Emerson boiler, and FESTO water treatment systems, combined through a dSPACE hardware-in-the-loop; using the testbed, benign and malicious scenarios were run multiple times (based on the HIL-based Augmented ICS Security Dataset).
 
 Console output of examples is presented in ```./results``` folder.
+
+We also added Jupiter Notebooks, showcasing application of our modules to difference use cases:
+
+- ```assessor-featureeng.ipynb```: demonstration of the classification performance on the failure classification task (binary classification task on the failure-prediction-using-sensor-data dataset);
+- ```assessor_edgeiiot-small-sample.ipynb```: demonstration of the classification performance on the attack detection task (multi-label classification task on the Edge IIoT dataset);
+- ```assessor_small-cranes-sample.ipynb```: demonstration of the classification performance on the state detection task (multi-label classification task on the Small Cranes dataset);
+- ```forecastate_example_gearbox.ipynb```: demonstration of the prediction performance on the fault detection task (forecasting task on the Gearbox Fault Diagnosis dataset);
+- ```forecastate_example_swat.ipynb```: demonstration of the prediction performance on the anomaly detection task (forecasting task on the SWAT dataset).
+
+Joint use of Assessor and Forecaster on the same dataset for different tasks is presented in the following Jupiter Notebooks:
+- ```assessor-for-joint-experiments.ipynb```: demonstration of the classification performance on the state detection task (multi-label classification task on the condition-monitoring-dataset-ai4i dataset);
+- ```forecaster_example_ai4i.ipynb```: demonstration of the prediction performance on the state detection task (forecasting task on the condition-monitoring-dataset-ai4i dataset).
 </p>
