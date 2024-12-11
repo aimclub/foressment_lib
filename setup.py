@@ -9,8 +9,8 @@ with open(path.join(HERE, 'README_en.md'), encoding='utf-8') as f:
 
 setup(
     name="foressment_ai",
-    version="0.1.2",
-    description="Demo library",
+    version="0.1.3",
+    description="Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://foressment_ai.readthedocs.io/",
@@ -21,16 +21,17 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU GPLv3 License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Operating System :: OS Independent"
     ],
     packages=["foressment_ai"],
     include_package_data=True,
     install_requires=[
-        "sklearn", "scipy", "numpy",
+        "scikit-learn", "scipy", "numpy",
         "pandas", "matplotlib", "keras",
-        "tensorflow"
+        "tensorflow", "optuna", "psutil",
+        "setuptools", "tqdm", "termcolor"
     ]
 )
